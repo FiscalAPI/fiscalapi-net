@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35004.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fiscalapi-net", "fiscalapi-net.csproj", "{CAF0BCFD-6731-4434-9745-5C4BA48FF46B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CAF0BCFD-6731-4434-9745-5C4BA48FF46B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAF0BCFD-6731-4434-9745-5C4BA48FF46B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAF0BCFD-6731-4434-9745-5C4BA48FF46B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAF0BCFD-6731-4434-9745-5C4BA48FF46B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8031797A-62FF-45F8-B933-520C236FA119}
+	EndGlobalSection
+EndGlobal
