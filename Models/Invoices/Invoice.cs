@@ -22,7 +22,6 @@ namespace FiscalApi.Models.Invoices
         }
 
         public string PaymentFormCode { get; set; }
-        public string PaymentConditions { get; set; } = "Contado";
         public string CurrencyCode { get; set; } = "MXN";
         public string TypeCode { get; set; } = "I";
         public string ExpeditionZipCode { get; set; }
@@ -35,12 +34,12 @@ namespace FiscalApi.Models.Invoices
         public Addendum Addendum { get; set; }
 
         // Nullable or optional properties in some invoices
-        public string PacConfirmation { get; set; }
-        public string PaymentMethodCode { get; set; } = "PUE";
-
         [JsonConverter(typeof(DecimalJsonConverter))]
         public decimal ExchangeRate { get; set; } = 1;
 
+        public string PaymentConditions { get; set; }
+        public string PacConfirmation { get; set; }
+        public string PaymentMethodCode { get; set; } = "PUE";
         public decimal Subtotal { get; set; }
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
@@ -161,7 +160,10 @@ namespace FiscalApi.Models.Invoices
         public decimal PaymentAmount { get; set; }
         public decimal RemainingBalance { get; set; }
         public string TaxObjectCode { get; set; }
-        public decimal Equivalence { get; set; }
+
+        [JsonConverter(typeof(DecimalJsonConverter))]
+        public decimal Equivalence { get; set; } = 1;
+
         public decimal ExchangeRate { get; set; }
         public List<PaidInvoiceTax> PaidInvoiceTaxes { get; set; }
     }
@@ -187,6 +189,56 @@ namespace FiscalApi.Models.Invoices
         public string SatBase64Sello { get; set; }
         public string SatBase64OriginalString { get; set; }
         public string SatCertificateNumber { get; set; }
+    }
+
+
+    public class CancelInvoiceRequest
+    {
+        /// <summary>
+        /// Invoice id to cancel.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Invoice uuid to cancel.
+        /// </summary>
+        public string InvoiceUuid { get; set; }
+
+        /// <summary>
+        /// Taxpayer RFC.
+        /// </summary>
+        [JsonProperty("tin")]
+        public string Rfc { get; set; }
+
+        /// <summary>
+        /// Cancellation reason code.
+        /// </summary>
+        public string CancellationReasonCode { get; set; }
+
+        /// <summary>
+        /// Replacement uuid.
+        /// </summary>
+        public string ReplacementUuid { get; set; }
+
+        /// <summary>
+        /// Tax credentials.
+        /// </summary>
+        public List<TaxCredential> TaxCredentials { get; set; }
+    }
+
+
+    public class CancelInvoiceResponse
+    {
+        /// <summary>
+        /// XML Acknowledgement of cancellation encoded to base 64.
+        /// To retrieve the raw XML you must decode using the DecodeFromBase64() extension method.
+        /// </summary>
+        public string Base64CancellationAcknowledgement { get; set; }
+
+        /// <summary>
+        /// List of canceled invoice uuids. Or list of  invoice uuids in process to be canceled.
+        /// </summary>
+        public Dictionary<string, string> InvoiceUuids { get; set; }
     }
 
     public enum FileType

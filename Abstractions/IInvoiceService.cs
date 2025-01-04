@@ -6,6 +6,6 @@ namespace FiscalApi.Abstractions
 {
     public interface IInvoiceService : IFiscalApiService<Invoice>
     {
-        Task<ApiResponse<object>> CancelAsync(string id);
+        Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest cancelInvoiceRequest);
     }
 }

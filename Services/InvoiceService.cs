@@ -44,8 +44,19 @@ namespace FiscalApi.Services
             return await HttpClient.PostAsync<Invoice>(endpoint, entity);
         }
 
+        public Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest cancelInvoiceRequest)
+        {
+            //public Task<ApiResponse<object>> CancelAsync(string id)
+            //    => HttpClient.PostAsync<object>(BuildEndpoint($"{id}/cancel"), null);
+            //return HttpClient.PostAsync<CancelInvoiceResponse>(BuildEndpoint($"{cancelInvoiceRequest.Id}/cancel"),
+            //    cancelInvoiceRequest);
 
-        public Task<ApiResponse<object>> CancelAsync(string id)
-            => HttpClient.PostAsync<object>(BuildEndpoint($"{id}/cancel"), null);
+            if (cancelInvoiceRequest == null)
+                throw new ArgumentNullException(nameof(cancelInvoiceRequest));
+
+            // Send the request to the API
+            // POST /api/v4/invoices/cancel
+            return HttpClient.PostAsync<CancelInvoiceResponse>(BuildEndpoint("cancel"), cancelInvoiceRequest);
+        }
     }
 }
