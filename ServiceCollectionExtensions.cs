@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using FiscalApi.Abstractions;
-using FiscalApi.Http;
 using FiscalApi.Models.Common;
 using FiscalApi.Services;
 using Microsoft.Extensions.DependencyInjection;

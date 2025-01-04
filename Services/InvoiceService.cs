@@ -4,6 +4,7 @@ using FiscalApi.Http;
 using FiscalApi.Models.Common;
 using FiscalApi.Models.Invoices;
 using System.Threading.Tasks;
+using FiscalApi.Common;
 
 namespace FiscalApi.Services
 {
@@ -19,14 +20,14 @@ namespace FiscalApi.Services
         }
 
 
-        public override async Task<ApiResponse<Invoice>> CreateAsync(Invoice entity)
+        public override async Task<ApiResponse<Invoice>> CreateAsync(Invoice requestModel)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            if (requestModel == null)
+                throw new ArgumentNullException(nameof(requestModel));
 
             string endpoint;
 
-            switch (entity.TypeCode)
+            switch (requestModel.TypeCode)
             {
                 case "I":
                     endpoint = BuildEndpoint(IncomeEndpoint);
@@ -38,25 +39,43 @@ namespace FiscalApi.Services
                     endpoint = BuildEndpoint(PaymentEndpoint);
                     break;
                 default:
-                    throw new InvalidOperationException($"Unsupported invoice type: {entity.TypeCode}");
+                    throw new InvalidOperationException($"Unsupported invoice type: {requestModel.TypeCode}");
             }
 
-            return await HttpClient.PostAsync<Invoice>(endpoint, entity);
+            return await HttpClient.PostAsync<Invoice>(endpoint, requestModel);
         }
 
-        public Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest cancelInvoiceRequest)
+        public async Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest requestModel)
         {
-            //public Task<ApiResponse<object>> CancelAsync(string id)
-            //    => HttpClient.PostAsync<object>(BuildEndpoint($"{id}/cancel"), null);
-            //return HttpClient.PostAsync<CancelInvoiceResponse>(BuildEndpoint($"{cancelInvoiceRequest.Id}/cancel"),
-            //    cancelInvoiceRequest);
+            if (requestModel == null)
+                throw new ArgumentNullException(nameof(requestModel));
 
-            if (cancelInvoiceRequest == null)
-                throw new ArgumentNullException(nameof(cancelInvoiceRequest));
-
-            // Send the request to the API
             // POST /api/v4/invoices/cancel
-            return HttpClient.PostAsync<CancelInvoiceResponse>(BuildEndpoint("cancel"), cancelInvoiceRequest);
+            return await HttpClient.PostAsync<CancelInvoiceResponse>(BuildEndpoint("cancel"), requestModel);
+        }
+
+        public async Task<ApiResponse<FileResponse>> GetPdfAsync(CreatePdfRequest requestModel)
+        {
+            if (requestModel == null)
+                throw new ArgumentNullException(nameof(requestModel));
+
+            // POST /api/v4/invoices/pdf
+            return await HttpClient.PostAsync<FileResponse>(BuildEndpoint("pdf"), requestModel);
+        }
+
+        public Task<ApiResponse<FileResponse>> GetXmlAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+
+            //GET /api/v4/invoices/{id}/xml
+            return HttpClient.GetAsync<FileResponse>(BuildEndpoint($"{id}/xml"));
+        }
+
+        public Task<ApiResponse<bool>> SendAsync(SendInvoiceRequest requestModel)
+        {
+            // POST  /api/v4/invoices/send
+            return HttpClient.PostAsync<bool>(BuildEndpoint("send"), requestModel);
         }
     }
 }

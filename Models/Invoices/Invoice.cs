@@ -241,6 +241,24 @@ namespace FiscalApi.Models.Invoices
         public Dictionary<string, string> InvoiceUuids { get; set; }
     }
 
+
+    public class CreatePdfRequest
+    {
+        public string InvoiceId { get; set; }
+        public string Base64Logo { get; set; }
+        public string BandColor { get; set; }
+        public string FontColor { get; set; }
+    }
+
+    public class SendInvoiceRequest
+    {
+        public string InvoiceId { get; set; }
+        public string Base64Logo { get; set; }
+        public string BandColor { get; set; }
+        public string FontColor { get; set; }
+        public string ToEmail { get; set; }
+    }
+
     public enum FileType
     {
         CertificateCsd,

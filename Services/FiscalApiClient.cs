@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using FiscalApi.Abstractions;
 using FiscalApi.Http;
 using FiscalApi.Models.Common;

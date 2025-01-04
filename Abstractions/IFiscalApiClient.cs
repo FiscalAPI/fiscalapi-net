@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FiscalApi.Abstractions
+﻿namespace FiscalApi.Abstractions
 {
     public interface IFiscalApiClient
     {
