@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FiscalApi.Models
+namespace FiscalApi.Models.Common
 {
     public class ApiResponse<T>
     {
@@ -9,12 +7,5 @@ namespace FiscalApi.Models
         public string Message { get; set; }
         public string Details { get; set; }
         public int HttpStatusCode { get; set; }
-    }
-
-    public class BaseDto
-    {
-        public string Id { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
     }
 }

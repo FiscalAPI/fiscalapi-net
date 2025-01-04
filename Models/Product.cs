@@ -1,6 +1,8 @@
-﻿namespace FiscalApi.Models
+﻿using FiscalApi.Models.Common;
+
+namespace FiscalApi.Models
 {
-    public class Product
+    public class Product : BaseDto
     {
         public string Id { get; set; }
         public string Name { get; set; }

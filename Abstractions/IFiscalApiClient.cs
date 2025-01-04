@@ -1,10 +1,15 @@
-﻿using FiscalApi.Abstractions.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace FiscalApi.Abstractions
 {
-    public interface IFiscalApiClient : IFiscalApiScopedService
+    public interface IFiscalApiClient
     {
-        IInvoiceService InvoiceService { get; }
-        IProductService ProductService { get; }
+        IInvoiceService Invoices { get; }
+
+        IProductService Products { get; }
+        //IUserService Users { get; }
+        //ICustomerService Customers { get; }
     }
 }

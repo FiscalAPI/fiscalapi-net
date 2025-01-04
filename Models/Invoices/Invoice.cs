@@ -1,14 +1,26 @@
-﻿using System;
+﻿using FiscalApi.Models.Common;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using FiscalApi.Common;
 
-namespace FiscalApi.Models
+namespace FiscalApi.Models.Invoices
 {
     public class Invoice : BaseDto
     {
         public string VersionCode { get; set; } = "4.0";
         public string Series { get; set; }
         public string Number { get; set; }
-        public DateTime Date { get; set; }
+
+        [JsonIgnore] public DateTime Date { get; set; }
+
+        [JsonProperty("Date")]
+        public string InvoiceDate
+        {
+            get => Date.ToString(SdkConstants.SatDateFormat);
+            private set => Date = DateTime.Parse(value);
+        }
+
         public string PaymentFormCode { get; set; }
         public string PaymentConditions { get; set; } = "Contado";
         public string CurrencyCode { get; set; } = "MXN";
@@ -25,18 +37,15 @@ namespace FiscalApi.Models
         // Nullable or optional properties in some invoices
         public string PacConfirmation { get; set; }
         public string PaymentMethodCode { get; set; } = "PUE";
+
+        [JsonConverter(typeof(DecimalJsonConverter))]
         public decimal ExchangeRate { get; set; } = 1;
+
         public decimal Subtotal { get; set; }
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
-        public string IssuerId { get; set; }
-        public string RecipientId { get; set; }
-        public string IssuerTin { get; set; }
-        public string IssuerLegalName { get; set; }
-        public string RecipientTin { get; set; }
-        public string RecipientLegalName { get; set; }
-        public List<InvoiceResponse> InvoiceResponses { get; set; }
-        public InvoicePayment Payments { get; set; }
+        public List<InvoiceResponse> Responses { get; set; }
+        public List<InvoicePayment> Payments { get; set; }
     }
 
     public class InvoiceIssuer : BaseDto
@@ -51,7 +60,7 @@ namespace FiscalApi.Models
     public class TaxCredential
     {
         public string Base64File { get; set; }
-        public decimal FileType { get; set; }
+        public FileType FileType { get; set; }
         public string Password { get; set; }
     }
 
@@ -85,7 +94,7 @@ namespace FiscalApi.Models
         // Add properties as needed
     }
 
-    public class InvoiceItem
+    public class InvoiceItem : BaseDto
     {
         public string ItemCode { get; set; }
         public decimal Quantity { get; set; }
@@ -111,10 +120,21 @@ namespace FiscalApi.Models
 
     public class InvoicePayment
     {
-        public DateTime PaymentDate { get; set; }
+        [JsonIgnore] public DateTime PaymentDate { get; set; }
+
+        [JsonProperty("PaymentDate")]
+        public string InvoiceDate
+        {
+            get => PaymentDate.ToString(SdkConstants.SatDateFormat);
+            private set => PaymentDate = DateTime.Parse(value);
+        }
+
         public string PaymentFormCode { get; set; }
         public string CurrencyCode { get; set; }
-        public decimal ExchangeRate { get; set; }
+
+        [JsonConverter(typeof(DecimalJsonConverter))]
+        public decimal ExchangeRate { get; set; } = 1;
+
         public decimal Amount { get; set; }
         public string OperationNumber { get; set; }
         public string SourceBankTin { get; set; }
@@ -135,7 +155,7 @@ namespace FiscalApi.Models
         public string Series { get; set; }
         public string Number { get; set; }
         public string CurrencyCode { get; set; }
-        public decimal PartialityNumber { get; set; }
+        public int PartialityNumber { get; set; }
         public decimal SubTotal { get; set; }
         public decimal PreviousBalance { get; set; }
         public decimal PaymentAmount { get; set; }
@@ -167,5 +187,11 @@ namespace FiscalApi.Models
         public string SatBase64Sello { get; set; }
         public string SatBase64OriginalString { get; set; }
         public string SatCertificateNumber { get; set; }
+    }
+
+    public enum FileType
+    {
+        CertificateCsd,
+        PrivateKeyCsd,
     }
 }
