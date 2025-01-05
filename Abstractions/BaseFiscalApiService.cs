@@ -2,6 +2,8 @@ using FiscalApi.Http;
 using System;
 using System.Threading.Tasks;
 using FiscalApi.Common;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FiscalApi.Abstractions
 {
@@ -18,17 +20,49 @@ namespace FiscalApi.Abstractions
             ApiVersion = apiVersion ?? throw new ArgumentNullException(nameof(apiVersion));
         }
 
-        protected virtual string BuildEndpoint(string path = "")
+        /// <summary>
+        /// Construye la URL base y opcionalmente agrega path o query params.
+        /// Ejemplo: 
+        ///   BuildEndpoint() -> "api/v4/users"
+        ///   BuildEndpoint("123") -> "api/v4/users/123"
+        ///   BuildEndpoint("", new Dictionary{string,string} {["PageNumber"]="1",["PageSize"]="2"}) -> "api/v4/users?PageNumber=1&PageSize=2"
+        /// </summary>
+        protected virtual string BuildEndpoint(string path = "", IDictionary<string, string> queryParams = null)
         {
             var baseEndpoint = $"api/{ApiVersion}/{ResourcePath}";
-            return string.IsNullOrEmpty(path) ? baseEndpoint : $"{baseEndpoint}/{path}";
+            if (!string.IsNullOrEmpty(path))
+            {
+                baseEndpoint += $"/{path}";
+            }
+
+            if (queryParams == null || queryParams.Count <= 0)
+                return baseEndpoint;
+
+
+            // query string
+            var queryString = string.Join("&", queryParams
+                .Where(kvp => !string.IsNullOrEmpty(kvp.Key))
+                .Select(kvp => $"{kvp.Key}={kvp.Value}"));
+
+            baseEndpoint += $"?{queryString}";
+
+            return baseEndpoint;
         }
 
-        public virtual Task<ApiResponse<PagedList<T>>> GetListAsync(bool includeDetails = false)
-            => HttpClient.GetAsync<PagedList<T>>(BuildEndpoint(), includeDetails);
+        public virtual Task<ApiResponse<PagedList<T>>> GetListAsync(int pageNumber, int pageSize)
+        {
+            // query params
+            var queryParams = new Dictionary<string, string>
+            {
+                { "PageNumber", pageNumber.ToString() },
+                { "PageSize", pageSize.ToString() }
+            };
 
-        public virtual Task<ApiResponse<T>> GetByIdAsync(string id, bool includeDetails = false)
-            => HttpClient.GetByIdAsync<T>(BuildEndpoint(id), includeDetails);
+            return HttpClient.GetAsync<PagedList<T>>(BuildEndpoint(queryParams: queryParams));
+        }
+
+        public virtual Task<ApiResponse<T>> GetByIdAsync(string id)
+            => HttpClient.GetByIdAsync<T>(BuildEndpoint(id));
 
         public virtual Task<ApiResponse<T>> CreateAsync(T entity)
             => HttpClient.PostAsync<T>(BuildEndpoint(), entity);

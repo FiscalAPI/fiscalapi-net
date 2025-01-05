@@ -25,16 +25,14 @@ namespace FiscalApi.Http
             };
         }
 
-        public async Task<ApiResponse<T>> GetAsync<T>(string endpoint, bool includeDetails = false)
+        public async Task<ApiResponse<T>> GetAsync<T>(string endpoint)
         {
-            var query = includeDetails ? $"?details=true" : string.Empty;
-            return await SendRequestAsync<T>(HttpMethod.Get, $"{endpoint}{query}");
+            return await SendRequestAsync<T>(HttpMethod.Get, endpoint);
         }
 
-        public async Task<ApiResponse<T>> GetByIdAsync<T>(string id, bool includeDetails = false)
+        public async Task<ApiResponse<T>> GetByIdAsync<T>(string id)
         {
-            var query = includeDetails ? $"?details=true" : string.Empty;
-            return await SendRequestAsync<T>(HttpMethod.Get, $"{id}{query}");
+            return await SendRequestAsync<T>(HttpMethod.Get, id);
         }
 
         public async Task<ApiResponse<T>> PostAsync<T>(string endpoint, object payload)
@@ -49,8 +47,11 @@ namespace FiscalApi.Http
         public async Task<ApiResponse<bool>> DeleteAsync(string endpoint)
             => await SendRequestAsync<bool>(HttpMethod.Delete, endpoint);
 
-        private async Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint,
-            object content = null)
+        private async Task<ApiResponse<T>> SendRequestAsync<T>(
+            HttpMethod method,
+            string endpoint,
+            object content = null
+        )
         {
             var request = new HttpRequestMessage(method, endpoint);
 
@@ -63,12 +64,10 @@ namespace FiscalApi.Http
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-
             return response.IsSuccessStatusCode
                 ? JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings)
                 : HandleFailureAsync<T>(responseContent);
         }
-
 
         private ApiResponse<T> HandleFailureAsync<T>(string responseContent)
         {
@@ -77,7 +76,6 @@ namespace FiscalApi.Http
 
             var failures = failureResponse.Data;
 
-
             var friendlyErrorMessage = "";
             if (failures != null && failures.Count > 0)
             {
@@ -85,13 +83,14 @@ namespace FiscalApi.Http
                     failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"));
             }
 
-            // Retornamos un nuevo ApiResponse<T> con Data = null y los mensajes
             return new ApiResponse<T>
             {
                 Succeeded = false,
                 HttpStatusCode = failureResponse.HttpStatusCode,
                 Message = failureResponse.Message,
-                Details = !string.IsNullOrEmpty(friendlyErrorMessage) ? friendlyErrorMessage : failureResponse.Details,
+                Details = !string.IsNullOrEmpty(friendlyErrorMessage)
+                    ? friendlyErrorMessage
+                    : failureResponse.Details,
                 Data = default
             };
         }
