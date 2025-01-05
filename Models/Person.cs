@@ -21,8 +21,8 @@ namespace FiscalApi.Models
         public string ZipCode { get; set; }
         public string Base64Photo { get; set; }
         public string TaxPassword { get; set; }
-        public int AvailableBalance { get; set; }
-        public int CommittedBalance { get; set; }
+        public int AvailableBalance { get; }
+        public int CommittedBalance { get; }
         public string TenantId { get; set; }
     }
 }
