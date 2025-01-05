@@ -1,10 +1,9 @@
-﻿using FiscalApi.Models.Common;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using FiscalApi.Common;
 
-namespace FiscalApi.Models.Invoices
+namespace FiscalApi.Models
 {
     public class Invoice : BaseDto
     {

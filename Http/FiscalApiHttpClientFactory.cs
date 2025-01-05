@@ -1,8 +1,8 @@
-using FiscalApi.Models.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using FiscalApi.Common;
 
 namespace FiscalApi.Http
 {

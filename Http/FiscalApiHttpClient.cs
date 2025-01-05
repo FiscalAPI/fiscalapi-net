@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using FiscalApi.Models.Common;
+using FiscalApi.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -61,7 +63,37 @@ namespace FiscalApi.Http
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings);
+
+            return response.IsSuccessStatusCode
+                ? JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings)
+                : HandleFailureAsync<T>(responseContent);
+        }
+
+
+        private ApiResponse<T> HandleFailureAsync<T>(string responseContent)
+        {
+            var failureResponse =
+                JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
+
+            var failures = failureResponse.Data;
+
+
+            var friendlyErrorMessage = "";
+            if (failures != null && failures.Count > 0)
+            {
+                friendlyErrorMessage = string.Join("; ",
+                    failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"));
+            }
+
+            // Retornamos un nuevo ApiResponse<T> con Data = null y los mensajes
+            return new ApiResponse<T>
+            {
+                Succeeded = false,
+                HttpStatusCode = failureResponse.HttpStatusCode,
+                Message = failureResponse.Message,
+                Details = !string.IsNullOrEmpty(friendlyErrorMessage) ? friendlyErrorMessage : failureResponse.Details,
+                Data = default
+            };
         }
     }
 }

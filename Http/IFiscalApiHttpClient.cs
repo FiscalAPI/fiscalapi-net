@@ -1,5 +1,5 @@
-using FiscalApi.Models.Common;
 using System.Threading.Tasks;
+using FiscalApi.Common;
 
 namespace FiscalApi.Http
 {

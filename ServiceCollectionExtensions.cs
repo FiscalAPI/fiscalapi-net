@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using FiscalApi.Abstractions;
-using FiscalApi.Models.Common;
+using FiscalApi.Common;
 using FiscalApi.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

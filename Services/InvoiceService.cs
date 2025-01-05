@@ -1,10 +1,9 @@
 using System;
 using FiscalApi.Abstractions;
 using FiscalApi.Http;
-using FiscalApi.Models.Common;
-using FiscalApi.Models.Invoices;
 using System.Threading.Tasks;
 using FiscalApi.Common;
+using FiscalApi.Models;
 
 namespace FiscalApi.Services
 {

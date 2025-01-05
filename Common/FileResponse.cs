@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FiscalApi.Common
+﻿namespace FiscalApi.Common
 {
     public class FileResponse
     {

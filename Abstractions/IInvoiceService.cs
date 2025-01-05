@@ -1,12 +1,12 @@
-using FiscalApi.Models.Common;
-using FiscalApi.Models.Invoices;
 using System.Threading.Tasks;
 using FiscalApi.Common;
+using FiscalApi.Models;
 
 namespace FiscalApi.Abstractions
 {
     public interface IInvoiceService : IFiscalApiService<Invoice>
     {
+
         // Cancel any type of invoice
         Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest requestModel);
 

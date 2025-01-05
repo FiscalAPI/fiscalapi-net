@@ -1,7 +1,7 @@
 using FiscalApi.Http;
-using FiscalApi.Models.Common;
 using System;
 using System.Threading.Tasks;
+using FiscalApi.Common;
 
 namespace FiscalApi.Abstractions
 {

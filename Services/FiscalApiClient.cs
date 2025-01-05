@@ -1,7 +1,7 @@
 ﻿using System;
 using FiscalApi.Abstractions;
+using FiscalApi.Common;
 using FiscalApi.Http;
-using FiscalApi.Models.Common;
 
 namespace FiscalApi.Services
 {
@@ -10,6 +10,7 @@ namespace FiscalApi.Services
     {
         public IInvoiceService Invoices { get; }
         public IProductService Products { get; }
+        public IPersonService Persons { get; }
 
 
         private FiscalApiClient(FiscalApiOptions settings)
@@ -17,9 +18,11 @@ namespace FiscalApi.Services
             var httpClient = FiscalApiHttpClientFactory.Create(settings);
             var apiVersion = settings.ApiVersion;
 
+
             // Initialize services
             Invoices = new InvoiceService(httpClient, apiVersion);
             Products = new ProductService(httpClient, apiVersion);
+            Persons = new PersonService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalApiOptions settings)
