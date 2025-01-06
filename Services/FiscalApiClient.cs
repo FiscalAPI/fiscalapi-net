@@ -11,6 +11,7 @@ namespace FiscalApi.Services
         public IInvoiceService Invoices { get; }
         public IProductService Products { get; }
         public IPersonService Persons { get; }
+        public IApiKeyService ApiKeys { get; }
 
 
         private FiscalApiClient(FiscalApiOptions settings)
@@ -23,6 +24,7 @@ namespace FiscalApi.Services
             Invoices = new InvoiceService(httpClient, apiVersion);
             Products = new ProductService(httpClient, apiVersion);
             Persons = new PersonService(httpClient, apiVersion);
+            ApiKeys = new ApiKeyService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalApiOptions settings)
