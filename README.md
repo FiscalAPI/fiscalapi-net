@@ -177,5 +177,5 @@ Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENS
 
 - [Documentación Oficial](https://docs.fiscalapi.com)
 - [Portal de FiscalAPI](https://fiscalapi.com)
-- [Soporte](https://fiscalapi.com/soporte)
+- [Ejemplos de código]([https://fiscalapi.com/soporte](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms))
 
