@@ -7,12 +7,12 @@ namespace FiscalApi.Models
     {
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
-        public string SatUnitMeasurementId { get; set; } // Unidad de medida del SAT
-        public CatalogDto SatUnitMeasurement { get; set; } // Unidad de medida del SAT
-        public string SatTaxObjectId { get; set; } // Objeto del impuesto del SAT
-        public CatalogDto SatTaxObject { get; set; } // Objeto del impuesto del SAT
-        public string ProductClassId { get; set; } // Clase del producto del SAT (Clave producto/servicio)
-        public CatalogDto ProductClass { get; set; } // Clase del producto del SAT (Clave producto/servicio)
+        public string SatUnitMeasurementId { get; set; } //= "H87"; // Código del SAT (Unidad de medida)
+        public CatalogDto SatUnitMeasurement { get; set; } 
+        public string SatTaxObjectId { get; set; } //= "02"; //Código del SAT (objeto de impuesto)
+        public CatalogDto SatTaxObject { get; set; }  
+        public string SatProductCodeId { get; set; } //= "01010101"; // Código del SAT (Clave producto/servicio)
+        public CatalogDto SatProductCode { get; set; } 
         public List<ProductTax> ProductTaxes { get; set; } // Impuestos del producto
     }
 
@@ -32,6 +32,7 @@ namespace FiscalApi.Models
         /// * "003" = IEPS
         /// </summary>
         public string TaxId { get; set; }
+
         public CatalogDto Tax { get; set; }
 
         /// <summary>
@@ -41,6 +42,7 @@ namespace FiscalApi.Models
         /// * "R" = Retención
         /// </summary>
         public string TaxFlagId { get; set; }
+
         public CatalogDto TaxFlag { get; set; }
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace FiscalApi.Models
         /// * "Exento"
         /// </summary>
         public string TaxTypeId { get; set; }
+
         public CatalogDto TaxType { get; set; }
     }
 }
