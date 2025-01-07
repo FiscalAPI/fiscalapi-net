@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/v/FiscalApi.svg)](https://www.nuget.org/packages/FiscalApi/)
 [![License](https://img.shields.io/github/license/FiscalAPI/fiscalapi-net)](https://github.com/FiscalAPI/fiscalapi-net/blob/main/LICENSE)
 
-SDK oficial de FiscalAPI para .NET, la API de facturación CFDI más importante en México. Simplifica la integración con los servicios de facturación electrónica, eliminando las complejidades del SAT y facilitando la generación de facturas, notas de crédito y complementos de pago.
+SDK oficial de FiscalAPI para .NET, la API de facturación CFDI y otros servicios fiscales en México. Simplifica la integración con los servicios de facturación electrónica, eliminando las complejidades del de la autoridad tributaria (SAT) y facilitando la generación de facturas, notas de crédito y complementos de pago, etc.
 
 ## 🚀 Características
 
@@ -12,6 +12,7 @@ SDK oficial de FiscalAPI para .NET, la API de facturación CFDI más importante 
 - Operaciones asíncronas y sincrónicas
 - Flexibilidad en modos de operación: por valores o referencias
 - Manejo simplificado de errores
+- Busqueda en todos los catálogo  del SAT.
 - Documentación completa y ejemplos prácticos
 
 ## 📦 Instalación
