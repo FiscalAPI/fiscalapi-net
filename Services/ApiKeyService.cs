@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using FiscalApi.Abstractions;
-using FiscalApi.Common;
+﻿using FiscalApi.Abstractions;
 using FiscalApi.Http;
 using FiscalApi.Models;
 

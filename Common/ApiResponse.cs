@@ -1,7 +1,3 @@
-using Newtonsoft.Json;
-using System;
-using Newtonsoft.Json.Linq;
-
 namespace FiscalApi.Common
 {
     public class ApiResponse<T>

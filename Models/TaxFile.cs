@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using FiscalApi.Common;
 using Newtonsoft.Json;
 
