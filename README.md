@@ -173,7 +173,7 @@ var apiResponse = Task.Run(async () => await fiscalApi.Catalogs.SearchCatalogAsy
 
 Este proyecto está licenciado bajo la Licencia MPL. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
-## 🔗 Enlaces Úúles
+## 🔗 Enlaces Útiles
 
 - [Documentación Oficial](https://docs.fiscalapi.com)
 - [Portal de FiscalAPI](https://fiscalapi.com)
