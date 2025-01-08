@@ -1,6 +1,6 @@
-﻿using FiscalApi.Models;
+﻿using Fiscalapi.Models;
 
-namespace FiscalApi.Abstractions
+namespace Fiscalapi.Abstractions
 {
     public interface IApiKeyService : IFiscalApiService<ApiKey>
     {

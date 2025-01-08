@@ -1,8 +1,8 @@
-﻿using FiscalApi.Abstractions;
-using FiscalApi.Http;
-using FiscalApi.Models;
+﻿using Fiscalapi.Abstractions;
+using Fiscalapi.Http;
+using Fiscalapi.Models;
 
-namespace FiscalApi.Services
+namespace Fiscalapi.Services
 {
    
 

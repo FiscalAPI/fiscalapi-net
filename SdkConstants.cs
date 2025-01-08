@@ -1,4 +1,4 @@
-﻿namespace FiscalApi
+﻿namespace Fiscalapi
 {
     public class SdkConstants
     {

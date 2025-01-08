@@ -1,6 +1,6 @@
 using System;
 
-namespace FiscalApi.Common
+namespace Fiscalapi.Common
 {
     public abstract class BaseDto
     {

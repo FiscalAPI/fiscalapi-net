@@ -2,9 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using FiscalApi.Common;
+using Fiscalapi.Common;
 
-namespace FiscalApi.Http
+namespace Fiscalapi.Http
 {
     public static class FiscalApiHttpClientFactory
     {

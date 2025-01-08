@@ -1,6 +1,6 @@
-﻿using FiscalApi.Common;
+﻿using Fiscalapi.Common;
 
-namespace FiscalApi.Models
+namespace Fiscalapi.Models
 {
     public class Person : BaseDto
     {

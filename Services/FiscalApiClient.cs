@@ -1,9 +1,9 @@
 ﻿using System;
-using FiscalApi.Abstractions;
-using FiscalApi.Common;
-using FiscalApi.Http;
+using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
+using Fiscalapi.Http;
 
-namespace FiscalApi.Services
+namespace Fiscalapi.Services
 {
     // Core Fiscalapi service
     public class FiscalApiClient : IFiscalApiClient

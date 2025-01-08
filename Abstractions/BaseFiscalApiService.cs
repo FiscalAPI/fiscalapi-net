@@ -1,11 +1,11 @@
-using FiscalApi.Http;
 using System;
 using System.Threading.Tasks;
-using FiscalApi.Common;
 using System.Collections.Generic;
 using System.Linq;
+using Fiscalapi.Common;
+using Fiscalapi.Http;
 
-namespace FiscalApi.Abstractions
+namespace Fiscalapi.Abstractions
 {
     public abstract class BaseFiscalApiService<T> : IFiscalApiService<T> where T : BaseDto
     {

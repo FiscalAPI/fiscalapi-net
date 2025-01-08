@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using FiscalApi.Common;
+using Fiscalapi.Common;
 
-namespace FiscalApi.Http
+namespace Fiscalapi.Http
 {
     public interface IFiscalApiHttpClient
     {

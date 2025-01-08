@@ -1,4 +1,4 @@
-﻿namespace FiscalApi.Abstractions
+﻿namespace Fiscalapi.Abstractions
 {
     public interface IFiscalApiClient
     {

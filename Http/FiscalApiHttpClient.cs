@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using FiscalApi.Common;
+using Fiscalapi.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace FiscalApi.Http
+namespace Fiscalapi.Http
 {
     public class FiscalApiHttpClient : IFiscalApiHttpClient
     {

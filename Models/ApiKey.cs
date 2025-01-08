@@ -1,8 +1,8 @@
 ﻿
-using FiscalApi.Common;
+using Fiscalapi.Common;
 using Newtonsoft.Json;
 
-namespace FiscalApi.Models
+namespace Fiscalapi.Models
 {
     public class ApiKey : BaseDto
     {

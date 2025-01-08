@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FiscalApi.Abstractions;
-using FiscalApi.Common;
-using FiscalApi.Http;
-using FiscalApi.Models;
+using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
+using Fiscalapi.Http;
+using Fiscalapi.Models;
 
-namespace FiscalApi.Services
+namespace Fiscalapi.Services
 {
     public class PersonService : BaseFiscalApiService<Person>, IPersonService
     {

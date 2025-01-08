@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using FiscalApi.Abstractions;
-using FiscalApi.Common;
-using FiscalApi.Services;
+using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
+using Fiscalapi.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

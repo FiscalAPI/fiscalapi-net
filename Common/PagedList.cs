@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FiscalApi.Common
+namespace Fiscalapi.Common
 {
     public class PagedList<T>
     {

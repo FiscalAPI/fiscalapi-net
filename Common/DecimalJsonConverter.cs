@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace FiscalApi.Common
+namespace Fiscalapi.Common
 {
     public class DecimalJsonConverter : JsonConverter<decimal>
     {

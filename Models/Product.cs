@@ -1,7 +1,7 @@
-﻿using FiscalApi.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Fiscalapi.Common;
 
-namespace FiscalApi.Models
+namespace Fiscalapi.Models
 {
     public class Product : BaseDto
     {

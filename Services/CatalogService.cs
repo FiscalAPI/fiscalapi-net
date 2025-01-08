@@ -1,10 +1,10 @@
-﻿using FiscalApi.Abstractions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FiscalApi.Common;
-using FiscalApi.Http;
+using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
+using Fiscalapi.Http;
 
-namespace FiscalApi.Services
+namespace Fiscalapi.Services
 {
     public class CatalogService : BaseFiscalApiService<CatalogDto>, ICatalogService
     {

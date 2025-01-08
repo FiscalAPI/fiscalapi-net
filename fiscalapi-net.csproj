@@ -2,8 +2,30 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461;net48;netcoreapp3.1;net5.0;net6.0;net8.0</TargetFrameworks>
-    <RootNamespace>FiscalApi</RootNamespace>
+	  <Version>4.0.87</Version>
+	  <AssemblyVersion>$(Version)</AssemblyVersion>
+	  <FileVersion>$(Version)</FileVersion>
+	  <PackageVersion>$(Version)</PackageVersion>
+	  <RootNamespace>Fiscalapi</RootNamespace>
+	  <AssemblyName>Fiscalapi</AssemblyName>
+	  <PackageId>Fiscalapi</PackageId>
+	  <Authors>Fiscalapi</Authors>
+	  <PackageIcon>fiscalapi.png</PackageIcon>
+	  <Summary>Genera facturas CFDI válidas ante el SAT consumiento el api de https://www.fiscalapi.com</Summary>
+	  <PackageTags>factura cfdi facturacion mexico sat</PackageTags>
+	  <Title>Fiscalapi</Title>
+	  <Owners>Fiscalapi</Owners>
+	  <ApplicationIcon>fiscalapi.ico</ApplicationIcon>
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <Company>FISCAL API S DE R.L DE C.V</Company>
+	  <Copyright>FISCAL API S DE R.L DE C.V © 2019</Copyright>
+	  <PackageProjectUrl>https://www.fiscalapi.com</PackageProjectUrl>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <RepositoryUrl>https://github.com/FiscalAPI/fiscalapi-net</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  
   </PropertyGroup>
+
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net461' Or '$(TargetFramework)'=='net48'">
 		<Reference Include="System.Net.Http" />
@@ -22,6 +44,18 @@
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="fiscalapi.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="fiscalapi.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 

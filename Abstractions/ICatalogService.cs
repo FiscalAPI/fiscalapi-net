@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FiscalApi.Common;
+using Fiscalapi.Common;
 
-namespace FiscalApi.Abstractions
+namespace Fiscalapi.Abstractions
 {
     public interface ICatalogService : IFiscalApiService<CatalogDto>
     {

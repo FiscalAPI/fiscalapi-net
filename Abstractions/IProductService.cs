@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FiscalApi.Common;
-using FiscalApi.Models;
+using Fiscalapi.Common;
+using Fiscalapi.Models;
 
-namespace FiscalApi.Abstractions
+namespace Fiscalapi.Abstractions
 {
     public interface IProductService : IFiscalApiService<Product>
     {

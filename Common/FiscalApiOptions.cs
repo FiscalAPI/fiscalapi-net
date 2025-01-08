@@ -1,4 +1,4 @@
-namespace FiscalApi.Common
+namespace Fiscalapi.Common
 {
     public class FiscalApiOptions
     {
