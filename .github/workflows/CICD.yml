@@ -1,0 +1,48 @@
+name: Build and Publish NuGet Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    # Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # Step to extract the AssemblyVersion from the .csproj file
+    - name: Extract Package Version
+      id: get_version
+      run: |
+        version=$(grep -oPm1 "(?<=<Version>)[^<]+" $(find . -name "*.csproj"))
+        echo "PACKAGE_VERSION=$version" >> $GITHUB_ENV
+        echo "Package Version extracted: $version"
+
+    # Build the project
+    - name: Build the project
+      run: dotnet build --configuration Release
+
+    # Pack the NuGet package
+    - name: Pack NuGet Package
+      run: dotnet pack --configuration Release --output ./nupkg
+
+    # Publish the package to NuGet
+    - name: Publish to NuGet
+      env:
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      run: |
+        dotnet nuget push ./nupkg/*.nupkg \
+          --api-key $NUGET_KEY \
+          --source https://api.nuget.org/v3/index.json
