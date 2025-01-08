@@ -171,7 +171,7 @@ var apiResponse = Task.Run(async () => await fiscalApi.Catalogs.SearchCatalogAsy
 
 ## 📄 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está licenciado bajo la Licencia MPL. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 🔗 Enlaces Úúles
 
