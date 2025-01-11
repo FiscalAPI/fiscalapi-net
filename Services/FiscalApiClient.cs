@@ -13,6 +13,7 @@ namespace Fiscalapi.Services
         public IPersonService Persons { get; }
         public IApiKeyService ApiKeys { get; }
         public ICatalogService Catalogs { get; }
+        public ITaxFileService TaxFiles { get; }
 
 
         private FiscalApiClient(FiscalApiOptions settings)
@@ -27,6 +28,7 @@ namespace Fiscalapi.Services
             Persons = new PersonService(httpClient, apiVersion);
             ApiKeys = new ApiKeyService(httpClient, apiVersion);
             Catalogs = new CatalogService(httpClient, apiVersion);
+            TaxFiles = new TaxFileService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalApiOptions settings)

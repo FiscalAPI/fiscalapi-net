@@ -6,6 +6,8 @@
         IPersonService Persons { get; }
         IProductService Products { get; }
         IApiKeyService ApiKeys { get; }
+
+        ITaxFileService TaxFiles { get; }
         ICatalogService Catalogs { get; }
     }
 }

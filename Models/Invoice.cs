@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using FiscalApi;
 using Fiscalapi.Common;
 
 namespace Fiscalapi.Models
@@ -85,12 +84,12 @@ namespace Fiscalapi.Models
     {
         public string PeriodicityCode { get; set; }
         public string MonthCode { get; set; }
-        public decimal? Year { get; set; }
+        public int Year { get; set; }
     }
 
     public class Addendum
     {
-        // Add properties as needed
+        public string Any { get; set; }
     }
 
     public class InvoiceItem : BaseDto

@@ -47,11 +47,54 @@ namespace Fiscalapi.Http
         public async Task<ApiResponse<bool>> DeleteAsync(string endpoint)
             => await SendRequestAsync<bool>(HttpMethod.Delete, endpoint);
 
-        private async Task<ApiResponse<T>> SendRequestAsync<T>(
-            HttpMethod method,
-            string endpoint,
-            object content = null
-        )
+        //private async Task<ApiResponse<T>> SendRequestAsync<T>(
+        //    HttpMethod method,
+        //    string endpoint,
+        //    object content = null
+        //)
+        //{
+        //    var request = new HttpRequestMessage(method, endpoint);
+
+        //    if (content != null)
+        //    {
+        //        var json = JsonConvert.SerializeObject(content, _jsonSettings);
+        //        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        //    }
+
+        //    var response = await _httpClient.SendAsync(request);
+        //    var responseContent = await response.Content.ReadAsStringAsync();
+
+        //    return response.IsSuccessStatusCode
+        //        ? JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings)
+        //        : HandleFailureAsync<T>(responseContent);
+        //}
+
+        //private ApiResponse<T> HandleFailureAsync<T>(string responseContent)
+        //{
+        //    var failureResponse =
+        //        JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
+
+        //    var failures = failureResponse.Data;
+
+        //    var friendlyErrorMessage = "";
+        //    if (failures != null && failures.Count > 0)
+        //    {
+        //        friendlyErrorMessage = string.Join("; ",
+        //            failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"));
+        //    }
+
+        //    return new ApiResponse<T>
+        //    {
+        //        Succeeded = false,
+        //        HttpStatusCode = failureResponse.HttpStatusCode,
+        //        Message = failureResponse.Message,
+        //        Details = !string.IsNullOrEmpty(friendlyErrorMessage)
+        //            ? friendlyErrorMessage
+        //            : failureResponse.Details,
+        //        Data = default
+        //    };
+        //}
+        public async Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, object content = null)
         {
             var request = new HttpRequestMessage(method, endpoint);
 
@@ -66,33 +109,58 @@ namespace Fiscalapi.Http
 
             return response.IsSuccessStatusCode
                 ? JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings)
-                : HandleFailureAsync<T>(responseContent);
+                : HandleFailureResponse<T>(responseContent, (int)response.StatusCode);
         }
 
-        private ApiResponse<T> HandleFailureAsync<T>(string responseContent)
+        private ApiResponse<T> HandleFailureResponse<T>(string responseContent, int statusCode)
         {
-            var failureResponse =
-                JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
-
-            var failures = failureResponse.Data;
-
-            var friendlyErrorMessage = "";
-            if (failures != null && failures.Count > 0)
+            try
             {
-                friendlyErrorMessage = string.Join("; ",
-                    failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"));
+                // First try to deserialize as a generic response
+                var failureResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(responseContent, _jsonSettings);
+
+                // If status is 400, try to deserialize ValidationFailures
+                if (statusCode == 400)
+                {
+                    var validationResponse = JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
+                    var failures = validationResponse?.Data;
+
+                    var validationErrors = failures != null && failures.Count > 0
+                        ? string.Join("; ", failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"))
+                        : null;
+
+                    return new ApiResponse<T>
+                    {
+                        Succeeded = false,
+                        HttpStatusCode = statusCode,
+                        Message = validationResponse?.Message,
+                        Details = validationErrors ?? validationResponse?.Details,
+                        Data = default
+                    };
+                }
+
+                // For other error codes (401, 403, 404, 500, etc.)
+                return new ApiResponse<T>
+                {
+                    Succeeded = false,
+                    HttpStatusCode = statusCode,
+                    Message = failureResponse?.Message,
+                    Details = failureResponse?.Details,
+                    Data = default
+                };
             }
-
-            return new ApiResponse<T>
+            catch (JsonException)
             {
-                Succeeded = false,
-                HttpStatusCode = failureResponse.HttpStatusCode,
-                Message = failureResponse.Message,
-                Details = !string.IsNullOrEmpty(friendlyErrorMessage)
-                    ? friendlyErrorMessage
-                    : failureResponse.Details,
-                Data = default
-            };
+                // If we can't deserialize the response, create a generic error response
+                return new ApiResponse<T>
+                {
+                    Succeeded = false,
+                    HttpStatusCode = statusCode,
+                    Message = "Error processing server response",
+                    Details = responseContent,
+                    Data = default
+                };
+            }
         }
     }
 }
