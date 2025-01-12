@@ -7,13 +7,13 @@ namespace Fiscalapi.Models
     {
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
-        public string SatUnitMeasurementId { get; set; } //= "H87"; // Código del SAT (Unidad de medida)
+        public string SatUnitMeasurementId { get; set; } // Default "H87"
         public CatalogDto SatUnitMeasurement { get; set; } 
-        public string SatTaxObjectId { get; set; } //= "02"; //Código del SAT (objeto de impuesto)
+        public string SatTaxObjectId { get; set; } //Default "02"
         public CatalogDto SatTaxObject { get; set; }  
-        public string SatProductCodeId { get; set; } //= "01010101"; // Código del SAT (Clave producto/servicio)
+        public string SatProductCodeId { get; set; } //Default "01010101"
         public CatalogDto SatProductCode { get; set; } 
-        public List<ProductTax> ProductTaxes { get; set; } // Impuestos del producto
+        public List<ProductTax> ProductTaxes { get; set; } // Default "IVA 16%"
     }
 
     public class ProductTax : BaseDto

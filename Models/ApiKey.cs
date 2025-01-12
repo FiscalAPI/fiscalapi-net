@@ -4,12 +4,15 @@ using Newtonsoft.Json;
 
 namespace Fiscalapi.Models
 {
+   
+
     public class ApiKey : BaseDto
     {
+        public string Description { get; set; }
         public string Environment { get; set; }
         public string ApiKeyValue { get; set; }
-        [JsonProperty("userId")] 
         public string PersonId { get; set; }
+        public string TenantId { get; set; }
         public ApiKeyStatus ApiKeyStatus { get; set; }
     }
 
