@@ -69,6 +69,21 @@ namespace Fiscalapi.Services
             return HttpClient.GetAsync<List<string>>(BuildEndpoint());
         }
 
+
+        /// <summary>
+        /// Recupera un registro de un catálogo por catalogName y id.
+        /// </summary>
+        /// <param name="catalogName">Nombre del catálogo</param>
+        /// <param name="id">Id del registro en el catalogName</param>
+        /// <returns>CatalogDto</returns>
+        public Task<ApiResponse<CatalogDto>> GetRecordByIdAsync(string catalogName, string id)
+        {
+            var path = $"{catalogName}/key/{id}";
+            var endpoint = BuildEndpoint(path);
+            ///api/v4/catalogs/<catalogName>/key/<id>
+            return HttpClient.GetAsync<CatalogDto>(endpoint);
+        }
+
         /// <summary>
         /// Busca en un catálogo.
         /// </summary>
