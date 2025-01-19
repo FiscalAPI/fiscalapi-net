@@ -62,9 +62,7 @@ Para ejemplos completos, consulta [winforms-console](https://github.com/FiscalAP
       "FiscalapiSettings": {
         "ApiUrl": "https://test.fiscalapi.com", // https://live.fiscalapi.com (producción)
         "ApiKey": "<YourApiKeyHere>",
-        "ApiVersion": "v4",
-        "Tenant": "<YourTenantHere>",
-        "TimeZone": "America/Mexico_City"
+        "Tenant": "<YourTenantHere>"
       }
     }
     ```
