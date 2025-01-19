@@ -29,8 +29,6 @@ NuGet\Install-Package Fiscalapi
 dotnet add package Fiscalapi
 ```
 
----
-
 ## ⚙️ Configuración
 
 Puedes usar el SDK tanto en aplicaciones sin inyección de dependencias (WinForms, Consolas, WPF, etc.) como en proyectos que usan DI (ASP.NET Core, Blazor, etc.). A continuación se describen ambas formas:
@@ -94,7 +92,6 @@ public class InvoicesController : Controller
 
 Para más ejemplos, revisa [asp-net](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet).
 
----
 
 ## 🔄 Modos de Operación
 
@@ -106,7 +103,6 @@ FiscalAPI admite dos [modos de operación](https://docs.fiscalapi.com/modes-of-o
 - **Por Valores**: Envía todos los campos requeridos en cada petición, con mayor control sobre los datos.  
   No se requiere configuración previa en el dashboard.
 
----
 
 ## 📝 Ejemplos de Uso
 
