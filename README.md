@@ -39,7 +39,7 @@ Puedes usar el SDK tanto en aplicaciones sin inyección de dependencias (WinForm
     ```csharp
     var settings = new FiscalApiOptions
     {
-        ApiUrl = "https://test.fiscalapi.com", // Cambia a https://fiscalapi.com para producción
+        ApiUrl = "https://test.fiscalapi.com", // https://live.fiscalapi.com (producción)
         ApiKey = "<tu_api_key>",
         Tenant = "<tenant>"
     };
@@ -60,7 +60,7 @@ Para ejemplos completos, consulta [winforms-console](https://github.com/FiscalAP
     ```jsonc
     {
       "FiscalapiSettings": {
-        "ApiUrl": "https://test.fiscalapi.com",
+        "ApiUrl": "https://test.fiscalapi.com", // https://live.fiscalapi.com (producción)
         "ApiKey": "<YourApiKeyHere>",
         "ApiVersion": "v4",
         "Tenant": "<YourTenantHere>",
@@ -90,7 +90,7 @@ public class InvoicesController : Controller
 }
 ```
 
-Para más ejemplos, revisa [asp-net](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet).
+Para más ejemplos, revisa [samples-asp-net](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet).
 
 
 ## 🔄 Modos de Operación
