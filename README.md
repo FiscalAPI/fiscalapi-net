@@ -175,5 +175,6 @@ Este proyecto está licenciado bajo la Licencia MPL. Consulta el archivo [LICENS
 
 - [Documentación Oficial](https://docs.fiscalapi.com)
 - [Portal de FiscalAPI](https://fiscalapi.com)
-- [Ejemplos](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms)
+- [Ejemplos Winforms/Console](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms)
+- [Ejemplos ASP.NET](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet)
 
