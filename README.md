@@ -31,16 +31,14 @@ dotnet add package Fiscalapi
 
 ## ⚙️ Configuración
 
-Configura el cliente con tus credenciales:
+Configura el cliente con [tus credenciales](https://docs.fiscalapi.com/credentials-info):
 
 ```csharp
 var settings = new FiscalApiOptions
 {
     ApiUrl = "https://test.fiscalapi.com", // Usa https://fiscalapi.com para producción
     ApiKey = "<tu_api_key>",
-    ApiVersion = "v4",
     Tenant = "<tenant>",
-    TimeZone = "America/Mexico_City"
 };
 
 var fiscalApi = FiscalApiClient.Create(settings);
