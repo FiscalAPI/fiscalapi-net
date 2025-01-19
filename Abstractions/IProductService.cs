@@ -5,6 +5,9 @@ using Fiscalapi.Models;
 
 namespace Fiscalapi.Abstractions
 {
+    /// <summary>
+    /// Interface for the Product service
+    /// </summary>
     public interface IProductService : IFiscalApiService<Product>
     {
         // GET /api/v4/products/{id}/taxes

@@ -4,6 +4,9 @@ using Fiscalapi.Models;
 
 namespace Fiscalapi.Abstractions
 {
+    /// <summary>
+    /// Interface for the Invoice service
+    /// </summary>
     public interface IInvoiceService : IFiscalApiService<Invoice>
     {
 

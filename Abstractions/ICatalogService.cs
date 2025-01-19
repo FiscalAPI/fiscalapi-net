@@ -4,6 +4,9 @@ using Fiscalapi.Common;
 
 namespace Fiscalapi.Abstractions
 {
+    /// <summary>
+    /// Interface for the Catalog service
+    /// </summary>
     public interface ICatalogService : IFiscalApiService<CatalogDto>
     {
         //GET /api/v4/catalogs

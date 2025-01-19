@@ -5,7 +5,9 @@ using Fiscalapi.Http;
 
 namespace Fiscalapi.Services
 {
-    // Core Fiscalapi service
+    /// <summary>
+    /// Client for the Fiscal API
+    /// </summary>
     public class FiscalApiClient : IFiscalApiClient
     {
         public IInvoiceService Invoices { get; }

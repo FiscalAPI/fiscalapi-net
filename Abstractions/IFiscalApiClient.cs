@@ -1,5 +1,8 @@
 ﻿namespace Fiscalapi.Abstractions
 {
+    /// <summary>
+    /// Interface for the Fiscal API client
+    /// </summary>
     public interface IFiscalApiClient
     {
         IInvoiceService Invoices { get; }
