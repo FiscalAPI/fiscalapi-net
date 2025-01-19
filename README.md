@@ -20,13 +20,13 @@ SDK oficial de FiscalAPI para .NET, la API de facturación CFDI y otros servicio
 Instala el paquete FiscalAPI vía NuGet Package Manager:
 
 ```bash
-Install-Package FiscalApi
+NuGet\Install-Package Fiscalapi
 ```
 
 O vía .NET CLI:
 
 ```bash
-dotnet add package FiscalApi
+dotnet add package Fiscalapi
 ```
 
 ## ⚙️ Configuración
