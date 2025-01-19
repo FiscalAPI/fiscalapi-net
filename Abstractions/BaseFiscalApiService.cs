@@ -72,5 +72,6 @@ namespace Fiscalapi.Abstractions
 
         public virtual Task<ApiResponse<bool>> DeleteAsync(string id)
             => HttpClient.DeleteAsync(BuildEndpoint(id));
+
     }
 }

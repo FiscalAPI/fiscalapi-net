@@ -16,7 +16,7 @@ namespace Fiscalapi.Services
         public ITaxFileService TaxFiles { get; }
 
 
-        private FiscalApiClient(FiscalApiOptions settings)
+        private FiscalApiClient(FiscalapiSettings settings)
         {
             var httpClient = FiscalApiHttpClientFactory.Create(settings);
             var apiVersion = settings.ApiVersion;
@@ -31,7 +31,7 @@ namespace Fiscalapi.Services
             TaxFiles = new TaxFileService(httpClient, apiVersion);
         }
 
-        public static IFiscalApiClient Create(FiscalApiOptions settings)
+        public static IFiscalApiClient Create(FiscalapiSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
@@ -41,7 +41,7 @@ namespace Fiscalapi.Services
         }
 
 
-        private static void ValidateSettings(FiscalApiOptions settings)
+        private static void ValidateSettings(FiscalapiSettings settings)
         {
             if (string.IsNullOrEmpty(settings.ApiUrl))
                 throw new ArgumentException("ApiUrl is required", nameof(settings.ApiUrl));

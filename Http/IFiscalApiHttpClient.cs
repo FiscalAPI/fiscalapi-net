@@ -11,5 +11,6 @@ namespace Fiscalapi.Http
         Task<ApiResponse<T>> PutAsync<T>(string endpoint, object payload);
         Task<ApiResponse<T>> PatchAsync<T>(string endpoint, object payload);
         Task<ApiResponse<bool>> DeleteAsync(string endpoint);
+        Task<ApiResponse<T>> DeleteAsync<T>(string endpoint, object payload);
     }
 }

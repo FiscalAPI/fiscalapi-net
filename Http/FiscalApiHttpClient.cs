@@ -47,53 +47,14 @@ namespace Fiscalapi.Http
         public async Task<ApiResponse<bool>> DeleteAsync(string endpoint)
             => await SendRequestAsync<bool>(HttpMethod.Delete, endpoint);
 
-        //private async Task<ApiResponse<T>> SendRequestAsync<T>(
-        //    HttpMethod method,
-        //    string endpoint,
-        //    object content = null
-        //)
-        //{
-        //    var request = new HttpRequestMessage(method, endpoint);
+        public async Task<ApiResponse<T>> DeleteAsync<T>(string endpoint, object payload)
+        {
+            // SendRequestAsync<T>(HttpMethod.Delete, endpoint, payload);   
 
-        //    if (content != null)
-        //    {
-        //        var json = JsonConvert.SerializeObject(content, _jsonSettings);
-        //        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-        //    }
+            return await SendRequestAsync<T>(HttpMethod.Delete, endpoint, payload);
+        }
 
-        //    var response = await _httpClient.SendAsync(request);
-        //    var responseContent = await response.Content.ReadAsStringAsync();
 
-        //    return response.IsSuccessStatusCode
-        //        ? JsonConvert.DeserializeObject<ApiResponse<T>>(responseContent, _jsonSettings)
-        //        : HandleFailureAsync<T>(responseContent);
-        //}
-
-        //private ApiResponse<T> HandleFailureAsync<T>(string responseContent)
-        //{
-        //    var failureResponse =
-        //        JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
-
-        //    var failures = failureResponse.Data;
-
-        //    var friendlyErrorMessage = "";
-        //    if (failures != null && failures.Count > 0)
-        //    {
-        //        friendlyErrorMessage = string.Join("; ",
-        //            failures.Select(x => $"{x.PropertyName}: {x.ErrorMessage}"));
-        //    }
-
-        //    return new ApiResponse<T>
-        //    {
-        //        Succeeded = false,
-        //        HttpStatusCode = failureResponse.HttpStatusCode,
-        //        Message = failureResponse.Message,
-        //        Details = !string.IsNullOrEmpty(friendlyErrorMessage)
-        //            ? friendlyErrorMessage
-        //            : failureResponse.Details,
-        //        Data = default
-        //    };
-        //}
         public async Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, object content = null)
         {
             var request = new HttpRequestMessage(method, endpoint);
@@ -117,12 +78,15 @@ namespace Fiscalapi.Http
             try
             {
                 // First try to deserialize as a generic response
-                var failureResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(responseContent, _jsonSettings);
+                var failureResponse =
+                    JsonConvert.DeserializeObject<ApiResponse<object>>(responseContent, _jsonSettings);
 
                 // If status is 400, try to deserialize ValidationFailures
                 if (statusCode == 400)
                 {
-                    var validationResponse = JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent, _jsonSettings);
+                    var validationResponse =
+                        JsonConvert.DeserializeObject<ApiResponse<List<ValidationFailure>>>(responseContent,
+                            _jsonSettings);
                     var failures = validationResponse?.Data;
 
                     var validationErrors = failures != null && failures.Count > 0
@@ -164,4 +128,3 @@ namespace Fiscalapi.Http
         }
     }
 }
-

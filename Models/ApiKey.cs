@@ -1,6 +1,5 @@
 ﻿
 using Fiscalapi.Common;
-using Newtonsoft.Json;
 
 namespace Fiscalapi.Models
 {

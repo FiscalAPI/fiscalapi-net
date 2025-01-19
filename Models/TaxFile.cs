@@ -1,6 +1,5 @@
 ﻿using System;
 using Fiscalapi.Common;
-using Newtonsoft.Json;
 
 namespace Fiscalapi.Models
 {
@@ -9,9 +8,7 @@ namespace Fiscalapi.Models
         /// <summary>
         /// PersonId who owns the tax file
         /// </summary>
-        [JsonProperty("userId")]
         public string PersonId { get; set; }
-
         public string Tin { get; set; } // RFC (Tax Identification Number)
         public string Base64File { get; set; }
         public FileType FileType { get; set; }

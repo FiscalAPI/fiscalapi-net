@@ -11,7 +11,7 @@ namespace Fiscalapi.Http
         private static readonly ConcurrentDictionary<string, Lazy<HttpClient>> Clients =
             new ConcurrentDictionary<string, Lazy<HttpClient>>();
 
-        public static IFiscalApiHttpClient Create(FiscalApiOptions options)
+        public static IFiscalApiHttpClient Create(FiscalapiSettings options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
