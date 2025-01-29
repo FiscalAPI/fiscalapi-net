@@ -1,10 +1,7 @@
-﻿
-using Fiscalapi.Common;
+﻿using Fiscalapi.Common;
 
 namespace Fiscalapi.Models
 {
-   
-
     public class ApiKey : BaseDto
     {
         public string Description { get; set; }

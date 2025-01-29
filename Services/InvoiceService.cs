@@ -49,7 +49,7 @@ namespace Fiscalapi.Services
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
 
-           // var endpoint = BuildEndpoint("cancel");
+            // var endpoint = BuildEndpoint("cancel");
 
             // POST /api/v4/invoices/cancel
             return await HttpClient.DeleteAsync<CancelInvoiceResponse>(BuildEndpoint(), requestModel);
