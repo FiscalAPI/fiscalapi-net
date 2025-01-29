@@ -371,3 +371,8 @@ Este proyecto está licenciado bajo la Licencia **MPL**. Consulta el archivo [LI
 - [Portal de FiscalAPI](https://fiscalapi.com)  
 - [Ejemplos WinForms/Console](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms)  
 - [Ejemplos ASP.NET](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet)
+
+
+---
+
+Desarrollado con ❤️ por [Fiscalapi](https://www.fiscalapi.com)
