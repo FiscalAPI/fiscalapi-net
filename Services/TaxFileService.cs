@@ -18,7 +18,7 @@ namespace Fiscalapi.Services
         /// <summary>
         /// Obtiene el último par de ids de certificados válidos y vigente de una persona. Es decir sus certificados por defecto (ids)
         /// </summary>
-        /// <param name="personId">Id de la persona dueña de los certificados</param>
+        /// <param name="personId">Id de la persona propietaria de los certificados</param>
         /// <returns>Lista con un par de certificados, pero sin con tenido, solo sus Ids.</returns>
         public Task<ApiResponse<List<TaxFile>>> GetDefaultReferencesAsync(string personId)
         {
