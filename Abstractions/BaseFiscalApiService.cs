@@ -61,8 +61,14 @@ namespace Fiscalapi.Abstractions
             return HttpClient.GetAsync<PagedList<T>>(BuildEndpoint(queryParams: queryParams));
         }
 
-        public virtual Task<ApiResponse<T>> GetByIdAsync(string id)
-            => HttpClient.GetByIdAsync<T>(BuildEndpoint(id));
+        public virtual Task<ApiResponse<T>> GetByIdAsync(string id, bool details = false)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "details", details.ToString().ToLower() }
+            };
+            return HttpClient.GetByIdAsync<T>(BuildEndpoint(id, parameters));
+        }
 
         public virtual Task<ApiResponse<T>> CreateAsync(T entity)
             => HttpClient.PostAsync<T>(BuildEndpoint(), entity);
@@ -72,6 +78,5 @@ namespace Fiscalapi.Abstractions
 
         public virtual Task<ApiResponse<bool>> DeleteAsync(string id)
             => HttpClient.DeleteAsync(BuildEndpoint(id));
-
     }
 }
