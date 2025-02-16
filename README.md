@@ -122,6 +122,7 @@ var apiResponse = await fiscalApi.Persons.CreateAsync(request);
 ```
 
 ### 2. Subir Certificados CSD
+[Descarga certificados de prueba](https://docs.fiscalapi.com/tax-files-info)
 
 ```csharp
 var fiscalApi = FiscalApiClient.Create(Settings);
