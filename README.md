@@ -1,7 +1,7 @@
 # FiscalAPI SDK para .NET
 
 [![NuGet](https://img.shields.io/nuget/v/FiscalApi.svg)](https://www.nuget.org/packages/FiscalApi/)
-[![License](https://img.shields.io/github/license/FiscalAPI/fiscalapi-net)](https://github.com/FiscalAPI/fiscalapi-net/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/FiscalAPI/fiscalapi-net)](https://github.com/FiscalAPI/fiscalapi-net/blob/master/LICENSE.txt) 
 
 **SDK oficial de FiscalAPI para .NET**, la API de facturación CFDI y otros servicios fiscales en México. Simplifica la integración con los servicios de facturación electrónica, eliminando las complejidades del SAT y facilitando la generación de facturas, notas de crédito, complementos de pago, nómina, carta porte, y más. ¡Factura sin dolor!
 
@@ -122,6 +122,7 @@ var apiResponse = await fiscalApi.Persons.CreateAsync(request);
 ```
 
 ### 2. Subir Certificados CSD
+[Descarga certificados de prueba](https://docs.fiscalapi.com/tax-files-info)
 
 ```csharp
 var fiscalApi = FiscalApiClient.Create(Settings);
