@@ -9,7 +9,6 @@ namespace Fiscalapi.Abstractions
     /// </summary>
     public interface IInvoiceService : IFiscalApiService<Invoice>
     {
-
         // Cancel any type of invoice
         Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest requestModel);
 
@@ -21,5 +20,9 @@ namespace Fiscalapi.Abstractions
 
         // Send invoice to the email
         Task<ApiResponse<bool>> SendAsync(SendInvoiceRequest requestModel);
+
+
+        // Get invoice status
+        Task<ApiResponse<InvoiceStatusResponse>> GetStatusAsync(InvoiceStatusRequest requestModel);
     }
 }

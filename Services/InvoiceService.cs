@@ -78,5 +78,11 @@ namespace Fiscalapi.Services
             // POST  /api/v4/invoices/send
             return HttpClient.PostAsync<bool>(BuildEndpoint("send"), requestModel);
         }
+
+        public Task<ApiResponse<InvoiceStatusResponse>> GetStatusAsync(InvoiceStatusRequest requestModel)
+        {
+            // POST /api/v4/invoices/status
+            return HttpClient.PostAsync<InvoiceStatusResponse>(BuildEndpoint("status"), requestModel);
+        }
     }
 }

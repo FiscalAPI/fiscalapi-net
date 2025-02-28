@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Fiscalapi.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Fiscalapi.Models
 {
@@ -262,5 +263,90 @@ namespace Fiscalapi.Models
     {
         CertificateCsd,
         PrivateKeyCsd,
+    }
+
+
+    /// <summary>
+    /// Modelo para consultar el estado de facturas (CFDI)
+    /// Permite consultar por referencias (usando id) o por valores (usando los demás campos)
+    /// </summary>
+    public class InvoiceStatusRequest
+    {
+        /// <summary>
+        /// Id de la factura a consultar. Obligatorio cuando se consulta por referencias.
+        /// </summary>
+
+        public string Id { get; set; }
+
+        /// <summary>
+        /// RFC Emisor de la factura. Obligatorio cuando se consulta por valores.
+        /// </summary>
+
+        public string IssuerTin { get; set; }
+
+        /// <summary>
+        /// RFC Receptor de la factura. Obligatorio cuando se consulta por valores.
+        /// </summary>
+
+        public string RecipientTin { get; set; }
+
+        /// <summary>
+        /// Total de la factura. Obligatorio cuando se consulta por valores.
+        /// </summary>
+
+        public decimal InvoiceTotal { get; set; }
+
+        /// <summary>
+        /// Folio fiscal de la factura a consultar. Obligatorio tanto para consultas por referencias como por valores.
+        /// </summary>
+
+        public string InvoiceUuid { get; set; }
+
+        /// <summary>
+        /// Últimos ocho caracteres del sello digital del emisor. Obligatorio cuando se consulta por valores.
+        /// </summary>
+
+        public string Last8DigitsIssuerSignature { get; set; }
+    }
+
+    /// <summary>
+    /// Modelo de respuesta de consulta de estado de facturas
+    /// Contiene la información del estado de una factura consultada
+    /// </summary>
+    public class InvoiceStatusResponse
+    {
+        /// <summary>
+        /// Código de estatus retornado por el SAT.
+        /// </summary>
+        public string StatusCode { get; set; }
+
+        /// <summary>
+        /// Estado actual de la factura.
+        /// Posibles valores: 'Vigente' | 'Cancelado' | 'No Encontrado'
+        /// </summary>
+        public string Status { get; set; }
+
+        /// <summary>
+        /// Indica si la factura es cancelable.
+        /// Posibles valores: 'Cancelable con aceptación' | 'No cancelable' | 'Cancelable sin aceptación'
+        /// </summary>
+        public string CancelableStatus { get; set; }
+
+        /// <summary>
+        /// Detalle del estatus de cancelación.
+        /// Posibles valores: null | 'En proceso' | 'Plazo vencido' | 'Solicitud rechazada' | 
+        /// 'Cancelado sin aceptación' | 'Cancelado con aceptación'
+        /// </summary>
+
+        public string CancellationStatus { get; set; }
+
+        /// <summary>
+        /// Codigo que indica si el RFC Emisor se encuentra dentro de la lista negra de 
+        /// Empresas que Facturan Operaciones Simuladas (EFOS).
+        /// Posible valores: 
+        /// 100: El RFC Emisor se encuentra dentro de la lista de EFOS.
+        /// 200: El RFC Emisor no se encuentra dentro de la lista de EFOS.
+        /// </summary>
+        public string EfosValidation { get; set; }
     }
 }
