@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Fiscalapi.Common;
-using System.ComponentModel.DataAnnotations;
 
 namespace Fiscalapi.Models
 {

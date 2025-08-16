@@ -16,6 +16,9 @@ namespace Fiscalapi.Services
         public IApiKeyService ApiKeys { get; }
         public ICatalogService Catalogs { get; }
         public ITaxFileService TaxFiles { get; }
+        public IDownloadCatalogService DownloadCatalogs { get; }
+        public IDownloadRuleService DownloadRules { get; }
+        public IDownloadRequestService DownloadRequests { get; }
 
 
         private FiscalApiClient(FiscalapiSettings settings)
@@ -31,6 +34,9 @@ namespace Fiscalapi.Services
             ApiKeys = new ApiKeyService(httpClient, apiVersion);
             Catalogs = new CatalogService(httpClient, apiVersion);
             TaxFiles = new TaxFileService(httpClient, apiVersion);
+            DownloadCatalogs = new DownloadCatalogService(httpClient, apiVersion);
+            DownloadRules = new DownloadRuleService(httpClient, apiVersion);
+            DownloadRequests = new DownloadRequestService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalapiSettings settings)

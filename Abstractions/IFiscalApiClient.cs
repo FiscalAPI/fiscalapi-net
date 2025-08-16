@@ -12,5 +12,8 @@
 
         ITaxFileService TaxFiles { get; }
         ICatalogService Catalogs { get; }
+        IDownloadCatalogService DownloadCatalogs { get; }
+        IDownloadRuleService DownloadRules { get; }
+        IDownloadRequestService DownloadRequests { get; }
     }
 }
