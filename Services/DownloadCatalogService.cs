@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Fiscalapi.Services
 {
-   
     public class DownloadCatalogService : BaseFiscalApiService<CatalogDto>, IDownloadCatalogService
     {
         public DownloadCatalogService(IFiscalApiHttpClient httpClient, string apiVersion)
@@ -72,18 +71,16 @@ namespace Fiscalapi.Services
 
 
         /// <summary>
-        /// Recupera un registro de un catálogo por catalogName.
+        /// Lista todos los registros de un catálogo pasando el nombre del catálogo.
         /// </summary>
         /// <param name="catalogName">Nombre del catálogo</param>
-        /// <returns>CatalogDto</returns>
-        public Task<ApiResponse<List<CatalogDto>>> GetRecordByNameAsync(string catalogName)
+        /// <returns>Lista de CatalogDto</returns>
+        public Task<ApiResponse<List<CatalogDto>>> ListCatalogAsync(string catalogName)
         {
+            // api/v4/download-catalogs/<catalogName>/
             var path = $"{catalogName}";
             var endpoint = BuildEndpoint(path);
-            // api/v4/download-catalogs/<catalogName>/
             return HttpClient.GetAsync<List<CatalogDto>>(endpoint);
         }
-
-        
     }
 }

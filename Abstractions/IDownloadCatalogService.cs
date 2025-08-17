@@ -13,7 +13,7 @@ namespace Fiscalapi.Abstractions
         Task<ApiResponse<List<string>>> GetListAsync();
 
 
-        // /api/v4/download-catalogs/<catalogName>
-        Task<ApiResponse<List<CatalogDto>>> GetRecordByNameAsync(string catalogName);
+        // /api/v4/download-catalogs/<catalogName>  ListCatalog
+        Task<ApiResponse<List<CatalogDto>>> ListCatalogAsync(string catalogName);
     }
 }
