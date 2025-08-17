@@ -9,13 +9,15 @@
 
 ## 🚀 Características
 
-- Soporte completo para **CFDI 4.0**  
+- Soporte completo para **CFDI 4.0**
+- Descarga masiva XML
 - Compatible con múltiples versiones de .NET (desde **.NET Framework 4.6.1** hasta **.NET 8**)
 - Operaciones asíncronas y sincrónicas
 - Dos modos de operación: **Por valores** o **Por referencias**
-- Manejo simplificado de errores
 - Búsqueda en catálogos del SAT
 - Documentación completa y ejemplos prácticos
+- Manejo simplificado de errores
+
 
 ## 📦 Instalación
 
