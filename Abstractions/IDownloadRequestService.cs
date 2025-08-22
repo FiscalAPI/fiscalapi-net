@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fiscalapi.Common;
 using Fiscalapi.Models;
@@ -44,5 +45,12 @@ namespace Fiscalapi.Abstractions
         /// <param name="requestId"></param>
         /// <returns>File response object</returns>
         Task<ApiResponse<FileResponse>> DownloadSatResponseAsync(string requestId);
+
+        /// <summary>
+        /// Searches for download requests created at a specific date.
+        /// </summary>
+        /// <param name="createdAt"></param>
+        /// <returns></returns>
+        Task<ApiResponse<List<DownloadRequest>>> SearchAsync(DateTime createdAt);
     }
 }

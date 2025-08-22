@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fiscalapi.Abstractions;
 using Fiscalapi.Common;
@@ -53,6 +54,14 @@ namespace Fiscalapi.Services
             var path = $"{requestId}/raw-response";
             var endpoint = BuildEndpoint(path);
             return HttpClient.GetAsync<FileResponse>(endpoint);
+        }
+
+        public Task<ApiResponse<List<DownloadRequest>>> SearchAsync(DateTime createdAt)
+        {
+            //api/v4/download-requests/search?createdAt=2025-08-21
+            var path = $"search?createdAt={createdAt:yyyy-MM-dd}";
+            var endpoint = BuildEndpoint(path);
+            return HttpClient.GetAsync<List<DownloadRequest>>(endpoint);
         }
     }
 }
