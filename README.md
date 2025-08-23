@@ -7,19 +7,57 @@
 
 **SDK oficial de FiscalAPI para .NET**, la API de facturación CFDI y otros servicios fiscales en México. Simplifica la integración con los servicios de facturación electrónica, eliminando las complejidades del SAT y facilitando la generación de facturas, notas de crédito, complementos de pago, nómina, carta porte, y más. ¡Factura sin dolor!
 
-## 🚀 Características
 
-- Soporte completo para **CFDI 4.0**
-- Descarga masiva XML
-- Compatible con múltiples versiones de .NET (desde **.NET Framework 4.6.1** hasta **.NET 8**)
-- Operaciones asíncronas y sincrónicas
-- Dos modos de operación: **Por valores** o **Por referencias**
-- Búsqueda en catálogos del SAT
-- Documentación completa y ejemplos prácticos
-- Manejo simplificado de errores
+
+## 📋 Facturación CFDI 4.0
+- **Soporte completo para CFDI 4.0** con todas las especificaciones oficiales
+- **Timbrado de facturas de ingreso** con validación automática
+- **Timbrado de notas de crédito** (facturas de egreso)
+- **Timbrado de complementos de pago** en MXN, USD y EUR.
+- **Consulta del estatus de facturas** en el SAT en tiempo real
+- **Cancelación de facturas** 
+- **Generación de archivos PDF** de las facturas con formato profesional
+- **Personalización de logos y colores** en los PDF generados
+- **Envío de facturas por correo electrónico** automatizado
+- **Descarga de archivos XML** con estructura completa
+- **Almacenamiento y recuperación** de facturas por 5 años.
+- Dos [modos de operación](https://docs.fiscalapi.com/modes-of-operation): **Por valores** o **Por referencias**
+
+## 📥 Descarga Masiva
+- **Acceso a catálogos de descarga masiva** del SAT
+- **Descarga de CFDI y Metadatos** en lotes grandes
+- **Descarga masiva XML** con filtros personalizados
+- **Reglas de descarga automática por RFC** 
+- **Solicitudes de descarga** via API y Dashboard.
+- **Automatización de solicitudes de descarga**
+
+## 👥 Gestión de Personas
+- **Administración de personas** (emisores, receptores, clientes, usuarios, etc.)
+- **Gestión de certificados CSD y FIEL** (subir archivos .cer y .key a FiscalAPI)
+- **Configuración de datos fiscales** (RFC, domicilio fiscal, régimen fiscal)
+
+## 🛍️ Gestión de Productos/Servicios
+- **Gestión de productos y servicios** con catálogo personalizable
+- **Administración de impuestos aplicables** (IVA, ISR, IEPS)
+
+## 📚 Consulta de Catálogos SAT
+- **Consulta en catálogos oficiales del SAT** actualizados
+- **Consulta en catálogos oficiales de Descarga masiva del SAT** actualizados
+- **Búsqueda de información** en catálogos del SAT con filtros avanzados
+- **Acceso y búsqueda** en catálogos completos
+  
+## 📖 Recursos Adicionales
+- **Cientos de ejemplos de código** disponibles en múltiples lenguajes de programación
+- Documentación completa con guías paso a paso
+- Ejemplos prácticos para casos de uso comunes
+- Soporte técnico especializado
+- Actualizaciones regulares conforme a cambios del SAT
+- 
+
 
 
 ## 📦 Instalación
+Compatible con múltiples versiones de .NET (desde **.NET Framework 4.6.1** hasta **.NET 8**)
 
 **NuGet Package Manager**:
 
@@ -376,7 +414,8 @@ Este proyecto está licenciado bajo la Licencia **MPL**. Consulta el archivo [LI
 - [Portal de FiscalAPI](https://fiscalapi.com)  
 - [Ejemplos WinForms/WPF/Console](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms)  
 - [Ejemplos ASP.NET](https://github.com/FiscalAPI/fiscalapi-samples-net-aspnet)
-
+- [Postman Collection](https://documenter.getpostman.com/view/4346593/2sB2j4eqXr)
+- [SDKs](https://docs.fiscalapi.com/sdks)
 
 ---
 
