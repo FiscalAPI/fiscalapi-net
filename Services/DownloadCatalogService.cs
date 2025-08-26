@@ -22,7 +22,7 @@ namespace Fiscalapi.Services
         /// <exception cref="System.NotImplementedException"></exception>
         public override Task<ApiResponse<PagedList<CatalogDto>>> GetListAsync(int pageNumber, int pageSize)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotImplementedException("Utiliza GetListAsync y ListCatalogAsync en su lugar.");
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Fiscalapi.Services
         /// <exception cref="System.NotImplementedException"></exception>
         public override Task<ApiResponse<CatalogDto>> UpdateAsync(string id, CatalogDto entity)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotImplementedException("Utiliza GetListAsync y ListCatalogAsync en su lugar.");
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Fiscalapi.Services
         /// <exception cref="System.NotImplementedException"></exception>
         public override Task<ApiResponse<CatalogDto>> CreateAsync(CatalogDto entity)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotImplementedException("Utiliza GetListAsync y ListCatalogAsync en su lugar.");
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Fiscalapi.Services
         /// <exception cref="System.NotImplementedException"></exception>
         public override Task<ApiResponse<bool>> DeleteAsync(string id)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotImplementedException("Utiliza GetListAsync y ListCatalogAsync en su lugar.");
         }
 
 
