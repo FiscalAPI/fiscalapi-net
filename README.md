@@ -52,7 +52,6 @@
 - Ejemplos prácticos para casos de uso comunes
 - Soporte técnico especializado
 - Actualizaciones regulares conforme a cambios del SAT
-- 
 
 
 
