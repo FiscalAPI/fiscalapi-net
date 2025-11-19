@@ -18,7 +18,6 @@ namespace Fiscalapi.Abstractions
         /// <param name="details">True para obtener los objetos relacionados, de lo contrario False.</param>
         /// <returns></returns>
         Task<ApiResponse<T>> GetByIdAsync(string id, bool details = false);
-
         Task<ApiResponse<T>> CreateAsync(T model);
         Task<ApiResponse<T>> UpdateAsync(string id, T model);
         Task<ApiResponse<bool>> DeleteAsync(string id);

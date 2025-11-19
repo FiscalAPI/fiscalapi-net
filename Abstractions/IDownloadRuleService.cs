@@ -9,7 +9,7 @@ namespace Fiscalapi.Abstractions
     /// </summary>
     public interface IDownloadRuleService : IFiscalApiService<DownloadRule>
     {
-        // GET /api/v4/products/{id}/taxes
+        // GET /api/v4/download-rules/test
         Task<ApiResponse<DownloadRequest>> CreateTestRuleAsync();
     }
 }
