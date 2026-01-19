@@ -28,7 +28,7 @@ namespace Fiscalapi.Services
         public string EmployeePersonId { get; set; }
         public string EmployeeNumber { get; set; }
         public string SocialSecurityNumber { get; set; }
-        public string LaborRelationStartDate { get; set; }
+        public DateTime LaborRelationStartDate { get; set; }
         public CatalogDto SatContractType { get; set; }
         public CatalogDto SatTaxRegimeType { get; set; }
         public CatalogDto SatWorkdayType { get; set; }
@@ -124,7 +124,7 @@ namespace Fiscalapi.Services
         // GET /api/v4/people/{personId}/employer
         public async Task<ApiResponse<EmployeeData>> GetByIdAsync(string id)
         {
-            string endpoint = $"{baseEndpoint}/{id}/employer";
+            string endpoint = $"{baseEndpoint}/{id}/employee";
 
             return await HttpClient.GetAsync<EmployeeData>(endpoint);
         }
@@ -133,7 +133,7 @@ namespace Fiscalapi.Services
         //var employer = await fiscalApi.People.Employer(personId).CreateAsync(employerData);
         public async Task<ApiResponse<EmployeeData>> CreateAsync(EmployeeData requestModel)
         {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployerPersonId}/employer";
+            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
 
             return await HttpClient.PostAsync<EmployeeData>(endpoint, requestModel);
         }
@@ -142,7 +142,7 @@ namespace Fiscalapi.Services
         //var employer = await fiscalApi.People.Employer(personId).UpdateAsync(employerData);
         public async Task<ApiResponse<EmployeeData>> UpdateAsync(EmployeeData requestModel)
         {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployerPersonId}/employer";
+            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
 
             return await HttpClient.PutAsync<EmployeeData>(endpoint, requestModel);
         }
@@ -151,7 +151,7 @@ namespace Fiscalapi.Services
         //await fiscalApi.People.Employer(personId).DeleteAsync();
         public async Task<ApiResponse<bool>> DeleteAsync(string id)
         {
-            string endpoint = $"{baseEndpoint}/{id}/employer";
+            string endpoint = $"{baseEndpoint}/{id}/employee";
 
             return await HttpClient.DeleteAsync(endpoint);
         }
