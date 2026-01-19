@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Fiscalapi.Common;
+using Fiscalapi.Services;
 
 namespace Fiscalapi.Models
 {
@@ -44,6 +45,7 @@ namespace Fiscalapi.Models
         public decimal Total { get; set; }
         public List<InvoiceResponse> Responses { get; set; }
         public List<InvoicePayment> Payments { get; set; }
+        public Complement Complement { get; set; }
     }
 
     public class InvoiceIssuer : BaseDto
@@ -51,6 +53,7 @@ namespace Fiscalapi.Models
         public string Tin { get; set; }
         public string LegalName { get; set; }
         public string TaxRegimeCode { get; set; }
+        public EmployerData EmployerData { get; set; }
         public string OperationNumber { get; set; }
         public List<TaxCredential> TaxCredentials { get; set; }
     }
@@ -71,6 +74,7 @@ namespace Fiscalapi.Models
         public string ForeignTin { get; set; }
         public string TaxRegimeCode { get; set; }
         public string CfdiUseCode { get; set; }
+        public EmployeeData EmployeeData { get; set; }
         public string Email { get; set; }
     }
 
@@ -105,7 +109,33 @@ namespace Fiscalapi.Models
         public string ItemSku { get; set; }
         public string UnitOfMeasurement { get; set; }
         public decimal Discount { get; set; }
+        public List<CustomsInfo> CustomsInfo { get; set; }
         public List<InvoiceItemTax> ItemTaxes { get; set; }
+        public OnBehalfOf OnBehalfOf { get; set; }
+        public List<PropertyInfo> PropertyInfo { get; set; }
+        public List<InvoiceItemPart> Parts { get; set; }
+    }
+
+    public class InvoiceItemPart
+    {
+        public string ItemCode { get; set; }
+
+        public string ItemSku { get; set; }
+
+        public decimal Quantity { get; set; }
+
+        public string UnitOfMeasurementCode { get; set; }
+
+        public string Description { get; set; }
+
+        public decimal UnitPrice { get; set; }
+
+        public List<CustomsInfo> CustomsInfo { get; set; }
+    }
+
+    public class CustomsInfo
+    {
+        public string CustomsNumber { get; set; }
     }
 
     public class InvoiceItemTax
@@ -114,6 +144,19 @@ namespace Fiscalapi.Models
         public string TaxTypeCode { get; set; }
         public decimal TaxRate { get; set; }
         public string TaxFlagCode { get; set; }
+    }
+
+    public class OnBehalfOf
+    {
+        public string Tin { get; set; }
+        public string LegalName { get; set; }
+        public string TaxRegimeCode { get; set; }
+        public string ZipCode { get; set; }
+    }
+
+    public class PropertyInfo
+    {
+        public string Number { get; set; }
     }
 
     public class InvoicePayment
@@ -162,6 +205,7 @@ namespace Fiscalapi.Models
 
         [JsonConverter(typeof(DecimalJsonConverter))]
         public decimal Equivalence { get; set; } = 1;
+        public decimal Subtotal { get; set; }
 
         public decimal ExchangeRate { get; set; }
         public List<PaidInvoiceTax> PaidInvoiceTaxes { get; set; }

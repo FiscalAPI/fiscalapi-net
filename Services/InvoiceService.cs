@@ -9,9 +9,9 @@ namespace Fiscalapi.Services
 {
     public class InvoiceService : BaseFiscalApiService<Invoice>, IInvoiceService
     {
-        private const string IncomeEndpoint = "income";
-        private const string CreditNoteEndpoint = "credit-note";
-        private const string PaymentEndpoint = "payment";
+        //private const string IncomeEndpoint = "income";
+        //private const string CreditNoteEndpoint = "credit-note";
+        //private const string PaymentEndpoint = "payment";
 
         public InvoiceService(IFiscalApiHttpClient httpClient, string apiVersion)
             : base(httpClient, "invoices", apiVersion)
@@ -24,24 +24,7 @@ namespace Fiscalapi.Services
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
 
-            string endpoint;
-
-            switch (requestModel.TypeCode)
-            {
-                case "I":
-                    endpoint = BuildEndpoint(IncomeEndpoint);
-                    break;
-                case "E":
-                    endpoint = BuildEndpoint(CreditNoteEndpoint);
-                    break;
-                case "P":
-                    endpoint = BuildEndpoint(PaymentEndpoint);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unsupported invoice type: {requestModel.TypeCode}");
-            }
-
-            return await HttpClient.PostAsync<Invoice>(endpoint, requestModel);
+            return await HttpClient.PostAsync<Invoice>(BuildEndpoint(), requestModel);
         }
 
         public async Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest requestModel)

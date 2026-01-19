@@ -1,4 +1,5 @@
 ﻿using Fiscalapi.Models;
+using Fiscalapi.Services;
 
 namespace Fiscalapi.Abstractions
 {
@@ -7,5 +8,7 @@ namespace Fiscalapi.Abstractions
     /// </summary>
     public interface IPersonService : IFiscalApiService<Person>
     {
+        EmployerService Employer {  get; }
+        EmployeeService Employee { get; }
     }
 }
