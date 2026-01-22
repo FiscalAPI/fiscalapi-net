@@ -1,4 +1,5 @@
 ﻿using Fiscalapi.Common;
+using System;
 
 namespace Fiscalapi.Models
 {
@@ -24,5 +25,49 @@ namespace Fiscalapi.Models
         public int AvailableBalance { get; }
         public int CommittedBalance { get; }
         public string TenantId { get; set; }
+    }
+
+    public class EmployeeData : BaseDto
+    {
+        public string Curp { get; set; }
+        public string EmployerPersonId { get; set; }
+        public string EmployeePersonId { get; set; }
+        public string EmployeeNumber { get; set; }
+        public string SocialSecurityNumber { get; set; }
+        public DateTime LaborRelationStartDate { get; set; }
+        public CatalogDto SatContractType { get; set; }
+        public CatalogDto SatTaxRegimeType { get; set; }
+        public CatalogDto SatWorkdayType { get; set; }
+        public CatalogDto SatJobRisk { get; set; }
+        public CatalogDto SatPaymentPeriodicity { get; set; }
+        public CatalogDto SatBank { get; set; }
+        public CatalogDto SatPayrollState { get; set; }
+        public CatalogDto SatUnionizedStatus { get; set; }
+        public string Department { get; set; }
+        public string Position { get; set; }
+        public string Seniority { get; set; }
+        public string SatUnionizedStatusId { get; set; }
+        public string SatContractTypeId { get; set; }
+        public string SatWorkdayTypeId { get; set; }
+        public string SatTaxRegimeTypeId { get; set; }
+        public string SatJobRiskId { get; set; }
+        public string SatPaymentPeriodicityId { get; set; }
+        public string SatBankId { get; set; }
+        public string SatPayrollStateId { get; set; }
+        public string BankAccount { get; set; }
+        public decimal BaseSalaryForContributions { get; set; }
+        public decimal IntegratedDailySalary { get; set; }
+        public string SubcontractorRfc { get; set; }
+        public decimal TimePercentage { get; set; }
+    }
+
+    public class EmployerData : BaseDto
+    {
+        public string PersonId { get; set; }
+        public string EmployerRegistration { get; set; }
+        public string OriginEmployerTin { get; set; }
+        public CatalogDto SatFundSource { get; set; } // Rename to SatFundingSource
+        public string SatFundSourceId { get; set; }
+        public decimal OwnResourceAmount { get; set; }
     }
 }
