@@ -19,6 +19,7 @@ namespace Fiscalapi.Services
         public IDownloadCatalogService DownloadCatalogs { get; }
         public IDownloadRuleService DownloadRules { get; }
         public IDownloadRequestService DownloadRequests { get; }
+        public IStampService Stamps { get; }
 
 
         private FiscalApiClient(FiscalapiSettings settings)
@@ -37,6 +38,7 @@ namespace Fiscalapi.Services
             DownloadCatalogs = new DownloadCatalogService(httpClient, apiVersion);
             DownloadRules = new DownloadRuleService(httpClient, apiVersion);
             DownloadRequests = new DownloadRequestService(httpClient, apiVersion);
+            Stamps = new StampService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalapiSettings settings)

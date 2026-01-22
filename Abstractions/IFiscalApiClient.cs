@@ -15,5 +15,6 @@
         IDownloadCatalogService DownloadCatalogs { get; }
         IDownloadRuleService DownloadRules { get; }
         IDownloadRequestService DownloadRequests { get; }
+        IStampService Stamps { get; }
     }
 }
