@@ -45,8 +45,6 @@
 ## 🛍️ Gestión de Productos/Servicios
 - **Gestión de productos y servicios** con catálogo personalizable
 - **Administración de impuestos aplicables** (IVA, ISR, IEPS)
-- **Timbres**
-  Listar transacciones, transferir y retirar timbres entre personas.
 
 ## 📚 Consulta de Catálogos SAT
 - **Consulta en catálogos oficiales del SAT** actualizados
