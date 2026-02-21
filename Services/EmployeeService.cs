@@ -1,50 +1,39 @@
-﻿using Fiscalapi.Common;
+﻿using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
 using Fiscalapi.Http;
 using Fiscalapi.Models;
 using System.Threading.Tasks;
 
 namespace Fiscalapi.Services
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private IFiscalApiHttpClient HttpClient { get; }
-        private string baseEndpoint = "api/v4/people";
+        private readonly string _baseEndpoint;
 
-        public EmployeeService(IFiscalApiHttpClient fiscalApiHttpClient)
+        public EmployeeService(IFiscalApiHttpClient fiscalApiHttpClient, string apiVersion)
         {
             HttpClient = fiscalApiHttpClient;
+            _baseEndpoint = $"api/{apiVersion}/people";
         }
 
-        // GET /api/v4/people/{personId}/employee
+        private string BuildEndpoint(string personId)
+            => $"{_baseEndpoint}/{personId}/employee";
+
+        // GET /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> GetByIdAsync(string id)
-        {
-            string endpoint = $"{baseEndpoint}/{id}/employee";
+            => await HttpClient.GetAsync<EmployeeData>(BuildEndpoint(id));
 
-            return await HttpClient.GetAsync<EmployeeData>(endpoint);
-        }
-
-        //POST /api/v4/people/{personId}/employee
+        // POST /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> CreateAsync(EmployeeData requestModel)
-        {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
+            => await HttpClient.PostAsync<EmployeeData>(BuildEndpoint(requestModel.EmployeePersonId), requestModel);
 
-            return await HttpClient.PostAsync<EmployeeData>(endpoint, requestModel);
-        }
-
-        // PUT /api/v4/people/{personId}/employee
+        // PUT /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> UpdateAsync(EmployeeData requestModel)
-        {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
+            => await HttpClient.PutAsync<EmployeeData>(BuildEndpoint(requestModel.EmployeePersonId), requestModel);
 
-            return await HttpClient.PutAsync<EmployeeData>(endpoint, requestModel);
-        }
-
-        // DELETE /api/v4/people/{personId}/employee
+        // DELETE /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<bool>> DeleteAsync(string id)
-        {
-            string endpoint = $"{baseEndpoint}/{id}/employee";
-
-            return await HttpClient.DeleteAsync(endpoint);
-        }
+            => await HttpClient.DeleteAsync(BuildEndpoint(id));
     }
 }
