@@ -22,18 +22,41 @@ namespace Fiscalapi.Services
 
         // GET /api/{version}/people/{personId}/employer
         public async Task<ApiResponse<EmployerData>> GetByIdAsync(string id)
-            => await HttpClient.GetAsync<EmployerData>(BuildEndpoint(id));
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("Person ID is required to build endpoint", nameof(id));
+            return await HttpClient.GetAsync<EmployerData>(BuildEndpoint(id));
+        }
 
         // POST /api/{version}/people/{personId}/employer
         public async Task<ApiResponse<EmployerData>> CreateAsync(EmployerData requestModel)
-            => await HttpClient.PostAsync<EmployerData>(BuildEndpoint(requestModel.PersonId), requestModel);
+        {
+            ValidateRequestModel(requestModel);
+            return await HttpClient.PostAsync<EmployerData>(BuildEndpoint(requestModel.PersonId), requestModel);
+        }
 
         // PUT /api/{version}/people/{personId}/employer
         public async Task<ApiResponse<EmployerData>> UpdateAsync(EmployerData requestModel)
-            => await HttpClient.PutAsync<EmployerData>(BuildEndpoint(requestModel.PersonId), requestModel);
+        {
+            ValidateRequestModel(requestModel);
+            return await HttpClient.PutAsync<EmployerData>(BuildEndpoint(requestModel.PersonId), requestModel);
+        }
 
         // DELETE /api/{version}/people/{personId}/employer
         public async Task<ApiResponse<bool>> DeleteAsync(string id)
-            => await HttpClient.DeleteAsync(BuildEndpoint(id));
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("El ID de la persona requerido", nameof(id));
+            return await HttpClient.DeleteAsync(BuildEndpoint(id));
+        }
+
+        private void ValidateRequestModel(EmployerData requestModel)
+        {
+            if (requestModel == null)
+                throw new ArgumentNullException(nameof(requestModel), "El modelo de solicitud no puede ser nulo");
+
+            if (string.IsNullOrWhiteSpace(requestModel.PersonId))
+                throw new ArgumentException("Se requiere el ID de la persona para crear o actualizar los datos del empleador", nameof(requestModel.PersonId));
+        }
     }
 }
