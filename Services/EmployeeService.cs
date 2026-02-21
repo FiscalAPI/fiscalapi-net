@@ -2,6 +2,7 @@
 using Fiscalapi.Common;
 using Fiscalapi.Http;
 using Fiscalapi.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace Fiscalapi.Services
