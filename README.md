@@ -54,12 +54,6 @@
 - **Búsqueda de información** en catálogos del SAT con filtros avanzados
 - **Acceso y búsqueda** en catálogos completos
 
-## 🎫 Gestión de Timbres
-- **Listar transacciones de timbres** con paginación
-- **Consultar transacciones** por ID
-- **Transferir timbres** entre personas
-- **Retirar timbres** de una persona
-
 ## 📖 Recursos Adicionales
 - **Cientos de ejemplos de código** disponibles en múltiples lenguajes de programación
 - Documentación completa con guías paso a paso
