@@ -1,4 +1,5 @@
 ﻿using Fiscalapi.Common;
+using Fiscalapi.Models.BillOfLading;
 using System.Collections.Generic;
 
 namespace Fiscalapi.Models
@@ -8,6 +9,7 @@ namespace Fiscalapi.Models
         public Payroll Payroll { get; set; }
         public InvoicePayment Payment { get; set; }
         public LocalTaxes LocalTaxes { get; set; }
+        public CartaPorte CartaPorte { get; set; }
     }
 
     public class LocalTaxes
