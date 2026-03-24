@@ -1,50 +1,63 @@
-﻿using Fiscalapi.Common;
+﻿using Fiscalapi.Abstractions;
+using Fiscalapi.Common;
 using Fiscalapi.Http;
 using Fiscalapi.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace Fiscalapi.Services
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private IFiscalApiHttpClient HttpClient { get; }
-        private string baseEndpoint = "api/v4/people";
+        private readonly string _baseEndpoint;
 
-        public EmployeeService(IFiscalApiHttpClient fiscalApiHttpClient)
+        public EmployeeService(IFiscalApiHttpClient fiscalApiHttpClient, string apiVersion)
         {
             HttpClient = fiscalApiHttpClient;
+            _baseEndpoint = $"api/{apiVersion}/people";
         }
 
-        // GET /api/v4/people/{personId}/employee
+        private string BuildEndpoint(string personId)
+            => $"{_baseEndpoint}/{personId}/employee";
+
+        // GET /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> GetByIdAsync(string id)
         {
-            string endpoint = $"{baseEndpoint}/{id}/employee";
-
-            return await HttpClient.GetAsync<EmployeeData>(endpoint);
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("Employee person ID is required to build endpoint", nameof(id));
+            return await HttpClient.GetAsync<EmployeeData>(BuildEndpoint(id));
         }
 
-        //POST /api/v4/people/{personId}/employee
+        // POST /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> CreateAsync(EmployeeData requestModel)
         {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
-
-            return await HttpClient.PostAsync<EmployeeData>(endpoint, requestModel);
+            ValidateRequestModel(requestModel);
+            return await HttpClient.PostAsync<EmployeeData>(BuildEndpoint(requestModel.EmployeePersonId), requestModel);
         }
 
-        // PUT /api/v4/people/{personId}/employee
+        // PUT /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<EmployeeData>> UpdateAsync(EmployeeData requestModel)
         {
-            string endpoint = $"{baseEndpoint}/{requestModel.EmployeePersonId}/employee";
-
-            return await HttpClient.PutAsync<EmployeeData>(endpoint, requestModel);
+            ValidateRequestModel(requestModel);
+            return await HttpClient.PutAsync<EmployeeData>(BuildEndpoint(requestModel.EmployeePersonId), requestModel);
         }
 
-        // DELETE /api/v4/people/{personId}/employee
+        // DELETE /api/{version}/people/{personId}/employee
         public async Task<ApiResponse<bool>> DeleteAsync(string id)
         {
-            string endpoint = $"{baseEndpoint}/{id}/employee";
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("El ID de la persona requerido", nameof(id));
+            return await HttpClient.DeleteAsync(BuildEndpoint(id));
+        }
 
-            return await HttpClient.DeleteAsync(endpoint);
+        private void ValidateRequestModel(EmployeeData requestModel)
+        {
+            if (requestModel == null)
+                throw new ArgumentNullException(nameof(requestModel), "El modelo de solicitud no puede ser nulo");
+
+            if (string.IsNullOrWhiteSpace(requestModel.EmployeePersonId))
+                throw new ArgumentException("Se requiere el ID de la persona para crear o actualizar los datos del empleado", nameof(requestModel.EmployeePersonId));
         }
     }
 }
