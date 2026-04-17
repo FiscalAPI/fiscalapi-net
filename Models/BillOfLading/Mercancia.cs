@@ -71,10 +71,10 @@ namespace Fiscalapi.Models.BillOfLading
 
     public class DocumentacionAduanera
     {
-        public string TipoDocumentoId { get; set; } = null!;
-        public string? NumPedimento { get; set; }
-        public string? IdentDocAduanero { get; set; }
-        public string? RFCImpo { get; set; }
+        public string TipoDocumentoId { get; set; }
+        public string NumPedimento { get; set; }
+        public string IdentDocAduanero { get; set; }
+        public string RFCImpo { get; set; }
     }
 
     public class GuiaIdentificacion
