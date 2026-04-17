@@ -12,6 +12,11 @@ namespace Fiscalapi.Models.BillOfLading
         public int AnioModeloVM { get; set; }
         public string AseguraRespCivil { get; set; }
         public string PolizaRespCivil { get; set; }
+        public string AseguraMedAmbiente { get; set; }
+        public string PolizaMedAmbiente { get; set; }
+        public string AseguraCarga { get; set; }
+        public string PolizaCarga { get; set; }
+        public decimal? PrimaSeguro { get; set; }
         public List<Remolque> Remolques { get; set; }
     }
 

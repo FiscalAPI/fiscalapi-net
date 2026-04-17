@@ -8,8 +8,9 @@ namespace Fiscalapi.Models.BillOfLading
         public string EntradaSalidaMercId { get; set; }
         public string PaisOrigenDestinoId { get; set; }
         public string ViaEntradaSalidaId { get; set; }
-        public decimal TotalDistRec { get; set; }
-        public decimal PesoNetoTotal { get; set; }
+        public decimal? TotalDistRec { get; set; }
+        public decimal? PesoNetoTotal { get; set; }
+        public decimal? CargoPorTasacion { get; set; }
         public string RegistroISTMOId { get; set; }
         public string UbicacionPoloOrigenId { get; set; }
         public string UbicacionPoloDestinoId { get; set; }

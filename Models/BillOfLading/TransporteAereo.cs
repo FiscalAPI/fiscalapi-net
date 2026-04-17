@@ -10,8 +10,9 @@ namespace Fiscalapi.Models.BillOfLading
         public string NumeroGuia { get; set; }
         public string LugarContrato { get; set; }
         public string CodigoTransportistaId { get; set; }
-        public string RfcEmbarcador { get; set; }
+        public string RFCEmbarcador { get; set; }
+        public string NumRegIdTribEmbarc { get; set; }
+        public string ResidenciaFiscalEmbarcId { get; set; }
         public string NombreEmbarcador { get; set; }
-        public string RfcTransportista { get; set; }
     }
 }
