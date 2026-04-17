@@ -27,6 +27,6 @@ namespace Fiscalapi.Models.BillOfLading
         }
 
         public decimal? DistanciaRecorrida { get; set; }
-        public Domicilio Domicilio { get; set; }
+        public UbicacionDomicilio Domicilio { get; set; }
     }
 }

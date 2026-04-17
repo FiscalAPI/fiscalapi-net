@@ -24,10 +24,10 @@ namespace Fiscalapi.Models.BillOfLading
         public string MatriculaCarro { get; set; }
         public string GuiaCarro { get; set; }
         public decimal ToneladasNetasCarro { get; set; }
-        public List<ContenedorFerroviario> Contenedores { get; set; }
+        public List<CarroContenedor> Contenedores { get; set; }
     }
 
-    public class ContenedorFerroviario
+    public class CarroContenedor
     {
         public string TipoContenedorId { get; set; }
         public decimal PesoContenedorVacio { get; set; }

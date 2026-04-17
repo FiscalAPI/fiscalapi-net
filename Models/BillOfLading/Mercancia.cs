@@ -55,7 +55,7 @@ namespace Fiscalapi.Models.BillOfLading
         public string UUIDComercioExt { get; set; }
         public string TipoMateriaId { get; set; }
         public string DescripcionMateria { get; set; }
-        public List<DocumentoAduanero> DocumentacionAduanera { get; set; }
+        public List<DocumentacionAduanera> DocumentacionAduanera { get; set; }
         public List<GuiaIdentificacion> GuiasIdentificacion { get; set; }
         public List<CantidadTransporta> CantidadTransporta { get; set; }
         public DetalleMercancia DetalleMercancia { get; set; }
@@ -69,12 +69,12 @@ namespace Fiscalapi.Models.BillOfLading
         public string CvesTransporteId { get; set; }
     }
 
-    public class DocumentoAduanero
+    public class DocumentacionAduanera
     {
-        public string TipoDocumentoId { get; set; }
-        public string NumPedimento { get; set; }
-        public string IdentDocAduanero { get; set; }
-        public string RFCImpo { get; set; }
+        public string TipoDocumentoId { get; set; } = null!;
+        public string? NumPedimento { get; set; }
+        public string? IdentDocAduanero { get; set; }
+        public string? RFCImpo { get; set; }
     }
 
     public class GuiaIdentificacion

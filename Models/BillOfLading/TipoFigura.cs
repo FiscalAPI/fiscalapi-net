@@ -11,7 +11,7 @@ namespace Fiscalapi.Models.BillOfLading
         public string NumRegIdTribFigura { get; set; }
         public string ResidenciaFiscalFiguraId { get; set; }
         public List<ParteTransporte> PartesTransporte { get; set; }
-        public Domicilio Domicilio { get; set; }
+        public TiposFiguraDomicilio Domicilio { get; set; }
     }
 
     public class ParteTransporte
