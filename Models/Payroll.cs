@@ -61,6 +61,19 @@ namespace Fiscalapi.Models
         public decimal NonAccumulableIncome { get; set; }
     }
 
+    public class PayrollStockOptions
+    {
+        /// <summary>
+        /// Valor de mercado de las acciones o títulos valor al momento de ejercer la opción.
+        /// </summary>
+        public decimal MarketPrice { get; set; }
+
+        /// <summary>
+        /// Precio pactado al otorgarse la opción de ingresos en acciones o títulos valor.
+        /// </summary>
+        public decimal GrantPrice { get; set; }
+    }
+
     public class PayrollEarning
     {
         public string EarningTypeCode { get; set; }
@@ -68,6 +81,7 @@ namespace Fiscalapi.Models
         public string Concept { get; set; }
         public decimal TaxedAmount { get; set; }
         public decimal ExemptAmount { get; set; }
+        public PayrollStockOptions StockOptions { get; set; }
         public List<PayrollEarningOvertime> Overtime { get; set; }
     }
 
