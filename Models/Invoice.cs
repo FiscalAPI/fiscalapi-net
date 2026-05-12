@@ -69,7 +69,7 @@ namespace Fiscalapi.Models
         public string Tin { get; set; }
         public string LegalName { get; set; }
         public string ZipCode { get; set; }
-        public string ForeignCountryCode { get; set; }
+        public string CountryId { get; set; }
         public string ForeignTin { get; set; }
         public string TaxRegimeCode { get; set; }
         public string CfdiUseCode { get; set; }

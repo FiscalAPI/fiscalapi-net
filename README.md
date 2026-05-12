@@ -351,7 +351,138 @@ var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice);
 ```
 
 
-### 7. Búsqueda en Catálogos del SAT
+### 7. Crear Factura con Complemento de Comercio Exterior (Por Valores)
+
+```csharp
+var fiscalApi = FiscalApiClient.Create(settings);
+
+var invoice = new Invoice
+{
+    VersionCode = "4.0",
+    PaymentFormCode = "99",
+    PaymentMethodCode = "PPD",
+    CurrencyCode = "MXN",
+    TypeCode = "I",
+    ExpeditionZipCode = "42501",
+    Series = "CCE",
+    Date = DateTime.Parse("2025-05-02T15:56:40"),
+    PaymentConditions = "CondicionesDePago",
+    ExportCode = "02",
+    Issuer = new InvoiceIssuer
+    {
+        Tin = "EKU9003173C9",
+        LegalName = "ESCUELA KEMPER URGATE",
+        TaxRegimeCode = "601",
+        TaxCredentials = new List<TaxCredential>
+        {
+            new TaxCredential { Base64File = "certificate_base64...", FileType = FileType.CertificateCsd, Password = "12345678a" },
+            new TaxCredential { Base64File = "private_key_base64...", FileType = FileType.PrivateKeyCsd, Password = "12345678a" }
+        }
+    },
+    Recipient = new InvoiceRecipient
+    {
+        Tin = "XEXX010101000",
+        LegalName = "Persona Fisica Extranjera",
+        ZipCode = "42501",
+        TaxRegimeCode = "616",
+        CfdiUseCode = "S01",
+        CountryId = "USA",
+        ForeignTin = "123456789"
+    },
+    Items = new List<InvoiceItem>
+    {
+        new InvoiceItem
+        {
+            ItemCode = "50211503",
+            ItemSku = "131494-1055",
+            Quantity = 2,
+            UnitOfMeasurementCode = "H87",
+            Description = "Cigarros",
+            UnitPrice = 200.00m,
+            TaxObjectCode = "02",
+            ItemTaxes = new List<InvoiceItemTax>
+            {
+                new InvoiceItemTax { TaxCode = "002", TaxTypeCode = "Tasa", TaxRate = 0.160000m, TaxFlagCode = "T" },
+                new InvoiceItemTax { TaxCode = "001", TaxTypeCode = "Tasa", TaxRate = 0.100000m, TaxFlagCode = "R" },
+                new InvoiceItemTax { TaxCode = "002", TaxTypeCode = "Tasa", TaxRate = 0.106666m, TaxFlagCode = "R" }
+            }
+        }
+    },
+    Complement = new Complement
+    {
+        ComercioExterior = new Fiscalapi.Models.ForeignTrade.ComercioExterior
+        {
+            ClaveDePedimentoId = "A1",
+            CertificadoOrigen = 0,
+            IncotermId = "FOB",
+            TipoCambioUSD = 17.4948m,
+            Emisor = new Fiscalapi.Models.ForeignTrade.Emisor
+            {
+                Domicilio = new Fiscalapi.Models.ForeignTrade.EmisorDomicilio
+                {
+                    Calle = "CALLE DEL PAPEL",
+                    ColoniaId = "0214",
+                    LocalidadId = "01",
+                    MunicipioId = "014",
+                    EstadoId = "QUE",
+                    PaisId = "MEX",
+                    CodigoPostalId = "76199"
+                }
+            },
+            Receptor = new Fiscalapi.Models.ForeignTrade.Receptor
+            {
+                NumRegIdTrib = "123456789",
+                Domicilio = new Fiscalapi.Models.ForeignTrade.ReceptorDomicilio
+                {
+                    Calle = "ST. A",
+                    Estado = "TX",
+                    PaisId = "USA",
+                    CodigoPostal = "00000"
+                }
+            },
+            Mercancias = new List<Fiscalapi.Models.ForeignTrade.Mercancia>
+            {
+                new Fiscalapi.Models.ForeignTrade.Mercancia
+                {
+                    NoIdentificacion = "131494-1055",
+                    FraccionArancelariaId = "2402200100",
+                    CantidadAduana = 2.00m,
+                    UnidadAduanaId = "01",
+                    ValorUnitarioAduana = 11.74m,
+                    ValorDolares = 23.47m
+                }
+            }
+        }
+    }
+};
+
+var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice);
+```
+
+> Para la versión **Por Referencias**, sustituye los objetos `Issuer` y `Recipient` por `new InvoiceIssuer { Id = "..." }` y `new InvoiceRecipient { Id = "..." }` manteniendo el resto idéntico.
+
+### 8. Firmar Manifiesto
+
+```csharp
+var fiscalApi = FiscalApiClient.Create(settings);
+
+var request = new SignManifestRequest
+{
+    Base64Cer = "MIIFsDCCA5igAwIBAgI...==", // .cer en Base64
+    Base64Key = "MIIFDjBABgkqhkiG9w0BBQ0...==", // .key en Base64
+    Password  = "12345678a"
+};
+
+var apiResponse = await fiscalApi.Manifests.SignAsync(request);
+
+if (apiResponse.Succeeded)
+{
+    var bytes = Convert.FromBase64String(apiResponse.Data.Base64File);
+    File.WriteAllBytes($"{apiResponse.Data.FileName}.{apiResponse.Data.FileExtension}", bytes);
+}
+```
+
+### 9. Búsqueda en Catálogos del SAT
 
 ```csharp
 // Busca los registros que contengan 'inter' en el catalogo 'SatUnitMeasurements' (pagina 1, tamaño pagina 10)
