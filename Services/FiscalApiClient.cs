@@ -21,6 +21,7 @@ namespace Fiscalapi.Services
         public IDownloadRequestService DownloadRequests { get; }
         public IStampService Stamps { get; }
         public IManifestService Manifests { get; }
+        public ISatValidationService SatValidations { get; }
 
 
         private FiscalApiClient(FiscalapiSettings settings)
@@ -41,6 +42,7 @@ namespace Fiscalapi.Services
             DownloadRequests = new DownloadRequestService(httpClient, apiVersion);
             Stamps = new StampService(httpClient, apiVersion);
             Manifests = new ManifestService(httpClient, apiVersion);
+            SatValidations = new SatValidationService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalapiSettings settings)

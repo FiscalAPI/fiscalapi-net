@@ -28,7 +28,7 @@ namespace Fiscalapi.Http
                 client.DefaultRequestHeaders.Add("X-API-KEY", options.ApiKey);
                 client.DefaultRequestHeaders.Add("X-TENANT-KEY", options.Tenant);
                 client.DefaultRequestHeaders.Add("X-API-VERSION", options.ApiVersion);
-                client.DefaultRequestHeaders.Add("X-TIMEZONE", options.TimeZone);
+                client.DefaultRequestHeaders.Add("X-TIME-ZONE", options.TimeZone);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 return client;
