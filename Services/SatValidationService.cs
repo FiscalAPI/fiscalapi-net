@@ -32,10 +32,10 @@ namespace Fiscalapi.Services
             return _httpClient.GetAsync<SatValidationType>($"{BaseEndpoint}/{id}");
         }
 
-        public Task<ApiResponse<List<SatValidationResult>>> GetStatusesAsync(string id)
+        public Task<ApiResponse<List<SatValidationTypeStatus>>> GetStatusesAsync(string id)
         {
             ValidateId(id);
-            return _httpClient.GetAsync<List<SatValidationResult>>($"{BaseEndpoint}/{id}/statuses");
+            return _httpClient.GetAsync<List<SatValidationTypeStatus>>($"{BaseEndpoint}/{id}/statuses");
         }
 
         public Task<ApiResponse<List<SatValidationResult>>> ValidateAsync(SatValidationRequest requestModel)

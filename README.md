@@ -560,7 +560,7 @@ var request = new SatValidationRequest
 var apiResponse = await fiscalApi.SatValidations.ValidateAsync(request);
 ```
 
-El catálogo de tipos y los estatus posibles de cada tipo (con su veredicto) también están disponibles:
+El catálogo de tipos y los estatus posibles de cada tipo también están disponibles:
 
 ```csharp
 var types = await fiscalApi.SatValidations.GetTypesAsync();                                   // GET /sat-validations
@@ -569,7 +569,7 @@ var statuses = await fiscalApi.SatValidations.GetStatusesAsync(SatValidationType
 
 foreach (var item in statuses.Data)
 {
-    Console.WriteLine($"{item.Status.Id} -> passed: {item.Passed}");
+    Console.WriteLine($"{item.Id}: {item.Description}");
 }
 ```
 

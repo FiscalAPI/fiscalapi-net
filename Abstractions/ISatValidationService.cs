@@ -18,10 +18,10 @@ namespace Fiscalapi.Abstractions
         Task<ApiResponse<SatValidationType>> GetTypeByIdAsync(string id);
 
         /// <summary>
-        /// Lista los estatus posibles de un tipo de validación con su veredicto (Passed), ordenados por Passed descendente.
-        /// GET /api/v4/sat-validations/{id}/statuses
+        /// Lista los estatus que un tipo de validación puede tomar al ejecutarse (aprobatorios primero, luego por id).
+        /// Solo lectura, no consume crédito. GET /api/v4/sat-validations/{id}/statuses
         /// </summary>
-        Task<ApiResponse<List<SatValidationResult>>> GetStatusesAsync(string id);
+        Task<ApiResponse<List<SatValidationTypeStatus>>> GetStatusesAsync(string id);
 
         /// <summary>
         /// Ejecuta las validaciones solicitadas sobre un CFDI (Xml) o un RFC (Tin, solo listas negras).

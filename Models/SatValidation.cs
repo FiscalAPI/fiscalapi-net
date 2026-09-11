@@ -30,7 +30,17 @@ namespace Fiscalapi.Models
         public string Description { get; set; }
     }
 
-    /// <summary>Estatus de una validación SAT.</summary>
+    /// <summary>Estatus que un tipo de validación puede tomar al ejecutarse. Elemento de GET /sat-validations/{id}/statuses.</summary>
+    public class SatValidationTypeStatus
+    {
+        /// <summary>Id del estatus, por ejemplo Valido, Vigente, NoListado (ver <see cref="SatValidationStatusIds"/>).</summary>
+        public string Id { get; set; }
+
+        /// <summary>Descripción del estatus según el catálogo.</summary>
+        public string Description { get; set; }
+    }
+
+    /// <summary>Estatus obtenido al ejecutar una validación SAT (Status de cada elemento de POST /sat-validations).</summary>
     public class SatValidationStatus
     {
         /// <summary>Id del estatus, por ejemplo Valido, Vigente, NoListado (ver <see cref="SatValidationStatusIds"/>).</summary>
@@ -40,22 +50,21 @@ namespace Fiscalapi.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Hechos del caso en texto libre (RFC y corte del listado, número de certificado, estado en el SAT).
-        /// Es null en el catálogo de estatus y puede ser null en una ejecución.
+        /// Hechos del caso en texto libre (RFC y corte del listado, número de certificado, estado en el SAT). Puede ser null.
         /// </summary>
         public string Details { get; set; }
     }
 
     /// <summary>
-    /// Un tipo de validación con un estatus y su veredicto. Es el elemento de GET /sat-validations/{id}/statuses
-    /// (estatus posibles del tipo) y de POST /sat-validations (estatus obtenido, en el orden del catálogo).
+    /// Un tipo de validación ejecutado con el estatus obtenido y su veredicto. Elemento de POST /sat-validations,
+    /// en el orden del catálogo.
     /// </summary>
     public class SatValidationResult
     {
         /// <summary>Tipo de validación evaluado.</summary>
         public SatValidationType Type { get; set; }
 
-        /// <summary>Estatus obtenido (o posible, en el catálogo).</summary>
+        /// <summary>Estatus obtenido.</summary>
         public SatValidationStatus Status { get; set; }
 
         /// <summary>True cuando el estatus se considera aprobado para ese tipo.</summary>
