@@ -22,8 +22,9 @@ namespace Fiscalapi.Models
         public string ZipCode { get; set; }
         public string Base64Photo { get; set; }
         public string TaxPassword { get; set; }
-        public int AvailableBalance { get; }
-        public int CommittedBalance { get; }
+        public int AvailableBalance { get; set; } // Timbres disponibles (solo lectura en la API)
+        public int CommittedBalance { get; set; } // Timbres comprometidos (solo lectura en la API)
+        public int AvailableValidationBalance { get; set; } // Créditos de validación SAT disponibles (solo lectura en la API)
         public string TenantId { get; set; }
     }
 

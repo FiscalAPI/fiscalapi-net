@@ -17,5 +17,6 @@
         IDownloadRequestService DownloadRequests { get; }
         IStampService Stamps { get; }
         IManifestService Manifests { get; }
+        ISatValidationService SatValidations { get; }
     }
 }

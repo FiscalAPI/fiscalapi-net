@@ -44,6 +44,15 @@
 
 ## 🎖️ Gestión de Timbres
 - **Gestión de folios fiscales** Compra timbres a FiscalAPI y transfiere/retira a las personas de tu organización según tus reglas de negocio.
+- **Créditos de validación** Transfiere créditos de validación SAT (`CreditType.Validation`) con la misma operación de timbres y consulta el saldo `AvailableValidationBalance` de cada persona.
+
+## ✅ Validaciones SAT de CFDI
+- **Estructura del XML** contra el Anexo 20 y sus complementos (verificador oficial del SAT)
+- **Vigencia del certificado** del emisor a la fecha de emisión
+- **Sello del CFDI y sello del SAT** (TimbreFiscalDigital)
+- **Estatus del comprobante** en el SAT (vigente, cancelado, no encontrado)
+- **Listas negras 69-B y 69-B Bis** por CFDI o directamente por RFC
+- **Catálogo de tipos y estatus** de validación consultable desde el SDK
 
 ## 🛍️ Gestión de Productos/Servicios
 - **Gestión de productos y servicios** con catálogo personalizable
@@ -502,6 +511,83 @@ else
 }
 ```
 
+### 10. Validar un CFDI ante el SAT
+
+Cada tipo de validación consume un crédito de validación. Los resultados vienen en el orden del catálogo y `Status.Details` trae los hechos del caso (RFC y corte del listado, número de certificado, estado en el SAT) cuando aplica.
+
+```csharp
+var fiscalApi = FiscalApiClient.Create(settings);
+
+var request = new SatValidationRequest
+{
+    Xml = Convert.ToBase64String(File.ReadAllBytes("factura-timbrada.xml")), // CFDI timbrado en Base64
+    ValidationTypes = new List<string>
+    {
+        SatValidationTypeIds.XmlStructure,
+        SatValidationTypeIds.CertificateValidity,
+        SatValidationTypeIds.CfdiSello,
+        SatValidationTypeIds.TfdSello,
+        SatValidationTypeIds.CfdiStatus,
+        SatValidationTypeIds.Blacklist69B,
+        SatValidationTypeIds.Blacklist69BBis
+    }
+};
+
+var apiResponse = await fiscalApi.SatValidations.ValidateAsync(request);
+
+if (apiResponse.Succeeded)
+{
+    foreach (var result in apiResponse.Data)
+    {
+        Console.WriteLine($"{result.Type.Id}: {result.Status.Id} (passed: {result.Passed}) {result.Status.Details}");
+    }
+}
+else
+{
+    Console.WriteLine(apiResponse.Details); // 400 sin cobro, 402 créditos insuficientes, etc.
+}
+```
+
+Para consultar únicamente listas negras basta el RFC, sin XML:
+
+```csharp
+var request = new SatValidationRequest
+{
+    Tin = "XAXX010101000",
+    ValidationTypes = new List<string> { SatValidationTypeIds.Blacklist69B, SatValidationTypeIds.Blacklist69BBis }
+};
+
+var apiResponse = await fiscalApi.SatValidations.ValidateAsync(request);
+```
+
+El catálogo de tipos y los estatus posibles de cada tipo también están disponibles:
+
+```csharp
+var types = await fiscalApi.SatValidations.GetTypesAsync();                                   // GET /sat-validations
+var type = await fiscalApi.SatValidations.GetTypeByIdAsync(SatValidationTypeIds.CfdiStatus);  // GET /sat-validations/{id}
+var statuses = await fiscalApi.SatValidations.GetStatusesAsync(SatValidationTypeIds.CfdiStatus); // GET /sat-validations/{id}/statuses
+
+foreach (var item in statuses.Data)
+{
+    Console.WriteLine($"{item.Id}: {item.Description}");
+}
+```
+
+### 11. Transferir timbres o créditos de validación
+
+```csharp
+var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionParams
+{
+    FromPersonId = "<id_persona_origen>",
+    ToPersonId = "<id_persona_destino>",
+    Amount = 10,
+    Comments = "Créditos para validar CFDI",
+    CreditType = CreditType.Validation // CreditType.Stamp (por defecto) transfiere timbres
+});
+
+// El saldo de cada persona se consulta en Persons.GetByIdAsync(...): AvailableBalance (timbres) y AvailableValidationBalance (validaciones)
+```
+
 ---
 
 ## ⏳ Operaciones Asíncronas y Sincrónicas
@@ -523,6 +609,10 @@ else
   Alta y administración de personas, gestión de certificados (CSD).
 - **Productos y Servicios**  
   Administración de catálogos de productos, búsqueda en catálogos SAT.
+- **Validaciones SAT**  
+  Validación de CFDI (estructura, certificado, sellos, estatus, listas negras 69-B / 69-B Bis) y consulta del catálogo de tipos y estatus.
+- **Timbres y créditos de validación**  
+  Transferencia de timbres y de créditos de validación entre personas, consulta de transacciones y saldos.
 
 
 ## 🤝 Contribuir
