@@ -22,6 +22,17 @@ namespace Fiscalapi.Models
         public string ZipCode { get; set; }
         public string Base64Photo { get; set; }
         public string TaxPassword { get; set; }
+        public string Curp { get; set; }
+
+        //Foreign person fields (receptor extranjero)
+        public string CountryId { get; set; } // Residencia fiscal, catálogo c_Pais (ej. "USA"). Máximo 36 caracteres
+        public CatalogDto Country { get; set; }
+        public string ForeignTin { get; set; } // NumRegIdTrib. Máximo 40 caracteres
+
+        //Carta manifiesto (solo lectura en la API, lo escribe Manifests.SignAsync)
+        public string ManifestStatusId { get; set; } // Ver ManifestStatusIds
+        public CatalogDto ManifestStatus { get; set; }
+
         public int AvailableBalance { get; set; } // Timbres disponibles (solo lectura en la API)
         public int CommittedBalance { get; set; } // Timbres comprometidos (solo lectura en la API)
         public int AvailableValidationBalance { get; set; } // Créditos de validación SAT disponibles (solo lectura en la API)
