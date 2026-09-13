@@ -96,7 +96,7 @@ Puedes usar el SDK tanto en aplicaciones sin inyección de dependencias (WinForm
 
 1. **Crea tu objeto de configuración** con [tus credenciales](https://docs.fiscalapi.com/credentials-info):
     ```csharp
-    var settings = new FiscalApiOptions
+    var settings = new FiscalapiSettings
     {
         ApiUrl = "https://test.fiscalapi.com", // https://live.fiscalapi.com (producción)
         ApiKey = "<tu_api_key>",
@@ -178,6 +178,29 @@ var request = new Person
 };
 
 var apiResponse = await fiscalApi.Persons.CreateAsync(request);
+```
+
+Para un **receptor extranjero** (necesario para facturar Comercio Exterior por referencias), agrega la
+residencia fiscal y la identificación tributaria del país de residencia:
+
+```csharp
+var request = new Person
+{
+    LegalName = "Persona Fisica Extranjera",
+    Email = "someone@somewhere.com",
+    Password = "YourStrongPassword123!",
+    Tin = "XEXX010101000",
+    ZipCode = "42501",
+    SatTaxRegimeId = "616",
+    SatCfdiUseId = "S01",
+    CountryId = "USA",          // Residencia fiscal, catálogo c_Pais. Va a cfdi:Receptor@ResidenciaFiscal
+    ForeignTin = "123456789"    // Va a cfdi:Receptor@NumRegIdTrib
+};
+
+var apiResponse = await fiscalApi.Persons.CreateAsync(request);
+
+// El id devuelto es el que se usa como Recipient.Id al facturar por referencias.
+var recipientId = apiResponse.Data.Id;
 ```
 
 ### 2. Subir Certificados CSD
@@ -488,7 +511,8 @@ var apiResponse = await fiscalApi.Manifests.SignAsync(request);
 if (apiResponse.Succeeded)
 {
     var bytes = Convert.FromBase64String(apiResponse.Data.Base64File);
-    File.WriteAllBytes($"{apiResponse.Data.FileName}.{apiResponse.Data.FileExtension}", bytes);
+    // FileName ya incluye la extensión (por ejemplo "EKU9003173C9.pdf")
+    File.WriteAllBytes(apiResponse.Data.FileName, bytes);
 }
 ```
 
