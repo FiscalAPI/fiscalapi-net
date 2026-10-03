@@ -35,6 +35,9 @@
 	  <Compile Remove="packages\**" />
 	  <EmbeddedResource Remove="packages\**" />
 	  <None Remove="packages\**" />
+	  <Compile Remove="tests\**" />
+	  <EmbeddedResource Remove="tests\**" />
+	  <None Remove="tests\**" />
 	</ItemGroup>
 
 	<ItemGroup>

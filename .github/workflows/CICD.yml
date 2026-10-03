@@ -26,7 +26,7 @@ jobs:
     - name: Extract Package Version
       id: get_version
       run: |
-        version=$(grep -oPm1 "(?<=<Version>)[^<]+" $(find . -name "*.csproj"))
+        version=$(grep -oPm1 "(?<=<Version>)[^<]+" fiscalapi-net.csproj)
         echo "PACKAGE_VERSION=$version" >> $GITHUB_ENV
         echo "Package Version extracted: $version"
 

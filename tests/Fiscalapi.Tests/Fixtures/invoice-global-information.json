@@ -1,0 +1,92 @@
+{
+  "data": {
+    "id": "3f2a9c1e-0b7d-4e55-9a61-2c8f0e4d7b10",
+    "createdAt": "2026-10-01T18:22:41.512",
+    "updatedAt": "2026-10-01T18:22:43.007",
+    "versionCode": "4.0",
+    "series": "G",
+    "number": "1024",
+    "date": "2026-10-01T18:22:00.000",
+    "paymentFormCode": "01",
+    "paymentConditions": null,
+    "subtotal": 1000.0,
+    "discount": 0,
+    "currencyCode": "MXN",
+    "exchangeRate": 1,
+    "total": 1160.0,
+    "typeCode": "I",
+    "exportCode": "01",
+    "uuid": "5d7c1b2a-9e3f-4a6b-8c0d-1e2f3a4b5c6d",
+    "consecutive": 57,
+    "status": {
+      "id": "V",
+      "createdAt": "2024-01-01T00:00:00.000",
+      "updatedAt": null,
+      "description": "Vigente"
+    },
+    "paymentMethodCode": "PUE",
+    "expeditionZipCode": "42501",
+    "issuer": {
+      "id": "4b1c2d3e-0000-4000-8000-000000000001",
+      "tin": "EKU9003173C9",
+      "legalName": "ESCUELA KEMPER URGATE",
+      "taxRegimeCode": "601",
+      "unknownNestedField": [
+        "nested",
+        "array"
+      ]
+    },
+    "recipient": {
+      "id": null,
+      "tin": "XAXX010101000",
+      "legalName": "PUBLICO EN GENERAL",
+      "zipCode": "42501",
+      "taxRegimeCode": "616",
+      "cfdiUseCode": "S01",
+      "email": null
+    },
+    "items": [
+      {
+        "itemCode": "01010101",
+        "quantity": 1,
+        "unitOfMeasurementCode": "ACT",
+        "description": "Venta",
+        "unitPrice": 1000.0,
+        "taxObjectCode": "02",
+        "itemSku": "T-0001",
+        "unitOfMeasurement": null,
+        "discount": 0,
+        "itemTaxes": [
+          {
+            "taxCode": "002",
+            "taxTypeCode": "Tasa",
+            "taxRate": 0.16,
+            "taxFlagCode": "T"
+          }
+        ]
+      }
+    ],
+    "responses": null,
+    "metadata": {},
+    "globalInformation": {
+      "periodicityCode": "04",
+      "monthCode": "09",
+      "year": 2026
+    },
+    "unknownScalarField": 7,
+    "unknownObjectField": {
+      "code": "T",
+      "enabled": true
+    },
+    "unknownArrayField": [
+      1,
+      2,
+      3
+    ]
+  },
+  "succeeded": true,
+  "message": "",
+  "details": "",
+  "httpStatusCode": 200,
+  "unknownEnvelopeField": "envelope"
+}

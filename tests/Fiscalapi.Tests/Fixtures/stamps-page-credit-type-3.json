@@ -1,0 +1,111 @@
+{
+  "data": {
+    "items": [
+      {
+        "id": "8d0f6a52-6f1e-4c3a-9a10-000000000101",
+        "createdAt": "2026-10-01T09:15:00.000",
+        "updatedAt": null,
+        "consecutive": 101,
+        "fromPerson": {
+          "id": "1",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "FIS190101AB1",
+          "legalName": "FISCALAPI"
+        },
+        "toPerson": {
+          "id": "4b1c2d3e-0000-4000-8000-000000000001",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "EKU9003173C9",
+          "legalName": "ESCUELA KEMPER URGATE"
+        },
+        "amount": 100,
+        "transactionType": 1,
+        "transactionStatus": 1,
+        "referenceId": null,
+        "comments": null,
+        "creditType": 1
+      },
+      {
+        "id": "8d0f6a52-6f1e-4c3a-9a10-000000000102",
+        "createdAt": "2026-10-01T09:16:00.000",
+        "updatedAt": null,
+        "consecutive": 102,
+        "fromPerson": {
+          "id": "1",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "FIS190101AB1",
+          "legalName": "FISCALAPI"
+        },
+        "toPerson": {
+          "id": "4b1c2d3e-0000-4000-8000-000000000001",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "EKU9003173C9",
+          "legalName": "ESCUELA KEMPER URGATE"
+        },
+        "amount": 50,
+        "transactionType": 2,
+        "transactionStatus": 1,
+        "referenceId": null,
+        "comments": "Creditos de validacion",
+        "creditType": 2
+      },
+      {
+        "id": "8d0f6a52-6f1e-4c3a-9a10-000000000103",
+        "createdAt": "2026-10-01T09:17:00.000",
+        "updatedAt": null,
+        "consecutive": 103,
+        "fromPerson": {
+          "id": "1",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "FIS190101AB1",
+          "legalName": "FISCALAPI",
+          "unknownNestedField": [
+            "nested",
+            "array"
+          ]
+        },
+        "toPerson": {
+          "id": "4b1c2d3e-0000-4000-8000-000000000001",
+          "createdAt": "2026-01-01T00:00:00.000",
+          "updatedAt": null,
+          "tin": "EKU9003173C9",
+          "legalName": "ESCUELA KEMPER URGATE"
+        },
+        "amount": 25,
+        "transactionType": 2,
+        "transactionStatus": 1,
+        "referenceId": null,
+        "comments": "Creditos de ticket",
+        "creditType": 3,
+        "unknownScalarField": 7,
+        "unknownObjectField": {
+          "code": "T",
+          "enabled": true
+        },
+        "unknownArrayField": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "pageNumber": 1,
+    "totalPages": 1,
+    "totalCount": 3,
+    "hasPreviousPage": false,
+    "hasNextPage": false,
+    "unknownPageField": {
+      "cursor": "c-1"
+    }
+  },
+  "succeeded": true,
+  "message": "",
+  "details": "",
+  "httpStatusCode": 200,
+  "unknownEnvelopeField": "envelope"
+}
