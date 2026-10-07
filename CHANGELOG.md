@@ -4,9 +4,12 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 
 ## [Sin publicar]
 
+### Cambios incompatibles (BREAKING)
+
+- Se elimina `Person.CapitalRegime` (estaba `[Obsolete]`): el API no tiene régimen de capital, ignoraba el valor y nunca lo devolvía. El código que lo asigna o lo lee deja de compilar: quite toda asignación o lectura de `CapitalRegime` (por ejemplo `CapitalRegime = "S.A. de C.V."` en un inicializador de `Person`) y envíe la razón social sin régimen de capital en `LegalName`.
+
 ### Modelo `Person`
 
-- `CapitalRegime` queda obsoleto (`[Obsolete]`): el API no tiene régimen de capital, ignora el valor y no lo devuelve (la propiedad queda en `null`). Envíe la razón social sin régimen de capital en `LegalName`. Se conserva para no romper la compilación de quien lo asigna.
 - Nuevos miembros (solo lectura en el API salvo `PhoneNumber`):
   - `PhoneNumber`: teléfono de la persona.
   - `Balances`: saldos por tipo de crédito (`CreditBalance`: `CreditType` y `Available`). Solo aparecen los tipos que la persona ha tenido; un tipo ausente tiene saldo 0.

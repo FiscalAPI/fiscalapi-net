@@ -14,12 +14,6 @@ namespace Fiscalapi.Models
         //Optional fields
         public string PhoneNumber { get; set; }
 
-        /// <summary>
-        /// El API no tiene este campo: no lo recibe ni lo devuelve (siempre llega null). Se conserva para no romper la
-        /// compilación de quien lo asigna; la razón social va en <see cref="LegalName"/> sin régimen de capital.
-        /// </summary>
-        [Obsolete("El API no tiene régimen de capital: el valor se ignora y nunca se devuelve. Envíe la razón social sin régimen de capital en LegalName.")]
-        public string CapitalRegime { get; set; }
         public string SatTaxRegimeId { get; set; }
         public CatalogDto SatTaxRegime { get; set; }
         public string SatCfdiUseId { get; set; }
