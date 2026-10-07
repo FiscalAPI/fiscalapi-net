@@ -36,11 +36,12 @@ namespace Fiscalapi.Models
         public CatalogDto ManifestStatus { get; set; }
 
         public int AvailableBalance { get; set; } // Timbres disponibles (solo lectura en la API)
-        public int CommittedBalance { get; set; } // Timbres comprometidos (solo lectura en la API)
+        public int CommittedBalance { get; set; } // Campo heredado: el API ya no lo calcula y siempre vale 0 (solo lectura en la API)
         public int AvailableValidationBalance { get; set; } // Créditos de validación SAT disponibles (solo lectura en la API)
         public List<CreditBalance> Balances { get; set; } // Saldos por tipo de crédito (solo lectura en la API)
         public string TenantId { get; set; }
         public bool IsOwner { get; set; } // true si la persona es el owner de su tenant (solo lectura en la API)
+        public DateTime? ValidTo { get; set; } // Fin de vigencia de la persona; la asigna el API, casi siempre null e informativa (solo lectura en la API)
     }
 
     /// <summary>
