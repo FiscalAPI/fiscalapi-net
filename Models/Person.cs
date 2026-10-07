@@ -29,7 +29,7 @@ namespace Fiscalapi.Models
         public string Tin { get; set; } // RFC (Tax Identification Number)
         public string ZipCode { get; set; }
         public string Base64Photo { get; set; }
-        public string TaxPassword { get; set; }
+        public string TaxPassword { get; set; } // Contraseña de la .key que la persona guarda en su perfil; el API no la usa para sellar. Con valor solo para la propia persona y el owner (los demás reciben null). En Update, null la conserva y "" la borra
         public string Curp { get; set; }
 
         //Foreign person fields (receptor extranjero)
