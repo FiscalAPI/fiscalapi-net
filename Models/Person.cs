@@ -1,5 +1,6 @@
 ﻿using Fiscalapi.Common;
 using System;
+using System.Collections.Generic;
 
 namespace Fiscalapi.Models
 {
@@ -8,15 +9,22 @@ namespace Fiscalapi.Models
         //Mandatory fields
         public string LegalName { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; } // Password to access to the dashboard 
+        public string Password { get; set; } // Contraseña del dashboard: requerida al crear; en Update, null o vacía conserva la actual. El API nunca la devuelve
 
         //Optional fields
+        public string PhoneNumber { get; set; }
+
+        /// <summary>
+        /// El API no tiene este campo: no lo recibe ni lo devuelve (siempre llega null). Se conserva para no romper la
+        /// compilación de quien lo asigna; la razón social va en <see cref="LegalName"/> sin régimen de capital.
+        /// </summary>
+        [Obsolete("El API no tiene régimen de capital: el valor se ignora y nunca se devuelve. Envíe la razón social sin régimen de capital en LegalName.")]
         public string CapitalRegime { get; set; }
         public string SatTaxRegimeId { get; set; }
         public CatalogDto SatTaxRegime { get; set; }
         public string SatCfdiUseId { get; set; }
         public CatalogDto SatCfdiUse { get; set; }
-        public string UserTypeId { get; set; }
+        public string UserTypeId { get; set; } // "C" (cliente, por omisión al crear) o "U" (usuario). "T" (tenant) solo llega en respuestas: el API lo rechaza al crear y en Update solo lo acepta si la persona ya es "T"
         public CatalogDto UserType { get; set; }
         public string Tin { get; set; } // RFC (Tax Identification Number)
         public string ZipCode { get; set; }
@@ -36,7 +44,19 @@ namespace Fiscalapi.Models
         public int AvailableBalance { get; set; } // Timbres disponibles (solo lectura en la API)
         public int CommittedBalance { get; set; } // Timbres comprometidos (solo lectura en la API)
         public int AvailableValidationBalance { get; set; } // Créditos de validación SAT disponibles (solo lectura en la API)
+        public List<CreditBalance> Balances { get; set; } // Saldos por tipo de crédito (solo lectura en la API)
         public string TenantId { get; set; }
+        public bool IsOwner { get; set; } // true si la persona es el owner de su tenant (solo lectura en la API)
+    }
+
+    /// <summary>
+    /// Saldo de una persona para un tipo de crédito (<see cref="Person.Balances"/>). Solo aparecen los tipos que la persona
+    /// ha tenido; un tipo ausente tiene saldo 0. Un tipo que este SDK no conoce conserva su número en <see cref="CreditType"/>.
+    /// </summary>
+    public class CreditBalance
+    {
+        public CreditType CreditType { get; set; }
+        public int Available { get; set; }
     }
 
     public class EmployeeData : BaseDto
