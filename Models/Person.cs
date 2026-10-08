@@ -91,6 +91,14 @@ namespace Fiscalapi.Models
     public class EmployerData : BaseDto
     {
         public string PersonId { get; set; }
+
+        /// <summary>
+        /// CURP del empleador persona física (Nomina/Emisor/@Curp). Solo aplica en los datos del empleador del emisor
+        /// de una factura de nómina por valores (Issuer.EmployerData); en las facturas por referencias el API toma
+        /// la CURP de la persona emisora, y los datos de empleador de una persona (Persons.Employer) no la guardan.
+        /// </summary>
+        public string Curp { get; set; }
+
         public string EmployerRegistration { get; set; }
         public string OriginEmployerTin { get; set; }
         public CatalogDto SatFundSource { get; set; } // Rename to SatFundingSource

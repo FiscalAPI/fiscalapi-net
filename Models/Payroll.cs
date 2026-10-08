@@ -12,7 +12,10 @@ namespace Fiscalapi.Models
         public DateTime PaymentDate { get; set; }
         public DateTime InitialPaymentDate { get; set; }
         public DateTime FinalPaymentDate { get; set; }
-        public int DaysPaid { get; set; }
+        /// <summary>
+        /// Días pagados (NumDiasPagados): entero o con hasta 3 decimales, por ejemplo 15.5m.
+        /// </summary>
+        public decimal DaysPaid { get; set; }
         public PayrollEarnings Earnings { get; set; }
         public List<PayrollDeduction> Deductions { get; set; }
         public List<PayrollDisability> Disabilities { get; set; }

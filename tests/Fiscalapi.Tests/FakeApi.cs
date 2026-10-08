@@ -17,6 +17,7 @@ internal sealed class FakeApi : HttpMessageHandler
     private readonly List<Uri> _requestedUris = new();
     private readonly List<RecordedRequest> _requests = new();
     private string _body = string.Empty;
+    private HttpStatusCode _status = HttpStatusCode.OK;
 
     public FakeApi()
     {
@@ -33,14 +34,18 @@ internal sealed class FakeApi : HttpMessageHandler
     public static string ReadFixture(string name) =>
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", name));
 
-    public void RespondWith(string body) => _body = body;
+    public void RespondWith(string body, HttpStatusCode status = HttpStatusCode.OK)
+    {
+        _body = body;
+        _status = status;
+    }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         _requestedUris.Add(request.RequestUri!);
         var body = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
         _requests.Add(new RecordedRequest(request.Method, request.RequestUri!, body));
-        return new HttpResponseMessage(HttpStatusCode.OK)
+        return new HttpResponseMessage(_status)
         {
             Content = new StringContent(_body, Encoding.UTF8, "application/json")
         };

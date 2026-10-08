@@ -42,6 +42,13 @@ namespace Fiscalapi.Models
         public decimal Subtotal { get; set; }
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
+
+        /// <summary>
+        /// Folio fiscal (UUID) que asigna el PAC al timbrar: llega en la respuesta de CreateAsync, GetByIdAsync y
+        /// GetListAsync (solo lectura en la API: al crear, el API lo ignora).
+        /// </summary>
+        public string Uuid { get; set; }
+
         public List<InvoiceResponse> Responses { get; set; }
         public List<InvoicePayment> Payments { get; set; }
         public Complement Complement { get; set; }
