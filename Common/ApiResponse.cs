@@ -16,6 +16,6 @@ namespace Fiscalapi.Common
     {
         public string PropertyName { get; set; }
         public string ErrorMessage { get; set; }
-        public object AttemptedValue { get; set; }
+        public object AttemptedValue { get; set; } // El valor de un secreto (contraseñas, códigos, tokens, archivos y contraseñas de CSD/FIEL) llega como "[masked: n]", o "[masked]" si es un objeto o lista que lo contiene
     }
 }

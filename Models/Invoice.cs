@@ -61,7 +61,7 @@ namespace Fiscalapi.Models
     {
         public string Base64File { get; set; }
         public FileType FileType { get; set; }
-        public string Password { get; set; }
+        public string Password { get; set; } // Contraseña de la llave privada: requerida en la .key; en el .cer es opcional y el API no la usa
     }
 
     public class InvoiceRecipient : BaseDto
