@@ -1,0 +1,55 @@
+{
+  "data": {
+    "id": "4b1c2d3e-0000-4000-8000-000000000001",
+    "createdAt": "2026-02-01T00:00:00.000",
+    "updatedAt": "2026-10-01T09:25:00.000",
+    "legalName": "ESCUELA KEMPER URGATE",
+    "email": "someone@example.com",
+    "phoneNumber": null,
+    "validTo": null,
+    "twoFactorEnabled": false,
+    "stripeCustomerId": null,
+    "satTaxRegimeId": "601",
+    "satTaxRegime": {
+      "id": "601",
+      "createdAt": "2024-01-01T00:00:00.000",
+      "updatedAt": null,
+      "description": "General de Ley Personas Morales"
+    },
+    "satCfdiUseId": "G03",
+    "satCfdiUse": null,
+    "userTypeId": "C",
+    "userType": null,
+    "manifestStatusId": null,
+    "manifestStatus": null,
+    "tin": "EKU9003173C9",
+    "zipCode": "42501",
+    "base64Photo": null,
+    "taxPassword": null,
+    "curp": null,
+    "countryId": null,
+    "country": null,
+    "foreignTin": null,
+    "availableBalance": 100,
+    "committedBalance": 0,
+    "availableValidationBalance": 50,
+    "availableTicketBalance": 25,
+    "subscriptionStatus": "active",
+    "tenantId": "e839651d-1d0b-4e44-a7a8-4b2b5e2a0001",
+    "unknownScalarField": 7,
+    "unknownObjectField": {
+      "code": "T",
+      "enabled": true
+    },
+    "unknownArrayField": [
+      1,
+      2,
+      3
+    ]
+  },
+  "succeeded": true,
+  "message": "",
+  "details": "",
+  "httpStatusCode": 200,
+  "unknownEnvelopeField": "envelope"
+}
