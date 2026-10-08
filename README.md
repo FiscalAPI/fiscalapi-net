@@ -516,6 +516,8 @@ if (apiResponse.Succeeded)
 }
 ```
 
+Al firmar, todas las personas del tenant con el RFC del certificado quedan con `ManifestStatusId` en `Signed` (`ManifestStatusIds.Signed`).
+
 ### 9. Búsqueda en Catálogos del SAT
 
 ```csharp
