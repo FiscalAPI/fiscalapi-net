@@ -17,6 +17,11 @@ namespace Fiscalapi.Models
         public string Tin { get; set; }
         public string Base64File { get; set; }
         public FileType FileType { get; set; }
+        /// <summary>
+        /// Contraseña de la llave privada (.key). Solo se envía al subir con CreateAsync (en el .cer y en la .key). En las
+        /// consultas (GetListAsync, GetByIdAsync y la respuesta de CreateAsync) el API la devuelve vacía (""); solo
+        /// GetDefaultValuesAsync la devuelve.
+        /// </summary>
         public string Password { get; set; }
         public DateTime ValidFrom { get; set; }
         public DateTime ValidTo { get; set; }
