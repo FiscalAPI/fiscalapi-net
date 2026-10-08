@@ -6,6 +6,7 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 
 ### Cambios incompatibles (BREAKING)
 
+- `Payroll.DaysPaid` pasa de `int` a `decimal`: el API y el SAT admiten días pagados fraccionarios (`NumDiasPagados`, entero o con hasta 3 decimales, por ejemplo `15.5m`) y con `int` el SDK no podía enviarlos. Asignar un entero sigue compilando (`DaysPaid = 15`), pero el código que guarda el valor en un `int` (`int dias = payroll.DaysPaid;`) o lo pasa donde se espera un `int` deja de compilar: use `decimal` o conviértalo de forma explícita. El SDK lo envía tal cual, sin redondear (`15.5m` viaja como `15.5` y `15m` como `15.0`, que el API timbra como `15.500` y `15`); con más de 3 decimales el API responde 400 de validación antes del PAC (ver la nota de decimales en Notas del API).
 - Se elimina `Person.CapitalRegime` (estaba `[Obsolete]`): el API no tiene régimen de capital, ignoraba el valor y nunca lo devolvía. El código que lo asigna o lo lee deja de compilar: quite toda asignación o lectura de `CapitalRegime` (por ejemplo `CapitalRegime = "S.A. de C.V."` en un inicializador de `Person`) y envíe la razón social sin régimen de capital en `LegalName`.
 - El API deja de devolver `stripeCustomerId` y `subscriptionStatus` en las personas (`/api/v4/people` y la persona de las reglas de descarga): eran datos internos de Stripe. Este SDK nunca los modeló en `Person`, así que el código que usa el modelo no cambia; si su integración los lee de la respuesta JSON cruda, quite esa lectura: el campo ya no llega.
 - Se elimina `update` del servicio de certificados (`TaxFiles.UpdateAsync`): el API retiró `PUT /api/v4/tax-files/{id}`, que ahora responde 405 (Method Not Allowed); antes nunca actualizaba un certificado (respondía un error). Para cambiar un certificado, suba el nuevo con `TaxFiles.CreateAsync` y elimine el anterior con `TaxFiles.DeleteAsync`. El método ya no existe ni en la interfaz ni en la clase del servicio: `ITaxFileService` extiende la nueva `IImmutableFiscalApiService<TaxFile>` (consulta, creación y baja, sin `UpdateAsync`) y `TaxFileService` hereda de la nueva `BaseImmutableFiscalApiService<TaxFile>`, así que `client.TaxFiles.UpdateAsync(...)` deja de compilar (CS1061) y `TaxFileService` deja de ser un `IFiscalApiService<TaxFile>`. Los demás servicios no cambian: `IFiscalApiService<T>` extiende `IImmutableFiscalApiService<T>` con `UpdateAsync` y `BaseFiscalApiService<T>` hereda de `BaseImmutableFiscalApiService<T>`.
@@ -20,6 +21,11 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
   - `ValidTo` (`DateTime?`): fin de vigencia de la persona. La asigna el API; casi siempre es `null` y es informativa (no limita el timbrado ni el acceso al API).
 - `Password`: requerida al crear; en `UpdateAsync`, `null` o vacía conserva la contraseña actual. El API nunca la devuelve.
 - `UserTypeId`: `"C"` (cliente, el valor por omisión al crear) o `"U"` (usuario). `"T"` (tenant) solo llega en respuestas: el API lo rechaza al crear y al actualizar solo lo acepta si la persona ya es `"T"`.
+
+### Modelos de factura y nómina
+
+- `Invoice.Uuid`: nuevo miembro con el folio fiscal (UUID) que asigna el PAC al timbrar; llega en la respuesta de `Invoices.CreateAsync`, `Invoices.GetByIdAsync` y `Invoices.GetListAsync` (solo lectura en el API: al crear, el API lo ignora). Antes había que buscarlo en `Responses` o en el XML; los SDK de Node.js, Python, PHP y Java ya lo leían.
+- `EmployerData.Curp`: nuevo miembro con la CURP del empleador persona física (`Nomina/Emisor/@Curp`), que se envía como `issuer.employerData.curp` en las facturas de nómina por valores (`Invoice.Issuer.EmployerData`). Antes el SDK no podía enviarla. En las facturas de nómina por referencias el API toma la CURP de la persona emisora, y los datos de empleador de una persona (`Persons.Employer`) no la guardan (el API la ignora ahí).
 
 ### Enum `FileType`
 
