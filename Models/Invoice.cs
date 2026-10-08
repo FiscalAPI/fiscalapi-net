@@ -301,10 +301,16 @@ namespace Fiscalapi.Models
         public string ToEmail { get; set; }
     }
 
+    /// <summary>
+    /// Tipo de archivo de un certificado (fileType del API): 0 y 1, el CSD (sellos para timbrar y cancelar); 2 y 3, la
+    /// FIEL (e.firma). El API no admite otros valores.
+    /// </summary>
     public enum FileType
     {
-        CertificateCsd,
-        PrivateKeyCsd,
+        CertificateCsd = 0,
+        PrivateKeyCsd = 1,
+        CertificateFiel = 2,
+        PrivateKeyFiel = 3,
     }
 
 
