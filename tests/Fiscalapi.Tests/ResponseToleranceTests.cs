@@ -5,13 +5,13 @@ using Newtonsoft.Json;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// Tolerancia del SDK a respuestas que el API devolverá en las próximas fases (SDK-001).
-/// Son pruebas de caracterización: fijan el comportamiento ACTUAL. Una prueba cuyo nombre cita
-/// SDK-010 documenta lo que esa tarea cambia. Los casos son:
-/// 1. una transacción de timbres con creditType 3 (créditos de ticket, Fase 1);
-/// 2. una persona con el campo nuevo availableTicketBalance (Fase 1);
+/// Tolerancia del SDK a respuestas del API con valores y campos que el SDK todavía no modela.
+/// Son pruebas de caracterización: fijan el comportamiento ACTUAL. Una prueba cuyo nombre anuncia un cambio
+/// documenta lo que cambia cuando el SDK agregue CreditType.Ticket y AvailableTicketBalance. Los casos son:
+/// 1. una transacción de timbres con creditType 3 (créditos de ticket);
+/// 2. una persona con el campo nuevo availableTicketBalance;
 /// 3. propiedades desconocidas en la envoltura, en data y en objetos anidados;
-/// 4. globalInformation en la respuesta de una factura (BE-008).
+/// 4. globalInformation en la respuesta de una factura.
 /// </summary>
 public class ResponseToleranceTests
 {
@@ -87,7 +87,7 @@ public class ResponseToleranceTests
         Assert.DoesNotContain("unknown", JsonConvert.SerializeObject(ticketTransaction), StringComparison.OrdinalIgnoreCase);
     }
 
-    // 4. globalInformation en la respuesta de una factura (BE-008)
+    // 4. globalInformation en la respuesta de una factura
 
     [Fact]
     public async Task Invoice_WithGlobalInformation_DeserializesIt()
