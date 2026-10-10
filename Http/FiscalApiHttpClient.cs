@@ -99,6 +99,7 @@ namespace Fiscalapi.Http
                         HttpStatusCode = statusCode,
                         Message = validationResponse?.Message,
                         Details = validationErrors ?? validationResponse?.Details,
+                        TraceIdentifier = validationResponse?.TraceIdentifier,
                         Data = default
                     };
                 }
@@ -110,6 +111,7 @@ namespace Fiscalapi.Http
                     HttpStatusCode = statusCode,
                     Message = failureResponse?.Message,
                     Details = failureResponse?.Details,
+                    TraceIdentifier = failureResponse?.TraceIdentifier,
                     Data = default
                 };
             }

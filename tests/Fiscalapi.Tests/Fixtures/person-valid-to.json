@@ -1,0 +1,26 @@
+{
+  "data": {
+    "id": "4b1c2d3e-0000-4000-8000-000000000002",
+    "createdAt": "2025-01-10T00:00:00.000",
+    "updatedAt": "2026-10-01T09:25:00.000",
+    "legalName": "ESCUELA KEMPER URGATE",
+    "email": "someone@example.com",
+    "validTo": "2025-07-15T10:30:00.000",
+    "satTaxRegimeId": "601",
+    "satCfdiUseId": "G03",
+    "userTypeId": "C",
+    "tin": "EKU9003173C9",
+    "zipCode": "42501",
+    "availableBalance": 100,
+    "committedBalance": 0,
+    "availableValidationBalance": 50,
+    "stripeCustomerId": "cus_legacy000000000000",
+    "subscriptionStatus": "active",
+    "capitalRegime": "SA DE CV",
+    "tenantId": "e839651d-1d0b-4e44-a7a8-4b2b5e2a0001"
+  },
+  "succeeded": true,
+  "message": "",
+  "details": "",
+  "httpStatusCode": 200
+}

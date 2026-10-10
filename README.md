@@ -215,7 +215,7 @@ var certificadoCsd = new TaxFile
     Base64File = "MIIFsDCCA5igAwIBAgI...==", // Certificado .cer codificado en Base64
     FileType = FileType.CertificateCsd,
     Password = "12345678a",
-    Tin = "EKU9003173C9"
+    Tin = "EKU9003173C9" // RFC de la persona (opcional)
 };
 
 var clavePrivadaCsd = new TaxFile
@@ -224,7 +224,7 @@ var clavePrivadaCsd = new TaxFile
     Base64File = "MIIFDjBABgkqhkiG9w0BBQ0...==", // Llave privada .key codificada en Base64
     FileType = FileType.PrivateKeyCsd,
     Password = "12345678a",
-    Tin = "EKU9003173C9"
+    Tin = "EKU9003173C9" // RFC de la persona (opcional)
 };
 
 var apiResponseCer = await fiscalApi.TaxFiles.CreateAsync(certificadoCsd);
@@ -515,6 +515,8 @@ if (apiResponse.Succeeded)
     File.WriteAllBytes(apiResponse.Data.FileName, bytes);
 }
 ```
+
+Al firmar, todas las personas del tenant con el RFC del certificado quedan con `ManifestStatusId` en `Signed` (`ManifestStatusIds.Signed`).
 
 ### 9. Búsqueda en Catálogos del SAT
 

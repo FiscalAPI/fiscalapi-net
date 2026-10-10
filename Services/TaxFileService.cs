@@ -7,7 +7,7 @@ using Fiscalapi.Http;
 
 namespace Fiscalapi.Services
 {
-    public class TaxFileService : BaseFiscalApiService<TaxFile>, ITaxFileService
+    public class TaxFileService : BaseImmutableFiscalApiService<TaxFile>, ITaxFileService
     {
         public TaxFileService(IFiscalApiHttpClient httpClient, string apiVersion)
             : base(httpClient, "tax-files", apiVersion)

@@ -128,8 +128,10 @@ namespace Fiscalapi.Models
 
         /// <summary>
         /// FechaSiguienteIntento
-        /// Next attempt date for the associated request.
+        /// Obsoleto: el API ya no lo devuelve; siempre era null porque Fiscalapi no programa un siguiente intento por
+        /// solicitud. Use <see cref="LastAttemptDate"/>.
         /// </summary>
+        [Obsolete("El API ya no devuelve nextAttemptDate: siempre era null (Fiscalapi no programa un siguiente intento por solicitud). Se eliminará en una versión mayor; use LastAttemptDate.")]
         public DateTime? NextAttemptDate { get; set; }
 
 
