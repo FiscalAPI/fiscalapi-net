@@ -692,6 +692,90 @@ var cancelled = await fiscalApi.Tickets.CancelAsync("<id_ticket>");
 
 `Status` (y `Type`/`ActorType` de los eventos) llegan como texto camelCase; compáralos con las constantes de `TicketStatus`, `TicketEventType` y `TicketActorType`. Un valor que esta versión del SDK no conoce llega tal cual, sin error.
 
+### 13. Factura global de tickets (Auto CFDI)
+
+La global de tickets es una factura de ingreso estándar (`Invoices.CreateAsync`) con `GlobalInformation`, el emisor por referencia (`Issuer.Id`) y `TicketId` en cada concepto. Cada ticket va en un concepto por grupo de objeto de impuesto e impuestos (un ticket con IVA 16 % y 0 % lleva dos conceptos con el mismo `TicketId`), y la suma de sus conceptos debe reflejar el ticket. Una global lleva una sola moneda, tipo de cambio y lugar de expedición, y hasta 1,500 conceptos: este ejemplo asume tickets en MXN de un solo lugar de expedición. Una global sin `TicketId` no marca los tickets como facturados.
+
+```csharp
+// Tickets pendientes del emisor en septiembre, con sus conceptos
+var issuerId = "<id_persona_emisora>";
+var tickets = new List<Ticket>();
+for (var pageNumber = 1; ; pageNumber++)
+{
+    var page = (await fiscalApi.Tickets.GetListAsync(new TicketListFilters
+    {
+        Status = new List<string> { TicketStatus.Pending },
+        PersonId = issuerId,
+        From = new DateTime(2026, 9, 1),
+        To = new DateTime(2026, 9, 30),
+        PageNumber = pageNumber,
+        PageSize = 50
+    })).Data;
+    foreach (var summary in page.Items)
+        tickets.Add((await fiscalApi.Tickets.GetByIdAsync(summary.Id, details: true)).Data);
+    if (!page.HasNextPage)
+        break;
+}
+
+// Un concepto por ticket y grupo de impuestos: valor unitario = suma de cantidad × valor unitario (6 decimales por concepto)
+// y descuento = suma de descuentos del grupo
+string TaxSignature(TicketItem item) => item.TaxObjectCode + ";" + string.Join(";", (item.ItemTaxes ?? new List<TicketItemTax>())
+    .Select(tax => $"{tax.TaxCode}|{tax.TaxTypeCode}|{tax.TaxRate.ToString("0.000000", CultureInfo.InvariantCulture)}|{tax.TaxFlagCode}")
+    .OrderBy(signature => signature, StringComparer.Ordinal));
+
+var items = tickets.SelectMany(ticket => ticket.Items.GroupBy(TaxSignature).Select(group => new InvoiceItem
+{
+    TicketId = ticket.Id,
+    ItemCode = "01010101",
+    ItemSku = ticket.Folio, // NoIdentificacion: folio del ticket
+    Quantity = 1,
+    UnitOfMeasurementCode = "ACT",
+    Description = "Venta",
+    UnitPrice = group.Sum(item => Math.Round(item.Quantity * item.UnitPrice, 6, MidpointRounding.AwayFromZero)),
+    Discount = group.Sum(item => item.Discount ?? 0m),
+    TaxObjectCode = group.First().TaxObjectCode,
+    ItemTaxes = (group.First().ItemTaxes ?? new List<TicketItemTax>())
+        .Select(tax => new InvoiceItemTax
+        {
+            TaxCode = tax.TaxCode, TaxTypeCode = tax.TaxTypeCode, TaxRate = tax.TaxRate, TaxFlagCode = tax.TaxFlagCode
+        })
+        .ToList()
+})).ToList();
+
+var expeditionZipCode = tickets[0].ExpeditionZipCode;
+var globalInvoice = new Invoice
+{
+    Series = "G",
+    Date = DateTime.Now,
+    PaymentFormCode = tickets.OrderByDescending(ticket => ticket.Total).First().PaymentFormCode, // la del mayor monto
+    PaymentMethodCode = "PUE",
+    CurrencyCode = "MXN",
+    TypeCode = "I",
+    ExpeditionZipCode = expeditionZipCode,
+    Issuer = new InvoiceIssuer { Id = issuerId },
+    Recipient = new InvoiceRecipient
+    {
+        Tin = "XAXX010101000",
+        LegalName = "PUBLICO EN GENERAL",
+        ZipCode = expeditionZipCode,
+        TaxRegimeCode = "616",
+        CfdiUseCode = "S01"
+    },
+    GlobalInformation = new GlobalInformation { PeriodicityCode = "04", MonthCode = "09", Year = 2026 },
+    Items = items
+};
+
+var global = await fiscalApi.Invoices.CreateAsync(globalInvoice);
+if (!global.Succeeded && global.HttpStatusCode == 409)
+{
+    // Algún ticket ya no estaba pendiente: no se cobró el timbre ni quedó tomado ningún ticket.
+    foreach (var unavailable in global.ErrorData["unavailableTickets"])
+        Console.WriteLine($"{unavailable["ticketId"]}: {unavailable["status"]}");
+}
+```
+
+Un 400 en `items[i].ticketId` indica que los conceptos de ese ticket no lo reflejan (importes, descuentos o impuestos). Sin `TicketId` (null), el concepto se envía igual que antes: la propiedad no viaja en el JSON.
+
 ---
 
 ## ⏳ Operaciones Asíncronas y Sincrónicas

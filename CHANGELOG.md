@@ -19,6 +19,10 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 - `IFiscalApiHttpClient` agrega la sobrecarga `PostAsync<T>(endpoint, payload, headers)` para headers propios de la petición (la usa `Idempotency-Key`); `FiscalApiHttpClient` la implementa. Quien implementa su propia versión de `IFiscalApiHttpClient` (p. ej. un doble de pruebas) debe agregar `PostAsync<T>(endpoint, payload, headers)`; quien usa el cliente del SDK no cambia nada.
 - `IFiscalApiClient` agrega `Tickets`. Quien implementa su propia versión de `IFiscalApiClient` (p. ej. un doble de pruebas) debe agregar `Tickets`; quien usa el cliente del SDK no cambia nada.
 
+### Modelo `InvoiceItem`
+
+- `ticketId` en el concepto de la factura para ligar la factura global a los tickets (Auto CFDI); se omite si es nulo. En .NET es `InvoiceItem.TicketId` (`string`); un 409 por tickets no disponibles trae `unavailableTickets` (`ticketId`, `status`) en `ErrorData`. Ejemplo en el README (sección 13).
+
 ### `ApiResponse`
 
 - `ErrorData` (`JToken`): nuevo miembro (aditivo) con el `data` crudo de una respuesta de error, tal como lo envía el API: por ejemplo `existingTicketId` en el 409 de `Tickets.CreateAsync` (`response.ErrorData["existingTicketId"]`) o `expectedTotal` y `computedTotal` en su 422. Es `null` en las respuestas exitosas y en los errores sin `data`. `Data`, `Message`, `Details`, `HttpStatusCode` y `TraceIdentifier` no cambian (en un error, `Data` sigue en su valor por omisión).
