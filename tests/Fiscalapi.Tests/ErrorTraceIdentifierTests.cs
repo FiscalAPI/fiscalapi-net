@@ -5,7 +5,7 @@ using Fiscalapi.Services;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// SDK-060 (DEC-184, consistencia DEC-136 con Java): las respuestas de error exponen el traceIdentifier que manda el API
+/// Las respuestas de error exponen el traceIdentifier que manda el API, igual que en los SDK de Node.js, Python y Java
 /// (los textos de los 5xx piden enviarlo a soporte). Aditivo: message, details y el status no cambian.
 /// </summary>
 public class ErrorTraceIdentifierTests

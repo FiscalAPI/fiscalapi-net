@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// Consistencia entre SDK (SDK-059, DEC-136): los mismos escenarios viven en el SDK de Java y ya los cumplían Node.js,
+/// Consistencia entre SDK: los mismos escenarios viven en el SDK de Java y ya los cumplían Node.js,
 /// Python y PHP:
 /// 1. nómina: DaysPaid admite días fraccionarios (decimal) y viaja sin perder precisión;
 /// 2. nómina por valores: Issuer.EmployerData.Curp viaja como issuer.employerData.curp;

@@ -6,12 +6,12 @@ using Newtonsoft.Json.Linq;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// Cambios de código del SDK en el ciclo de deuda técnica 2 (Fase III, C22). Los mismos escenarios viven en los SDK de
-/// Node.js, Python, PHP y Java (DEC-136), cuando el cambio aplica a cada uno:
+/// Contrato público que fijan estas pruebas. Los mismos escenarios viven en los SDK de Node.js, Python, PHP y Java, con
+/// el mismo resultado observable en cada uno (lo retirado no existe ni compila), cuando el cambio le aplica:
 /// 1. persona: validTo de solo lectura y committedBalance heredado; CapitalRegime, stripeCustomerId y
-///    subscriptionStatus fuera del modelo (SDK-043, SDK-044);
-/// 2. certificados: tin opcional al subir (SDK-045) y FileType de la FIEL, 2 y 3 (SDK-058);
-/// 3. certificados sin UpdateAsync: el API retiró PUT tax-files (SDK-051); los servicios que sí actualizan lo conservan.
+///    subscriptionStatus fuera del modelo;
+/// 2. certificados: tin opcional al subir y FileType de la FIEL, 2 y 3;
+/// 3. certificados sin UpdateAsync: el API retiró PUT tax-files; los servicios que sí actualizan lo conservan.
 /// </summary>
 public class CycleContractTests
 {
@@ -27,7 +27,7 @@ public class CycleContractTests
 
     private readonly FakeApi _api = new();
 
-    // 1. Persona (SDK-043, SDK-044)
+    // 1. Persona
 
     [Fact]
     public async Task Person_FromResponse_ReadsValidToAndCommittedBalance_AndDropsTheRetiredFields()
@@ -70,7 +70,7 @@ public class CycleContractTests
         Assert.False(body.ContainsKey("subscriptionStatus"));
     }
 
-    // 2. Certificados: tin opcional (SDK-045) y FileType de la FIEL (SDK-058)
+    // 2. Certificados: tin opcional y FileType de la FIEL
 
     [Fact]
     public void FileType_HasTheApiValues_CsdAndFiel_WithoutPfx()
@@ -110,7 +110,7 @@ public class CycleContractTests
         Assert.Equal(PersonId, body.Value<string>("personId"));
     }
 
-    // 3. Certificados sin UpdateAsync (SDK-051)
+    // 3. Certificados sin UpdateAsync
 
     [Fact]
     public void TaxFileService_HasNoUpdateAsync()
