@@ -18,5 +18,6 @@
         IStampService Stamps { get; }
         IManifestService Manifests { get; }
         ISatValidationService SatValidations { get; }
+        ITicketService Tickets { get; }
     }
 }

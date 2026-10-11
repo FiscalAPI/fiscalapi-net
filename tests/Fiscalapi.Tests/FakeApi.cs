@@ -28,7 +28,7 @@ internal sealed class FakeApi : HttpMessageHandler
 
     public IReadOnlyList<Uri> RequestedUris => _requestedUris;
 
-    /// <summary>Peticiones recibidas: método, URI y cuerpo JSON tal como lo serializó el SDK (null si no lleva).</summary>
+    /// <summary>Peticiones recibidas: método, URI, cuerpo JSON tal como lo serializó el SDK (null si no lleva) y headers.</summary>
     public IReadOnlyList<RecordedRequest> Requests => _requests;
 
     public static string ReadFixture(string name) =>
@@ -44,7 +44,8 @@ internal sealed class FakeApi : HttpMessageHandler
     {
         _requestedUris.Add(request.RequestUri!);
         var body = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
-        _requests.Add(new RecordedRequest(request.Method, request.RequestUri!, body));
+        var headers = request.Headers.ToDictionary(h => h.Key, h => string.Join(",", h.Value));
+        _requests.Add(new RecordedRequest(request.Method, request.RequestUri!, body, headers));
         return new HttpResponseMessage(_status)
         {
             Content = new StringContent(_body, Encoding.UTF8, "application/json")
@@ -52,4 +53,5 @@ internal sealed class FakeApi : HttpMessageHandler
     }
 }
 
-internal sealed record RecordedRequest(HttpMethod Method, Uri Uri, string? Body);
+/// <summary>Una petición recibida; <see cref="Headers"/> son los headers propios de la petición (no los del cliente).</summary>
+internal sealed record RecordedRequest(HttpMethod Method, Uri Uri, string? Body, IReadOnlyDictionary<string, string> Headers);

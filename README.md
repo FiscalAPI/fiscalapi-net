@@ -628,6 +628,70 @@ var person = (await fiscalApi.Persons.GetByIdAsync("<id_persona_destino>")).Data
 var ticketBalance = person.Balances.FirstOrDefault(b => b.CreditType == CreditType.Ticket)?.Available ?? 0;
 ```
 
+### 12. Tickets de Auto CFDI: ingesta y consulta
+
+```csharp
+// Ingesta de una venta pagada (cobra 1 crédito de ticket). La Idempotency-Key es opcional: repetir la misma key con el
+// mismo cuerpo responde 200 con el ticket original sin cobrar otra vez.
+var ticket = new Ticket
+{
+    Issuer = new TicketIssuer { Id = "<id_persona_emisora>" },
+    Folio = "F-1001",
+    Series = "A",
+    PaymentDate = new DateTime(2026, 10, 15, 12, 30, 0), // hora civil de México
+    PaymentFormCode = "01",
+    Total = 116.00m, // debe cuadrar al centavo con los conceptos e impuestos
+    Items = new List<TicketItem>
+    {
+        new TicketItem
+        {
+            ItemCode = "50202306",
+            ItemSku = "SKU-1",
+            Quantity = 1,
+            UnitOfMeasurementCode = "H87",
+            Description = "Refresco",
+            UnitPrice = 100.00m,
+            TaxObjectCode = "02",
+            ItemTaxes = new List<TicketItemTax>
+            {
+                new TicketItemTax { TaxCode = "002", TaxTypeCode = "Tasa", TaxRate = 0.160000m, TaxFlagCode = "T" }
+            }
+        }
+    }
+};
+
+var created = await fiscalApi.Tickets.CreateAsync(ticket, idempotencyKey: "pos-01-F-1001");
+if (created.Succeeded)
+{
+    // Imprime el código y el QR en el ticket de venta
+    Console.WriteLine($"{created.Data.TicketCode} {created.Data.QrUrl}");
+}
+else
+{
+    // 409: folio y serie ya activos; 422: total que no cuadra, emisor sin CSD o sin créditos de ticket, etc.
+    // ErrorData trae el data del error: existingTicketId (409) o expectedTotal y computedTotal (422).
+    Console.WriteLine($"{created.HttpStatusCode}: {created.Details} {created.ErrorData}");
+}
+
+// Tickets pendientes de un emisor en septiembre (por ejemplo, para armar la factura global)
+var page = await fiscalApi.Tickets.GetListAsync(new TicketListFilters
+{
+    Status = new List<string> { TicketStatus.Pending },
+    PersonId = "<id_persona_emisora>",
+    From = new DateTime(2026, 9, 1),
+    To = new DateTime(2026, 9, 30),
+    PageNumber = 1,
+    PageSize = 50
+});
+
+// Detalle con conceptos e historia, código para reimprimir y cancelación (solo en estado pending)
+var detail = await fiscalApi.Tickets.GetByIdAsync("<id_ticket>", details: true);
+var code = await fiscalApi.Tickets.GetCodeAsync("<id_ticket>");
+var cancelled = await fiscalApi.Tickets.CancelAsync("<id_ticket>");
+```
+
+`Status` (y `Type`/`ActorType` de los eventos) llegan como texto camelCase; compáralos con las constantes de `TicketStatus`, `TicketEventType` y `TicketActorType`. Un valor que esta versión del SDK no conoce llega tal cual, sin error.
+
 ---
 
 ## ⏳ Operaciones Asíncronas y Sincrónicas
@@ -653,6 +717,8 @@ var ticketBalance = person.Balances.FirstOrDefault(b => b.CreditType == CreditTy
   Validación de CFDI (estructura, certificado, sellos, estatus, listas negras 69-B / 69-B Bis) y consulta del catálogo de tipos y estatus.
 - **Timbres, créditos de validación y créditos de ticket**  
   Transferencia de timbres, créditos de validación y créditos de ticket entre personas, consulta de transacciones y saldos.
+- **Tickets (Auto CFDI)**  
+  Ingesta de ventas pagadas del punto de venta con Idempotency-Key opcional, consulta con filtros, código para reimprimir y cancelación.
 
 
 ## 🤝 Contribuir

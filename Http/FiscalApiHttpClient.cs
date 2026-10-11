@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Fiscalapi.Common;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Fiscalapi.Http
@@ -38,6 +39,10 @@ namespace Fiscalapi.Http
         public async Task<ApiResponse<T>> PostAsync<T>(string endpoint, object payload)
             => await SendRequestAsync<T>(HttpMethod.Post, endpoint, payload);
 
+        public async Task<ApiResponse<T>> PostAsync<T>(string endpoint, object payload,
+            IReadOnlyDictionary<string, string> headers)
+            => await SendRequestAsync<T>(HttpMethod.Post, endpoint, payload, headers);
+
         public async Task<ApiResponse<T>> PutAsync<T>(string endpoint, object payload)
             => await SendRequestAsync<T>(HttpMethod.Put, endpoint, payload);
 
@@ -55,9 +60,20 @@ namespace Fiscalapi.Http
         }
 
 
-        public async Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, object content = null)
+        public Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, object content = null)
+            => SendRequestAsync<T>(method, endpoint, content, null);
+
+        /// <summary>Envía la petición con headers propios (además de los del cliente); null o vacío no agrega ninguno.</summary>
+        public async Task<ApiResponse<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, object content,
+            IReadOnlyDictionary<string, string> headers)
         {
             var request = new HttpRequestMessage(method, endpoint);
+
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                    request.Headers.Add(header.Key, header.Value);
+            }
 
             if (content != null)
             {
@@ -73,13 +89,21 @@ namespace Fiscalapi.Http
                 : HandleFailureResponse<T>(responseContent, (int)response.StatusCode);
         }
 
+        // El data del cuerpo de error tal cual; un data null (o ausente) queda en null.
+        private static JToken RawData(ApiResponse<JToken> failureResponse)
+        {
+            var data = failureResponse?.Data;
+            return data == null || data.Type == JTokenType.Null ? null : data;
+        }
+
         private ApiResponse<T> HandleFailureResponse<T>(string responseContent, int statusCode)
         {
             try
             {
                 // First try to deserialize as a generic response
                 var failureResponse =
-                    JsonConvert.DeserializeObject<ApiResponse<object>>(responseContent, _jsonSettings);
+                    JsonConvert.DeserializeObject<ApiResponse<JToken>>(responseContent, _jsonSettings);
+                var errorData = RawData(failureResponse);
 
                 // If status is 400, try to deserialize ValidationFailures
                 if (statusCode == 400)
@@ -100,6 +124,7 @@ namespace Fiscalapi.Http
                         Message = validationResponse?.Message,
                         Details = validationErrors ?? validationResponse?.Details,
                         TraceIdentifier = validationResponse?.TraceIdentifier,
+                        ErrorData = errorData,
                         Data = default
                     };
                 }
@@ -112,6 +137,7 @@ namespace Fiscalapi.Http
                     Message = failureResponse?.Message,
                     Details = failureResponse?.Details,
                     TraceIdentifier = failureResponse?.TraceIdentifier,
+                    ErrorData = errorData,
                     Data = default
                 };
             }
