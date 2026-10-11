@@ -45,6 +45,7 @@
 ## 🎖️ Gestión de Timbres
 - **Gestión de folios fiscales** Compra timbres a FiscalAPI y transfiere/retira a las personas de tu organización según tus reglas de negocio.
 - **Créditos de validación** Transfiere créditos de validación SAT (`CreditType.Validation`) con la misma operación de timbres y consulta el saldo `AvailableValidationBalance` de cada persona.
+- **Créditos de ticket** Transfiere créditos de ticket (`CreditType.Ticket`) con la misma operación de timbres y consulta su saldo en `Balances` de cada persona.
 
 ## ✅ Validaciones SAT de CFDI
 - **Estructura del XML** contra el Anexo 20 y sus complementos (verificador oficial del SAT)
@@ -599,7 +600,7 @@ foreach (var item in statuses.Data)
 }
 ```
 
-### 11. Transferir timbres o créditos de validación
+### 11. Transferir timbres, créditos de validación o créditos de ticket
 
 ```csharp
 var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionParams
@@ -611,7 +612,20 @@ var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionPara
     CreditType = CreditType.Validation // CreditType.Stamp (por defecto) transfiere timbres
 });
 
-// El saldo de cada persona se consulta en Persons.GetByIdAsync(...): AvailableBalance (timbres) y AvailableValidationBalance (validaciones)
+// Créditos de ticket: la misma operación con CreditType.Ticket
+var ticketResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionParams
+{
+    FromPersonId = "<id_persona_origen>",
+    ToPersonId = "<id_persona_destino>",
+    Amount = 100,
+    Comments = "Créditos de ticket",
+    CreditType = CreditType.Ticket
+});
+
+// El saldo de cada persona se consulta en Persons.GetByIdAsync(...): AvailableBalance (timbres), AvailableValidationBalance (validaciones)
+// y Balances (por tipo de crédito; un tipo ausente tiene saldo 0)
+var person = (await fiscalApi.Persons.GetByIdAsync("<id_persona_destino>")).Data;
+var ticketBalance = person.Balances.FirstOrDefault(b => b.CreditType == CreditType.Ticket)?.Available ?? 0;
 ```
 
 ---
@@ -637,8 +651,8 @@ var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionPara
   Administración de catálogos de productos, búsqueda en catálogos SAT.
 - **Validaciones SAT**  
   Validación de CFDI (estructura, certificado, sellos, estatus, listas negras 69-B / 69-B Bis) y consulta del catálogo de tipos y estatus.
-- **Timbres y créditos de validación**  
-  Transferencia de timbres y de créditos de validación entre personas, consulta de transacciones y saldos.
+- **Timbres, créditos de validación y créditos de ticket**  
+  Transferencia de timbres, créditos de validación y créditos de ticket entre personas, consulta de transacciones y saldos.
 
 
 ## 🤝 Contribuir

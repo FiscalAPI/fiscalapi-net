@@ -2,6 +2,12 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [Sin publicar]
+
+### Enum `CreditType`
+
+- Tipo de crédito `Ticket` (3) para transferir y leer créditos de ticket: `Stamps.TransferStamps` con `CreditType = CreditType.Ticket` los transfiere con las mismas reglas que los timbres, y las transacciones (`Stamps.GetListAsync`, `Stamps.GetByIdAsync`) los devuelven como `CreditType.Ticket` (antes, un valor sin nombre). El saldo de créditos de ticket se lee en `Balances` de la persona (`CreditBalance` con `CreditType.Ticket`); un tipo ausente tiene saldo 0. Los valores existentes no cambian (`Stamp` 1, `Validation` 2), y un tipo que el SDK no conoce sigue llegando como un valor sin nombre que conserva su número.
+
 ## [4.0.433] - 2026-10-10
 
 ### Cambios incompatibles (BREAKING)
