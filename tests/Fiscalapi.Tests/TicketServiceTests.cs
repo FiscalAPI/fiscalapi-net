@@ -263,6 +263,32 @@ public class TicketServiceTests
     }
 
     [Fact]
+    public async Task GetList_WithDetailsAndGlobalInvoiceId_SendsBoth()
+    {
+        _api.RespondWith(PageResponse);
+
+        await Tickets.GetListAsync(new TicketListFilters
+        {
+            Details = true,
+            GlobalInvoiceId = "7c1d2e3f-0000-4000-8000-0000000000b2"
+        });
+
+        Assert.Equal(
+            "?details=true&globalInvoiceId=7c1d2e3f-0000-4000-8000-0000000000b2",
+            SingleRequest().Uri.Query);
+    }
+
+    [Fact]
+    public async Task GetList_DetailsFalse_IsNotSent()
+    {
+        _api.RespondWith(PageResponse);
+
+        await Tickets.GetListAsync(new TicketListFilters { Details = false });
+
+        Assert.Equal("", SingleRequest().Uri.Query);
+    }
+
+    [Fact]
     public async Task GetList_WithoutFilters_SendsNoQuery()
     {
         _api.RespondWith(PageResponse);

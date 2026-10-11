@@ -211,6 +211,12 @@ namespace Fiscalapi.Models
         /// <summary>Persona emisora.</summary>
         public string PersonId { get; set; }
 
+        /// <summary>Con true, cada ticket trae sus conceptos con impuestos (sin la historia).</summary>
+        public bool? Details { get; set; }
+
+        /// <summary>Factura global que ampara los tickets.</summary>
+        public string GlobalInvoiceId { get; set; }
+
         /// <summary>Primer día del pago (incluido), en fecha civil de México: solo cuenta la fecha (yyyy-MM-dd).</summary>
         public DateTime? From { get; set; }
 
@@ -230,6 +236,9 @@ namespace Fiscalapi.Models
             if (Status != null)
                 parameters.AddRange(Status.Select(status => new KeyValuePair<string, string>("status", status)));
             AddIfPresent(parameters, "personId", PersonId);
+            if (Details == true)
+                parameters.Add(new KeyValuePair<string, string>("details", "true"));
+            AddIfPresent(parameters, "globalInvoiceId", GlobalInvoiceId);
             AddIfPresent(parameters, "from", FormatDate(From));
             AddIfPresent(parameters, "to", FormatDate(To));
             AddIfPresent(parameters, "pageNumber", PageNumber?.ToString(CultureInfo.InvariantCulture));
