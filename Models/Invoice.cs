@@ -120,6 +120,15 @@ namespace Fiscalapi.Models
         public OnBehalfOf OnBehalfOf { get; set; }
         public List<PropertyInfo> PropertyInfo { get; set; }
         public List<InvoiceItemPart> Parts { get; set; }
+
+        /// <summary>
+        /// Id del ticket de Auto CFDI que este concepto factura (opcional). Solo en una factura global de ingreso (tipo I
+        /// con GlobalInformation) con el emisor por referencia (Issuer.Id). Un ticket puede ir en varios conceptos, uno por
+        /// grupo de objeto de impuesto e impuestos; la suma de sus conceptos debe reflejar el ticket. Si es null no se envía,
+        /// aunque el serializador incluya nulos: sin TicketId la petición es la de siempre.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string TicketId { get; set; }
     }
 
     public class InvoiceItemPart

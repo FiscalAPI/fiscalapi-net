@@ -45,6 +45,7 @@
 ## 🎖️ Gestión de Timbres
 - **Gestión de folios fiscales** Compra timbres a FiscalAPI y transfiere/retira a las personas de tu organización según tus reglas de negocio.
 - **Créditos de validación** Transfiere créditos de validación SAT (`CreditType.Validation`) con la misma operación de timbres y consulta el saldo `AvailableValidationBalance` de cada persona.
+- **Créditos de ticket** Transfiere créditos de ticket (`CreditType.Ticket`) con la misma operación de timbres y consulta su saldo en `Balances` de cada persona.
 
 ## ✅ Validaciones SAT de CFDI
 - **Estructura del XML** contra el Anexo 20 y sus complementos (verificador oficial del SAT)
@@ -599,7 +600,7 @@ foreach (var item in statuses.Data)
 }
 ```
 
-### 11. Transferir timbres o créditos de validación
+### 11. Transferir timbres, créditos de validación o créditos de ticket
 
 ```csharp
 var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionParams
@@ -611,8 +612,169 @@ var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionPara
     CreditType = CreditType.Validation // CreditType.Stamp (por defecto) transfiere timbres
 });
 
-// El saldo de cada persona se consulta en Persons.GetByIdAsync(...): AvailableBalance (timbres) y AvailableValidationBalance (validaciones)
+// Créditos de ticket: la misma operación con CreditType.Ticket
+var ticketResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionParams
+{
+    FromPersonId = "<id_persona_origen>",
+    ToPersonId = "<id_persona_destino>",
+    Amount = 100,
+    Comments = "Créditos de ticket",
+    CreditType = CreditType.Ticket
+});
+
+// El saldo de cada persona se consulta en Persons.GetByIdAsync(...): AvailableBalance (timbres), AvailableValidationBalance (validaciones)
+// y Balances (por tipo de crédito; un tipo ausente tiene saldo 0)
+var person = (await fiscalApi.Persons.GetByIdAsync("<id_persona_destino>")).Data;
+var ticketBalance = person.Balances.FirstOrDefault(b => b.CreditType == CreditType.Ticket)?.Available ?? 0;
 ```
+
+### 12. Tickets de Auto CFDI: ingesta y consulta
+
+```csharp
+// Ingesta de una venta pagada (cobra 1 crédito de ticket). La Idempotency-Key es opcional: repetir la misma key con el
+// mismo cuerpo responde 200 con el ticket original sin cobrar otra vez.
+var ticket = new Ticket
+{
+    Issuer = new TicketIssuer { Id = "<id_persona_emisora>" },
+    Folio = "F-1001",
+    Series = "A",
+    PaymentDate = new DateTime(2026, 10, 15, 12, 30, 0), // hora civil de México
+    PaymentFormCode = "01",
+    Total = 116.00m, // debe cuadrar al centavo con los conceptos e impuestos
+    Items = new List<TicketItem>
+    {
+        new TicketItem
+        {
+            ItemCode = "50202306",
+            ItemSku = "SKU-1",
+            Quantity = 1,
+            UnitOfMeasurementCode = "H87",
+            Description = "Refresco",
+            UnitPrice = 100.00m,
+            TaxObjectCode = "02",
+            ItemTaxes = new List<TicketItemTax>
+            {
+                new TicketItemTax { TaxCode = "002", TaxTypeCode = "Tasa", TaxRate = 0.160000m, TaxFlagCode = "T" }
+            }
+        }
+    }
+};
+
+var created = await fiscalApi.Tickets.CreateAsync(ticket, idempotencyKey: "pos-01-F-1001");
+if (created.Succeeded)
+{
+    // Imprime el código y el QR en el ticket de venta
+    Console.WriteLine($"{created.Data.TicketCode} {created.Data.QrUrl}");
+}
+else
+{
+    // 409: folio y serie ya activos; 422: total que no cuadra, emisor sin CSD o sin créditos de ticket, etc.
+    // ErrorData trae el data del error: existingTicketId (409) o expectedTotal y computedTotal (422).
+    Console.WriteLine($"{created.HttpStatusCode}: {created.Details} {created.ErrorData}");
+}
+
+// Tickets pendientes de un emisor en septiembre (por ejemplo, para armar la factura global)
+var page = await fiscalApi.Tickets.GetListAsync(new TicketListFilters
+{
+    Status = new List<string> { TicketStatus.Pending },
+    PersonId = "<id_persona_emisora>",
+    From = new DateTime(2026, 9, 1),
+    To = new DateTime(2026, 9, 30),
+    PageNumber = 1,
+    PageSize = 50
+});
+
+// Detalle con conceptos e historia, código para reimprimir y cancelación (solo en estado pending)
+var detail = await fiscalApi.Tickets.GetByIdAsync("<id_ticket>", details: true);
+var code = await fiscalApi.Tickets.GetCodeAsync("<id_ticket>");
+var cancelled = await fiscalApi.Tickets.CancelAsync("<id_ticket>");
+```
+
+`Status` (y `Type`/`ActorType` de los eventos) llegan como texto camelCase; compáralos con las constantes de `TicketStatus`, `TicketEventType` y `TicketActorType`. Un valor que esta versión del SDK no conoce llega tal cual, sin error.
+
+### 13. Factura global de tickets (Auto CFDI)
+
+La global de tickets es una factura de ingreso estándar (`Invoices.CreateAsync`) con `GlobalInformation`, el emisor por referencia (`Issuer.Id`) y `TicketId` en cada concepto. Cada ticket va en un concepto por grupo de objeto de impuesto e impuestos (un ticket con IVA 16 % y 0 % lleva dos conceptos con el mismo `TicketId`), y la suma de sus conceptos debe reflejar el ticket. Una global lleva una sola moneda, tipo de cambio y lugar de expedición, y hasta 1,500 conceptos: este ejemplo asume tickets en MXN de un solo lugar de expedición. Una global sin `TicketId` no marca los tickets como facturados.
+
+```csharp
+// Tickets pendientes del emisor en septiembre, con sus conceptos
+var issuerId = "<id_persona_emisora>";
+var tickets = new List<Ticket>();
+for (var pageNumber = 1; ; pageNumber++)
+{
+    var page = (await fiscalApi.Tickets.GetListAsync(new TicketListFilters
+    {
+        Status = new List<string> { TicketStatus.Pending },
+        PersonId = issuerId,
+        From = new DateTime(2026, 9, 1),
+        To = new DateTime(2026, 9, 30),
+        PageNumber = pageNumber,
+        PageSize = 50
+    })).Data;
+    foreach (var summary in page.Items)
+        tickets.Add((await fiscalApi.Tickets.GetByIdAsync(summary.Id, details: true)).Data);
+    if (!page.HasNextPage)
+        break;
+}
+
+// Un concepto por ticket y grupo de impuestos: valor unitario = suma de cantidad × valor unitario (6 decimales por concepto)
+// y descuento = suma de descuentos del grupo
+string TaxSignature(TicketItem item) => item.TaxObjectCode + ";" + string.Join(";", (item.ItemTaxes ?? new List<TicketItemTax>())
+    .Select(tax => $"{tax.TaxCode}|{tax.TaxTypeCode}|{tax.TaxRate.ToString("0.000000", CultureInfo.InvariantCulture)}|{tax.TaxFlagCode}")
+    .OrderBy(signature => signature, StringComparer.Ordinal));
+
+var items = tickets.SelectMany(ticket => ticket.Items.GroupBy(TaxSignature).Select(group => new InvoiceItem
+{
+    TicketId = ticket.Id,
+    ItemCode = "01010101",
+    ItemSku = ticket.Folio, // NoIdentificacion: folio del ticket
+    Quantity = 1,
+    UnitOfMeasurementCode = "ACT",
+    Description = "Venta",
+    UnitPrice = group.Sum(item => Math.Round(item.Quantity * item.UnitPrice, 6, MidpointRounding.AwayFromZero)),
+    Discount = group.Sum(item => item.Discount ?? 0m),
+    TaxObjectCode = group.First().TaxObjectCode,
+    ItemTaxes = (group.First().ItemTaxes ?? new List<TicketItemTax>())
+        .Select(tax => new InvoiceItemTax
+        {
+            TaxCode = tax.TaxCode, TaxTypeCode = tax.TaxTypeCode, TaxRate = tax.TaxRate, TaxFlagCode = tax.TaxFlagCode
+        })
+        .ToList()
+})).ToList();
+
+var expeditionZipCode = tickets[0].ExpeditionZipCode;
+var globalInvoice = new Invoice
+{
+    Series = "G",
+    Date = DateTime.Now,
+    PaymentFormCode = tickets.OrderByDescending(ticket => ticket.Total).First().PaymentFormCode, // la del mayor monto
+    PaymentMethodCode = "PUE",
+    CurrencyCode = "MXN",
+    TypeCode = "I",
+    ExpeditionZipCode = expeditionZipCode,
+    Issuer = new InvoiceIssuer { Id = issuerId },
+    Recipient = new InvoiceRecipient
+    {
+        Tin = "XAXX010101000",
+        LegalName = "PUBLICO EN GENERAL",
+        ZipCode = expeditionZipCode,
+        TaxRegimeCode = "616",
+        CfdiUseCode = "S01"
+    },
+    GlobalInformation = new GlobalInformation { PeriodicityCode = "04", MonthCode = "09", Year = 2026 },
+    Items = items
+};
+
+var global = await fiscalApi.Invoices.CreateAsync(globalInvoice);
+if (!global.Succeeded && global.HttpStatusCode == 409)
+{
+    // Algún ticket ya no estaba pendiente: no se cobró el timbre ni quedó tomado ningún ticket.
+    foreach (var unavailable in global.ErrorData["unavailableTickets"])
+        Console.WriteLine($"{unavailable["ticketId"]}: {unavailable["status"]}");
+}
+```
+
+Un 400 en `items[i].ticketId` indica que los conceptos de ese ticket no lo reflejan (importes, descuentos o impuestos). Sin `TicketId` (null), el concepto se envía igual que antes: la propiedad no viaja en el JSON.
 
 ---
 
@@ -637,8 +799,10 @@ var apiResponse = await fiscalApi.Stamps.TransferStamps(new StampTransactionPara
   Administración de catálogos de productos, búsqueda en catálogos SAT.
 - **Validaciones SAT**  
   Validación de CFDI (estructura, certificado, sellos, estatus, listas negras 69-B / 69-B Bis) y consulta del catálogo de tipos y estatus.
-- **Timbres y créditos de validación**  
-  Transferencia de timbres y de créditos de validación entre personas, consulta de transacciones y saldos.
+- **Timbres, créditos de validación y créditos de ticket**  
+  Transferencia de timbres, créditos de validación y créditos de ticket entre personas, consulta de transacciones y saldos.
+- **Tickets (Auto CFDI)**  
+  Ingesta de ventas pagadas del punto de venta con Idempotency-Key opcional, consulta con filtros, código para reimprimir y cancelación.
 
 
 ## 🤝 Contribuir

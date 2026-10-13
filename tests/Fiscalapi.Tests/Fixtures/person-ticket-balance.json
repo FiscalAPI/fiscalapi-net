@@ -7,7 +7,6 @@
     "email": "someone@example.com",
     "phoneNumber": null,
     "validTo": null,
-    "twoFactorEnabled": false,
     "stripeCustomerId": null,
     "satTaxRegimeId": "601",
     "satTaxRegime": {
@@ -33,7 +32,20 @@
     "availableBalance": 100,
     "committedBalance": 0,
     "availableValidationBalance": 50,
-    "availableTicketBalance": 25,
+    "balances": [
+      {
+        "creditType": 1,
+        "available": 100
+      },
+      {
+        "creditType": 2,
+        "available": 50
+      },
+      {
+        "creditType": 3,
+        "available": 25
+      }
+    ],
     "subscriptionStatus": "active",
     "tenantId": "e839651d-1d0b-4e44-a7a8-4b2b5e2a0001",
     "unknownScalarField": 7,

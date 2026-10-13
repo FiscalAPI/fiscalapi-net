@@ -2,6 +2,31 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [4.0.439] - 2026-10-12
+
+### Enum `CreditType`
+
+- Tipo de crédito `Ticket` (3) para transferir y leer créditos de ticket: `Stamps.TransferStamps` con `CreditType = CreditType.Ticket` los transfiere con las mismas reglas que los timbres, y las transacciones (`Stamps.GetListAsync`, `Stamps.GetByIdAsync`) los devuelven como `CreditType.Ticket` (antes, un valor sin nombre). El saldo de créditos de ticket se lee en `Balances` de la persona (`CreditBalance` con `CreditType.Ticket`); un tipo ausente tiene saldo 0. Los valores existentes no cambian (`Stamp` 1, `Validation` 2), y un tipo que el SDK no conoce sigue llegando como un valor sin nombre que conserva su número.
+
+### Servicio de tickets (Auto CFDI)
+
+- Servicio de tickets (Auto CFDI): `Tickets.CreateAsync` (con `Idempotency-Key` opcional), `GetListAsync` con filtros, `GetByIdAsync`, `GetCodeAsync` y `CancelAsync`, en `IFiscalApiClient.Tickets` (`ITicketService`/`TicketService`):
+  - `CreateAsync(ticket, idempotencyKey)`: `POST /api/v4/tickets`; cobra 1 crédito de ticket y devuelve `TicketIngestionResult` (`Id`, `TicketCode`, `QrUrl`, `Status`, `SelfInvoiceEligible`, `EligibleUntil` y los importes calculados). Con `idempotencyKey` envía el header `Idempotency-Key` (sin ella no lo envía): repetir la key con el mismo cuerpo responde 200 con el ticket original y sin cobrar. Un folio y serie ya activos del emisor responden 409 y un total que no cuadra 422, como `ApiResponse` fallida con el texto del API en `Details` y su `data` en `ErrorData`.
+  - `GetListAsync(TicketListFilters)`: `GET /api/v4/tickets` con `Status` (uno o más; se repite la llave `status`), `PersonId`, `Details` (con `true` envía `details=true`: cada ticket trae sus conceptos con impuestos, sin la historia), `GlobalInvoiceId` (factura global que ampara los tickets), `From`/`To` (fecha civil de México, solo la fecha), `PageNumber` y `PageSize`; los filtros sin asignar no se envían.
+  - `GetByIdAsync(id, details)`: con `details: true` trae `Items` (con `ItemTaxes`) y `Events`. `GetCodeAsync(id)` devuelve `TicketCodeResult` (`TicketCode`, `QrUrl`) para reimprimir. `CancelAsync(id)` usa `DELETE` (solo desde `pending`; el crédito no se devuelve).
+- Modelos nuevos en `Fiscalapi.Models`: `Ticket`, `TicketIssuer`, `TicketItem`, `TicketItemTax`, `TicketEvent`, `TicketIngestionResult`, `TicketCodeResult` y `TicketListFilters`. `Ticket.PaymentDate` viaja como hora civil de México sin zona (`yyyy-MM-ddTHH:mm:ss`) y los decimales se envían tal cual.
+- `Status`, `TicketEvent.Type` y `TicketEvent.ActorType` son texto camelCase, con las constantes `TicketStatus`, `TicketEventType` y `TicketActorType`: un valor que el SDK no conoce llega tal cual, sin error.
+- `IFiscalApiHttpClient` agrega la sobrecarga `PostAsync<T>(endpoint, payload, headers)` para headers propios de la petición (la usa `Idempotency-Key`); `FiscalApiHttpClient` la implementa. Quien implementa su propia versión de `IFiscalApiHttpClient` (p. ej. un doble de pruebas) debe agregar `PostAsync<T>(endpoint, payload, headers)`; quien usa el cliente del SDK no cambia nada.
+- `IFiscalApiClient` agrega `Tickets`. Quien implementa su propia versión de `IFiscalApiClient` (p. ej. un doble de pruebas) debe agregar `Tickets`; quien usa el cliente del SDK no cambia nada.
+
+### Modelo `InvoiceItem`
+
+- `ticketId` en el concepto de la factura para ligar la factura global a los tickets (Auto CFDI); se omite si es nulo. En .NET es `InvoiceItem.TicketId` (`string`); un 409 por tickets no disponibles trae `unavailableTickets` (`ticketId`, `status`) en `ErrorData`. Ejemplo en el README (sección 13).
+
+### `ApiResponse`
+
+- `ErrorData` (`JToken`): nuevo miembro (aditivo) con el `data` crudo de una respuesta de error, tal como lo envía el API: por ejemplo `existingTicketId` en el 409 de `Tickets.CreateAsync` (`response.ErrorData["existingTicketId"]`) o `expectedTotal` y `computedTotal` en su 422. Es `null` en las respuestas exitosas y en los errores sin `data`. `Data`, `Message`, `Details`, `HttpStatusCode` y `TraceIdentifier` no cambian (en un error, `Data` sigue en su valor por omisión).
+
 ## [4.0.433] - 2026-10-10
 
 ### Cambios incompatibles (BREAKING)
