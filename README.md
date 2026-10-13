@@ -776,6 +776,73 @@ if (!global.Succeeded && global.HttpStatusCode == 409)
 
 Un 400 en `items[i].ticketId` indica que los conceptos de ese ticket no lo reflejan (importes, descuentos o impuestos). Sin `TicketId` (null), el concepto se envía igual que antes: la propiedad no viaja en el JSON.
 
+### 14. Recibir webhooks
+
+FiscalAPI firma cada entrega con [Standard Webhooks](https://www.standardwebhooks.com) y el secreto `whsec_…` de su endpoint. `Webhook.Verify` comprueba la firma (en tiempo constante) y que `webhook-timestamp` no difiera más de 5 minutos del reloj del receptor, y devuelve el `WebhookEvent`. La firma es la única prueba de que la entrega viene de FiscalAPI.
+
+**Verifique el cuerpo crudo**: léalo como texto antes de deserializarlo. Un cuerpo deserializado y vuelto a serializar (por ejemplo, con `[FromBody]`) cambia sus bytes y la firma deja de coincidir.
+
+```csharp
+using Fiscalapi.Abstractions;
+using Fiscalapi.Models;
+using Fiscalapi.Webhooks;
+
+[ApiController]
+public class FiscalApiWebhooksController : ControllerBase
+{
+    private readonly IFiscalApiClient _fiscalApi;
+    private readonly string _webhookSecret; // whsec_… del endpoint, desde su configuración segura
+
+    public FiscalApiWebhooksController(IFiscalApiClient fiscalApi, IConfiguration configuration)
+    {
+        _fiscalApi = fiscalApi;
+        _webhookSecret = configuration["FiscalApi:WebhookSecret"];
+    }
+
+    [HttpPost("webhooks/fiscalapi")]
+    public async Task<IActionResult> Receive()
+    {
+        string body;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+            body = await reader.ReadToEndAsync();
+
+        WebhookEvent webhookEvent;
+        try
+        {
+            var headers = Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString());
+            webhookEvent = Webhook.Verify(headers, body, _webhookSecret);
+        }
+        catch (WebhookVerificationException)
+        {
+            return BadRequest(); // firma inválida, header faltante o timestamp fuera de tolerancia
+        }
+
+        // La entrega es al menos una vez: webhookEvent.Id (el header webhook-id) se repite en cada reintento.
+        // Responda 2xx rápido y procese después; el orden de llegada no está garantizado.
+        switch (webhookEvent.Type)
+        {
+            case WebhookEventTypes.InvoiceCanceled:
+                // El estado autoritativo se lee del recurso.
+                var invoice = await _fiscalApi.Invoices.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
+                break;
+            case WebhookEventTypes.DownloadRequestCompleted:
+                var request = await _fiscalApi.DownloadRequests.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
+                break;
+            default:
+                break; // un tipo que no conoce se ignora: el catálogo puede crecer
+        }
+
+        return Ok();
+    }
+}
+```
+
+- `WebhookEvent` es el mismo sobre para todo evento: `Id`, `Type` (texto; compárelo con las constantes de `WebhookEventTypes`), `CreatedAt` (UTC), `PersonId` (null si el recurso no tiene persona) y `Data` con `RelatedObject` (`Id`, `Type`, `Url`), `Status` y `PreviousStatus`.
+- `RelatedObject.Url` es la ruta relativa del GET v4 del recurso (`/api/v4/invoices/{id}`); para leerlo, use el servicio de su tipo con `RelatedObject.Id`.
+- Durante una rotación del secreto, FiscalAPI firma con el nuevo y con el anterior por 24 h: pase ambos, `Webhook.Verify(headers, body, new[] { secretoNuevo, secretoAnterior })`.
+- La tolerancia es configurable (`Webhook.Verify(headers, body, secreto, TimeSpan.FromMinutes(2))`); el valor por omisión es `Webhook.DefaultTolerance`.
+- Un secreto mal copiado (no es base64) o una lista de secretos vacía lanza `ArgumentException`: es un error de configuración, no de la entrega.
+
 ---
 
 ## ⏳ Operaciones Asíncronas y Sincrónicas
@@ -803,6 +870,8 @@ Un 400 en `items[i].ticketId` indica que los conceptos de ese ticket no lo refle
   Transferencia de timbres, créditos de validación y créditos de ticket entre personas, consulta de transacciones y saldos.
 - **Tickets (Auto CFDI)**  
   Ingesta de ventas pagadas del punto de venta con Idempotency-Key opcional, consulta con filtros, código para reimprimir y cancelación.
+- **Webhooks**  
+  Verificación de la firma Standard Webhooks de las entregas y lectura del evento (`Webhook.Verify`, `WebhookEvent`).
 
 
 ## 🤝 Contribuir
