@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -33,12 +34,22 @@ namespace Fiscalapi.Webhooks
         private const char VersionSeparator = ',';
         private const string SecretPrefix = "whsec_";
 
-        // Opciones propias, sin las del cliente HTTP: createdAt llega en UTC con Z y así se conserva.
+        // Todas explícitas y aplicadas con JsonSerializer.Create, que no lee JsonConvert.DefaultSettings: los ajustes
+        // globales de la aplicación del integrador no cambian cómo se lee el sobre. createdAt llega en UTC con Z y así se
+        // conserva; un campo nuevo del sobre no rompe a un SDK anterior.
         private static readonly JsonSerializerSettings EnvelopeSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            TypeNameHandling = TypeNameHandling.None,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            DateParseHandling = DateParseHandling.DateTime,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            CheckAdditionalContent = true
         };
+
+        // Estricta, como la librería de referencia: un texto que no es UTF-8 válido se rechaza en vez de firmarse con
+        // caracteres de reemplazo.
+        private static readonly UTF8Encoding StrictUtf8 = new UTF8Encoding(false, true);
 
         /// <summary>
         /// Verifica una entrega con el secreto del endpoint y devuelve su evento.
@@ -63,13 +74,9 @@ namespace Fiscalapi.Webhooks
         /// receptor, no de la entrega.
         /// </exception>
         public static WebhookEvent Verify(IEnumerable<KeyValuePair<string, string>> headers, string body, string secret,
-            TimeSpan? tolerance = null)
-        {
-            if (secret == null)
-                throw new ArgumentNullException(nameof(secret));
-
-            return Verify(headers, body, new[] { secret }, tolerance);
-        }
+            TimeSpan? tolerance = null) =>
+            Verify(headers, body, new[] { DecodeSecret(secret, nameof(secret), "El secreto de firma") },
+                tolerance ?? DefaultTolerance, DateTimeOffset.UtcNow);
 
         /// <summary>
         /// Verifica una entrega con varios secretos y devuelve su evento: basta que una firma <c>v1</c> del header coincida
@@ -101,7 +108,11 @@ namespace Fiscalapi.Webhooks
 
         /// <summary>La verificación contra el momento <paramref name="now"/> del receptor.</summary>
         internal static WebhookEvent Verify(IEnumerable<KeyValuePair<string, string>> headers, string body,
-            IEnumerable<string> secrets, TimeSpan tolerance, DateTimeOffset now)
+            IEnumerable<string> secrets, TimeSpan tolerance, DateTimeOffset now) =>
+            Verify(headers, body, DecodeSecrets(secrets), tolerance, now);
+
+        private static WebhookEvent Verify(IEnumerable<KeyValuePair<string, string>> headers, string body,
+            IReadOnlyCollection<byte[]> keys, TimeSpan tolerance, DateTimeOffset now)
         {
             if (headers == null)
                 throw new ArgumentNullException(nameof(headers));
@@ -109,14 +120,13 @@ namespace Fiscalapi.Webhooks
                 throw new ArgumentNullException(nameof(body));
             if (tolerance < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(tolerance), tolerance, "La tolerancia no puede ser negativa.");
-            var keys = DecodeSecrets(secrets);
 
             var id = RequiredHeader(headers, IdHeader);
             var timestamp = RequiredHeader(headers, TimestampHeader);
             var signatures = RequiredHeader(headers, SignatureHeader);
 
             EnsureWithinTolerance(timestamp, tolerance, now);
-            EnsureSigned(keys, Encoding.UTF8.GetBytes(id + "." + timestamp + "." + body), signatures);
+            EnsureSigned(keys, SignedContent(id, timestamp, body), signatures);
             return ReadEvent(body);
         }
 
@@ -125,17 +135,21 @@ namespace Fiscalapi.Webhooks
             if (secrets == null)
                 throw new ArgumentNullException(nameof(secrets));
 
-            var keys = secrets.Select(DecodeSecret).ToList();
+            var keys = secrets
+                .Select((secret, index) =>
+                    DecodeSecret(secret, nameof(secrets), $"El secreto de firma en la posición {index}"))
+                .ToList();
             if (keys.Count == 0)
                 throw new ArgumentException("Se necesita al menos un secreto de firma (whsec_…).", nameof(secrets));
 
             return keys;
         }
 
-        private static byte[] DecodeSecret(string secret)
+        // Los mensajes nombran el secreto por su posición y nunca incluyen su valor: terminarían en los logs del receptor.
+        private static byte[] DecodeSecret(string secret, string parameterName, string description)
         {
             if (secret == null)
-                throw new ArgumentNullException(nameof(secret), "Un secreto de firma no puede ser null.");
+                throw new ArgumentNullException(parameterName, $"{description} es null.");
 
             var encoded = secret.StartsWith(SecretPrefix, StringComparison.Ordinal)
                 ? secret.Substring(SecretPrefix.Length)
@@ -147,14 +161,13 @@ namespace Fiscalapi.Webhooks
             }
             catch (FormatException)
             {
-                // El mensaje no incluye el secreto: terminaría en los logs del receptor.
                 throw new ArgumentException(
-                    "El secreto de firma no es whsec_ seguido de base64: cópielo completo del endpoint de webhooks.",
-                    nameof(secret));
+                    $"{description} no es whsec_ seguido de base64: cópielo completo del endpoint de webhooks.",
+                    parameterName);
             }
 
             if (key.Length == 0)
-                throw new ArgumentException("El secreto de firma está vacío.", nameof(secret));
+                throw new ArgumentException($"{description} está vacío.", parameterName);
 
             return key;
         }
@@ -183,6 +196,18 @@ namespace Fiscalapi.Webhooks
                 throw new WebhookVerificationException(
                     $"El header {TimestampHeader} difiere más de {tolerance.TotalSeconds.ToString(CultureInfo.InvariantCulture)} s " +
                     "del reloj del receptor: puede ser una entrega repetida o un reloj desajustado.");
+        }
+
+        private static byte[] SignedContent(string id, string timestamp, string body)
+        {
+            try
+            {
+                return StrictUtf8.GetBytes(id + "." + timestamp + "." + body);
+            }
+            catch (EncoderFallbackException exception)
+            {
+                throw new WebhookVerificationException("El cuerpo o un header no es texto UTF-8 válido.", exception);
+            }
         }
 
         private static void EnsureSigned(IReadOnlyCollection<byte[]> keys, byte[] signedContent, string signatureHeader)
@@ -235,7 +260,8 @@ namespace Fiscalapi.Webhooks
             WebhookEvent webhookEvent;
             try
             {
-                webhookEvent = JsonConvert.DeserializeObject<WebhookEvent>(body, EnvelopeSettings);
+                using (var reader = new JsonTextReader(new StringReader(body)))
+                    webhookEvent = JsonSerializer.Create(EnvelopeSettings).Deserialize<WebhookEvent>(reader);
             }
             catch (JsonException exception)
             {

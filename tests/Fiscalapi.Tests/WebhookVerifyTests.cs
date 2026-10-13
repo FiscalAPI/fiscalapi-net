@@ -106,22 +106,66 @@ public class WebhookVerifyTests
     [InlineData("-1614265330")]
     [InlineData(" 1614265330")]
     [InlineData("1614265330000000000000")]
-    [InlineData("")]
+    [InlineData("abc")]
     public void A_timestamp_that_is_not_unix_seconds_is_rejected(string timestamp)
     {
-        Assert.Throws<WebhookVerificationException>(() =>
+        var exception = Assert.Throws<WebhookVerificationException>(() =>
             VerifyAt(OfficialMoment, OfficialHeaders(timestamp: timestamp), OfficialBody, OfficialSecret));
+        Assert.Contains("segundos Unix", exception.Message);
+    }
+
+    [Fact]
+    public void The_largest_unix_timestamp_is_rejected_by_the_tolerance_without_overflowing()
+    {
+        var exception = Assert.Throws<WebhookVerificationException>(() =>
+            VerifyAt(OfficialMoment, OfficialHeaders(timestamp: "9223372036854775807"), OfficialBody, OfficialSecret));
+        Assert.Contains("difiere", exception.Message);
+    }
+
+    [Fact]
+    public void A_timestamp_altered_within_the_tolerance_is_rejected_because_it_is_signed()
+    {
+        var alteredTimestamp = OfficialTimestamp + 1;
+
+        var exception = Assert.Throws<WebhookVerificationException>(() =>
+            VerifyAt(DateTimeOffset.FromUnixTimeSeconds(alteredTimestamp),
+                OfficialHeaders(timestamp: alteredTimestamp.ToString()), OfficialBody, OfficialSecret));
+        Assert.Contains("Ninguna firma", exception.Message);
     }
 
     [Theory]
     [InlineData("v1a,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")]
     [InlineData("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")]
     [InlineData("g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")]
-    [InlineData("")]
-    public void A_signature_header_without_a_v1_signature_is_rejected(string signature)
+    [InlineData("v1,")]
+    [InlineData("v1,!!!")]
+    public void A_signature_header_without_a_valid_v1_signature_is_rejected(string signature)
     {
-        Assert.Throws<WebhookVerificationException>(() =>
+        var exception = Assert.Throws<WebhookVerificationException>(() =>
             VerifyAt(OfficialMoment, OfficialHeaders(signature: signature), OfficialBody, OfficialSecret));
+        Assert.Contains("Ninguna firma", exception.Message);
+    }
+
+    [Fact]
+    public void A_body_with_a_lone_surrogate_is_rejected_even_when_signed_over_its_replacement_character()
+    {
+        // Un sustituto suelto no tiene UTF-8: un codificador tolerante lo cambia por U+FFFD y verificaría otros bytes.
+        var body = "{\"test\": \"" + (char)0xD800 + "\"}";
+        var signature = BackWebhookSigner.Sign(OfficialId, OfficialTimestamp, body, OfficialSecret);
+
+        var exception = Assert.Throws<WebhookVerificationException>(() =>
+            VerifyAt(OfficialMoment, OfficialHeaders(signature: signature), body, OfficialSecret));
+        Assert.IsType<System.Text.EncoderFallbackException>(exception.InnerException);
+    }
+
+    [Fact]
+    public void Content_after_the_signed_event_is_rejected()
+    {
+        const string body = "{\"id\":\"evt_1\"} {\"id\":\"evt_2\"}";
+        var signature = BackWebhookSigner.Sign(OfficialId, OfficialTimestamp, body, OfficialSecret);
+
+        Assert.Throws<WebhookVerificationException>(() =>
+            VerifyAt(OfficialMoment, OfficialHeaders(signature: signature), body, OfficialSecret));
     }
 
     [Theory]
@@ -181,6 +225,27 @@ public class WebhookVerifyTests
     public void A_malformed_secret_is_refused_as_a_configuration_error(string secret)
     {
         Assert.Throws<ArgumentException>(() => VerifyAt(OfficialMoment, OfficialHeaders(), OfficialBody, secret));
+    }
+
+    [Fact]
+    public void A_malformed_secret_in_a_list_names_the_parameter_and_its_position_without_its_value()
+    {
+        const string malformed = "whsec_%%no-es-base64%%";
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            Webhook.Verify(OfficialHeaders(), OfficialBody, new[] { OfficialSecret, malformed }));
+        Assert.Equal("secrets", exception.ParamName);
+        Assert.Contains("posición 1", exception.Message);
+        Assert.DoesNotContain("no-es-base64", exception.Message);
+
+        var nullInList = Assert.Throws<ArgumentNullException>(() =>
+            Webhook.Verify(OfficialHeaders(), OfficialBody, new[] { OfficialSecret, null! }));
+        Assert.Equal("secrets", nullInList.ParamName);
+        Assert.Contains("posición 1", nullInList.Message);
+
+        var single = Assert.Throws<ArgumentException>(() => Webhook.Verify(OfficialHeaders(), OfficialBody, malformed));
+        Assert.Equal("secret", single.ParamName);
+        Assert.DoesNotContain("no-es-base64", single.Message);
     }
 
     [Fact]

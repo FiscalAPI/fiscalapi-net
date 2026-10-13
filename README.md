@@ -783,19 +783,30 @@ FiscalAPI firma cada entrega con [Standard Webhooks](https://www.standardwebhook
 **Verifique el cuerpo crudo**: léalo como texto antes de deserializarlo. Un cuerpo deserializado y vuelto a serializar (por ejemplo, con `[FromBody]`) cambia sus bytes y la firma deja de coincidir.
 
 ```csharp
+using System.Text;
+using System.Threading.Channels;
 using Fiscalapi.Abstractions;
 using Fiscalapi.Models;
 using Fiscalapi.Webhooks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+// Program.cs:
+//   builder.Services.AddFiscalApi();
+//   builder.Services.AddSingleton(Channel.CreateUnbounded<WebhookEvent>());
+//   builder.Services.AddHostedService<FiscalApiWebhookWorker>();
 
 [ApiController]
 public class FiscalApiWebhooksController : ControllerBase
 {
-    private readonly IFiscalApiClient _fiscalApi;
+    private readonly Channel<WebhookEvent> _events;
     private readonly string _webhookSecret; // whsec_… del endpoint, desde su configuración segura
 
-    public FiscalApiWebhooksController(IFiscalApiClient fiscalApi, IConfiguration configuration)
+    public FiscalApiWebhooksController(Channel<WebhookEvent> events, IConfiguration configuration)
     {
-        _fiscalApi = fiscalApi;
+        _events = events;
         _webhookSecret = configuration["FiscalApi:WebhookSecret"];
     }
 
@@ -817,31 +828,56 @@ public class FiscalApiWebhooksController : ControllerBase
             return BadRequest(); // firma inválida, header faltante o timestamp fuera de tolerancia
         }
 
-        // La entrega es al menos una vez: webhookEvent.Id (el header webhook-id) se repite en cada reintento.
-        // Responda 2xx rápido y procese después; el orden de llegada no está garantizado.
-        switch (webhookEvent.Type)
-        {
-            case WebhookEventTypes.InvoiceCanceled:
-                // El estado autoritativo se lee del recurso.
-                var invoice = await _fiscalApi.Invoices.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
-                break;
-            case WebhookEventTypes.DownloadRequestCompleted:
-                var request = await _fiscalApi.DownloadRequests.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
-                break;
-            default:
-                break; // un tipo que no conoce se ignora: el catálogo puede crecer
-        }
-
+        // Responda 2xx rápido y procese después: FiscalAPI corta cada intento a los 15 s y lo reintenta.
+        await _events.Writer.WriteAsync(webhookEvent);
         return Ok();
+    }
+}
+
+// Procesa los eventos fuera de la petición. La cola en memoria es ilustrativa: en producción use una cola durable.
+public class FiscalApiWebhookWorker : BackgroundService
+{
+    private readonly Channel<WebhookEvent> _events;
+    private readonly IServiceScopeFactory _scopes;
+
+    public FiscalApiWebhookWorker(Channel<WebhookEvent> events, IServiceScopeFactory scopes)
+    {
+        _events = events;
+        _scopes = scopes;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var webhookEvent in _events.Reader.ReadAllAsync(stoppingToken))
+        {
+            // La entrega es al menos una vez: webhookEvent.Id (el header webhook-id) se repite en cada reintento;
+            // descarte los ya procesados. El orden de llegada no está garantizado: el estado autoritativo se lee del recurso.
+            using (var scope = _scopes.CreateScope())
+            {
+                var fiscalApi = scope.ServiceProvider.GetRequiredService<IFiscalApiClient>();
+                switch (webhookEvent.Type)
+                {
+                    case WebhookEventTypes.InvoiceCanceled:
+                        var invoice = await fiscalApi.Invoices.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
+                        break;
+                    case WebhookEventTypes.DownloadRequestCompleted:
+                        var request = await fiscalApi.DownloadRequests.GetByIdAsync(webhookEvent.Data.RelatedObject.Id);
+                        break;
+                    default:
+                        break; // un tipo que no conoce se ignora: el catálogo puede crecer
+                }
+            }
+        }
     }
 }
 ```
 
 - `WebhookEvent` es el mismo sobre para todo evento: `Id`, `Type` (texto; compárelo con las constantes de `WebhookEventTypes`), `CreatedAt` (UTC), `PersonId` (null si el recurso no tiene persona) y `Data` con `RelatedObject` (`Id`, `Type`, `Url`), `Status` y `PreviousStatus`.
 - `RelatedObject.Url` es la ruta relativa del GET v4 del recurso (`/api/v4/invoices/{id}`); para leerlo, use el servicio de su tipo con `RelatedObject.Id`.
+- El botón "Enviar prueba" del endpoint (`POST webhook-endpoints/{id}/test`) envía `WebhookEventTypes.WebhookEndpointTest`, cuyo `RelatedObject` es el endpoint (`webhook_endpoint`), sin persona ni estados; no se suscribe.
 - Durante una rotación del secreto, FiscalAPI firma con el nuevo y con el anterior por 24 h: pase ambos, `Webhook.Verify(headers, body, new[] { secretoNuevo, secretoAnterior })`.
 - La tolerancia es configurable (`Webhook.Verify(headers, body, secreto, TimeSpan.FromMinutes(2))`); el valor por omisión es `Webhook.DefaultTolerance`.
-- Un secreto mal copiado (no es base64) o una lista de secretos vacía lanza `ArgumentException`: es un error de configuración, no de la entrega.
+- Un secreto mal copiado (no es base64) o una lista de secretos vacía lanza `ArgumentException` con la posición del secreto (nunca su valor): es un error de configuración, no de la entrega.
 
 ---
 

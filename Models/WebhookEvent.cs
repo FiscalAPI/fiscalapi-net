@@ -55,7 +55,10 @@ namespace Fiscalapi.Models
         /// <summary>Id del recurso: el que reciben los <c>GetByIdAsync</c> de los servicios del SDK.</summary>
         public string Id { get; set; }
 
-        /// <summary>Tipo de recurso: <c>invoice</c>, <c>download_request</c> o <c>download_rule</c>; el conjunto puede crecer.</summary>
+        /// <summary>
+        /// Tipo de recurso: <c>invoice</c>, <c>download_request</c>, <c>download_rule</c> o <c>webhook_endpoint</c> (el de
+        /// <see cref="WebhookEventTypes.WebhookEndpointTest"/>); el conjunto puede crecer.
+        /// </summary>
         public string Type { get; set; }
 
         /// <summary>
@@ -66,8 +69,8 @@ namespace Fiscalapi.Models
     }
 
     /// <summary>
-    /// Tipos de evento de webhook, como llegan en <see cref="WebhookEvent.Type"/>. Cada uno nombra el estado al que llegó
-    /// el recurso. Son una ayuda para comparar: el catálogo puede crecer y un tipo desconocido se ignora.
+    /// Tipos de evento de webhook, como llegan en <see cref="WebhookEvent.Type"/>. Los de un cambio de estado nombran el
+    /// estado al que llegó el recurso. Son una ayuda para comparar: el catálogo puede crecer y un tipo desconocido se ignora.
     /// </summary>
     public static class WebhookEventTypes
     {
@@ -91,5 +94,12 @@ namespace Fiscalapi.Models
 
         /// <summary>La regla de descarga masiva quedó suspendida (<c>2</c> → <c>4</c>).</summary>
         public const string DownloadRuleSuspended = "download_rule.suspended";
+
+        /// <summary>
+        /// Prueba de un endpoint: no se suscribe; solo llega al pulsar "Enviar prueba" (<c>POST webhook-endpoints/{id}/test</c>),
+        /// y solo a ese endpoint. Su <see cref="WebhookEventData.RelatedObject"/> es el endpoint mismo
+        /// (<c>webhook_endpoint</c>), sin persona ni estados.
+        /// </summary>
+        public const string WebhookEndpointTest = "webhook_endpoint.test";
     }
 }
