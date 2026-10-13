@@ -161,16 +161,24 @@ namespace Fiscalapi.Webhooks
             }
             catch (FormatException)
             {
-                throw new ArgumentException(
-                    $"{description} no es whsec_ seguido de base64: cópielo completo del endpoint de webhooks.",
-                    parameterName);
+                throw NotCanonicalSecret(parameterName, description);
             }
 
             if (key.Length == 0)
                 throw new ArgumentException($"{description} está vacío.", parameterName);
 
+            // FromBase64String ignora espacios y saltos de línea; volver a codificar exige el texto exacto, como los
+            // decodificadores de los SDK de Node.js, Python y Java.
+            if (!string.Equals(Convert.ToBase64String(key), encoded, StringComparison.Ordinal))
+                throw NotCanonicalSecret(parameterName, description);
+
             return key;
         }
+
+        private static ArgumentException NotCanonicalSecret(string parameterName, string description) =>
+            new ArgumentException(
+                $"{description} no es whsec_ seguido de base64 canónico (sin espacios ni saltos de línea y con relleno): " +
+                "cópielo completo del endpoint de webhooks.", parameterName);
 
         private static string RequiredHeader(IEnumerable<KeyValuePair<string, string>> headers, string name)
         {

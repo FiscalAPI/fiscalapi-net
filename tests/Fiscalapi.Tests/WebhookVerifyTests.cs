@@ -139,6 +139,7 @@ public class WebhookVerifyTests
     [InlineData("g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")]
     [InlineData("v1,")]
     [InlineData("v1,!!!")]
+    [InlineData("v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE")]
     public void A_signature_header_without_a_valid_v1_signature_is_rejected(string signature)
     {
         var exception = Assert.Throws<WebhookVerificationException>(() =>
@@ -222,9 +223,27 @@ public class WebhookVerifyTests
     [InlineData("")]
     [InlineData("whsec_")]
     [InlineData("whsec_%%no-es-base64%%")]
+    [InlineData("whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaS")]
     public void A_malformed_secret_is_refused_as_a_configuration_error(string secret)
     {
         Assert.Throws<ArgumentException>(() => VerifyAt(OfficialMoment, OfficialHeaders(), OfficialBody, secret));
+    }
+
+    [Theory]
+    [InlineData(OfficialSecret + "\n")]
+    [InlineData(OfficialSecret + "\r\n")]
+    [InlineData("whsec_MfKQ9r8GKYqr TwjUPD8ILPZIo2LaLaSw")]
+    public void A_secret_that_is_not_canonical_base64_is_refused_without_revealing_it(string secret)
+    {
+        // Los 5 SDK exigen base64 canónico: un salto de línea o un espacio pegados al copiar no se ignoran en silencio.
+        var single = Assert.Throws<ArgumentException>(() => VerifyAt(OfficialMoment, OfficialHeaders(), OfficialBody, secret));
+        Assert.DoesNotContain("TwjUPD8ILPZIo2LaLaSw", single.Message);
+
+        var inList = Assert.Throws<ArgumentException>(() =>
+            Webhook.Verify(OfficialHeaders(), OfficialBody, new[] { OfficialSecret, secret }));
+        Assert.Equal("secrets", inList.ParamName);
+        Assert.Contains("posición 1", inList.Message);
+        Assert.DoesNotContain("TwjUPD8ILPZIo2LaLaSw", inList.Message);
     }
 
     [Fact]
