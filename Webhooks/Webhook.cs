@@ -15,7 +15,7 @@ namespace Fiscalapi.Webhooks
     /// <summary>
     /// Verificación de las entregas de webhooks de FiscalAPI, que se firman con Standard Webhooks
     /// (https://www.standardwebhooks.com): HMAC-SHA256 sobre <c>webhook-id.webhook-timestamp.cuerpo</c> con el secreto
-    /// <c>whsec_…</c> del endpoint, en el header <c>webhook-signature</c> como <c>v1,&lt;base64&gt;</c>. La firma es la
+    /// <c>whsec_…</c> del webhook, en el header <c>webhook-signature</c> como <c>v1,&lt;base64&gt;</c>. La firma es la
     /// única prueba de que una entrega viene de FiscalAPI.
     /// </summary>
     public static class Webhook
@@ -52,7 +52,7 @@ namespace Fiscalapi.Webhooks
         private static readonly UTF8Encoding StrictUtf8 = new UTF8Encoding(false, true);
 
         /// <summary>
-        /// Verifica una entrega con el secreto del endpoint y devuelve su evento.
+        /// Verifica una entrega con el secreto del webhook y devuelve su evento.
         /// </summary>
         /// <param name="headers">
         /// Los headers de la petición recibida; los nombres se comparan sin distinguir mayúsculas. En ASP.NET Core:
@@ -62,7 +62,7 @@ namespace Fiscalapi.Webhooks
         /// El cuerpo <b>crudo</b> tal como llegó, leído como texto UTF-8 antes de deserializarlo. Un cuerpo deserializado y
         /// vuelto a serializar cambia sus bytes (espacios, orden, escapes) y su firma deja de coincidir.
         /// </param>
-        /// <param name="secret">El secreto del endpoint (<c>whsec_…</c>); se acepta también sin el prefijo.</param>
+        /// <param name="secret">El secreto del webhook (<c>whsec_…</c>); se acepta también sin el prefijo.</param>
         /// <param name="tolerance">Tolerancia del timestamp; sin valor, <see cref="DefaultTolerance"/>.</param>
         /// <returns>El evento del cuerpo verificado.</returns>
         /// <exception cref="WebhookVerificationException">

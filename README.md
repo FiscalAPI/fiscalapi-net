@@ -778,7 +778,7 @@ Un 400 en `items[i].ticketId` indica que los conceptos de ese ticket no lo refle
 
 ### 14. Recibir webhooks
 
-FiscalAPI firma cada entrega con [Standard Webhooks](https://www.standardwebhooks.com) y el secreto `whsec_…` de su endpoint. `Webhook.Verify` comprueba la firma (en tiempo constante) y que `webhook-timestamp` no difiera más de 5 minutos del reloj del receptor, y devuelve el `WebhookEvent`. La firma es la única prueba de que la entrega viene de FiscalAPI.
+FiscalAPI firma cada entrega con [Standard Webhooks](https://www.standardwebhooks.com) y el secreto `whsec_…` de su webhook. `Webhook.Verify` comprueba la firma (en tiempo constante) y que `webhook-timestamp` no difiera más de 5 minutos del reloj del receptor, y devuelve el `WebhookEvent`. La firma es la única prueba de que la entrega viene de FiscalAPI.
 
 **Verifique el cuerpo crudo**: léalo como texto antes de deserializarlo. Un cuerpo deserializado y vuelto a serializar (por ejemplo, con `[FromBody]`) cambia sus bytes y la firma deja de coincidir.
 
@@ -802,7 +802,7 @@ using Microsoft.Extensions.Hosting;
 public class FiscalApiWebhooksController : ControllerBase
 {
     private readonly Channel<WebhookEvent> _events;
-    private readonly string _webhookSecret; // whsec_… del endpoint, desde su configuración segura
+    private readonly string _webhookSecret; // whsec_… del webhook, desde su configuración segura
 
     public FiscalApiWebhooksController(Channel<WebhookEvent> events, IConfiguration configuration)
     {
