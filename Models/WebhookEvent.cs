@@ -56,8 +56,8 @@ namespace Fiscalapi.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Tipo de recurso: <c>invoice</c>, <c>download_request</c>, <c>download_rule</c> o <c>webhook_endpoint</c> (el de
-        /// <see cref="WebhookEventTypes.WebhookEndpointTest"/>); el conjunto puede crecer.
+        /// Tipo de recurso: <c>invoice</c>, <c>download_request</c>, <c>download_rule</c> o <c>webhook</c> (el de
+        /// <see cref="WebhookEventTypes.WebhookTest"/>); el conjunto puede crecer.
         /// </summary>
         public string Type { get; set; }
 
@@ -96,10 +96,10 @@ namespace Fiscalapi.Models
         public const string DownloadRuleSuspended = "download_rule.suspended";
 
         /// <summary>
-        /// Prueba de un endpoint: no se suscribe; solo llega al pulsar "Enviar prueba" (<c>POST webhook-endpoints/{id}/test</c>),
-        /// y solo a ese endpoint. Su <see cref="WebhookEventData.RelatedObject"/> es el endpoint mismo
-        /// (<c>webhook_endpoint</c>), sin persona ni estados.
+        /// Prueba de un webhook: no se suscribe; llega solo al pulsar "Enviar prueba" (<c>POST /api/v4/webhooks/{id}/test</c>),
+        /// y solo a ese webhook. Su <see cref="WebhookEventData.RelatedObject"/> es el webhook mismo (<c>Type</c>
+        /// <c>webhook</c>, <c>Url</c> <c>/api/v4/webhooks/{id}</c>), sin persona ni estados.
         /// </summary>
-        public const string WebhookEndpointTest = "webhook_endpoint.test";
+        public const string WebhookTest = "webhook.test";
     }
 }

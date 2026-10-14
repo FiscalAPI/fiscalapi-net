@@ -26,11 +26,11 @@ public class WebhookBackInteropTests
     private const string CompletedDownloadRequestBody =
         """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"download_request.completed","createdAt":"2026-10-12T18:47:53Z","personId":null,"data":{"relatedObject":{"id":"3c2b1a09-0000-4000-8000-0000000000b7","type":"download_request","url":"/api/v4/download-requests/3c2b1a09-0000-4000-8000-0000000000b7"},"status":null,"previousStatus":null}}""";
 
-    // El sobre de WebhookEvent.EndpointTest del back (POST webhook-endpoints/{id}/test): el recurso es el endpoint.
-    private const string EndpointId = "6a5b4c3d-0000-4000-8000-0000000000c9";
+    // El sobre de "Enviar prueba" del back (POST /api/v4/webhooks/{id}/test): el recurso es el webhook mismo.
+    private const string WebhookId = "6a5b4c3d-0000-4000-8000-0000000000c9";
 
-    private const string EndpointTestBody =
-        """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"webhook_endpoint.test","createdAt":"2026-10-12T18:47:53Z","personId":null,"data":{"relatedObject":{"id":"6a5b4c3d-0000-4000-8000-0000000000c9","type":"webhook_endpoint","url":"/api/v4/webhook-endpoints/6a5b4c3d-0000-4000-8000-0000000000c9"},"status":null,"previousStatus":null}}""";
+    private const string WebhookTestBody =
+        """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"webhook.test","createdAt":"2026-10-12T18:47:53Z","personId":null,"data":{"relatedObject":{"id":"6a5b4c3d-0000-4000-8000-0000000000c9","type":"webhook","url":"/api/v4/webhooks/6a5b4c3d-0000-4000-8000-0000000000c9"},"status":null,"previousStatus":null}}""";
 
     private static readonly DateTimeOffset DeliveredAt = DateTimeOffset.FromUnixTimeSeconds(Timestamp);
 
@@ -92,19 +92,19 @@ public class WebhookBackInteropTests
     }
 
     [Fact]
-    public void A_back_endpoint_test_delivery_points_to_the_endpoint_without_person_or_statuses()
+    public void A_back_webhook_test_delivery_points_to_the_webhook_without_person_or_statuses()
     {
         var secret = BackWebhookSigner.GenerateSecret();
-        var headers = BackWebhookSigner.Headers(EventId, Timestamp, EndpointTestBody, secret);
+        var headers = BackWebhookSigner.Headers(EventId, Timestamp, WebhookTestBody, secret);
 
-        var webhookEvent = Webhook.Verify(headers, EndpointTestBody, new[] { secret }, Webhook.DefaultTolerance,
+        var webhookEvent = Webhook.Verify(headers, WebhookTestBody, new[] { secret }, Webhook.DefaultTolerance,
             DeliveredAt);
 
-        Assert.Equal(WebhookEventTypes.WebhookEndpointTest, webhookEvent.Type);
+        Assert.Equal(WebhookEventTypes.WebhookTest, webhookEvent.Type);
         Assert.Null(webhookEvent.PersonId);
-        Assert.Equal(EndpointId, webhookEvent.Data.RelatedObject.Id);
-        Assert.Equal("webhook_endpoint", webhookEvent.Data.RelatedObject.Type);
-        Assert.Equal("/api/v4/webhook-endpoints/" + EndpointId, webhookEvent.Data.RelatedObject.Url);
+        Assert.Equal(WebhookId, webhookEvent.Data.RelatedObject.Id);
+        Assert.Equal("webhook", webhookEvent.Data.RelatedObject.Type);
+        Assert.Equal("/api/v4/webhooks/" + WebhookId, webhookEvent.Data.RelatedObject.Url);
         Assert.Null(webhookEvent.Data.Status);
         Assert.Null(webhookEvent.Data.PreviousStatus);
     }
@@ -112,7 +112,7 @@ public class WebhookBackInteropTests
     [Fact]
     public void The_event_type_constants_are_the_types_of_the_back()
     {
-        Assert.Equal("webhook_endpoint.test", WebhookEventTypes.WebhookEndpointTest);
+        Assert.Equal("webhook.test", WebhookEventTypes.WebhookTest);
         Assert.Equal("invoice.cancellation_requested", WebhookEventTypes.InvoiceCancellationRequested);
         Assert.Equal("invoice.canceled", WebhookEventTypes.InvoiceCanceled);
         Assert.Equal("invoice.cancellation_rejected", WebhookEventTypes.InvoiceCancellationRejected);
