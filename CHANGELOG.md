@@ -2,6 +2,18 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [Sin publicar]
+
+### Webhooks
+
+- `Webhook.Verify(headers, body, secret, tolerance)` (namespace `Fiscalapi.Webhooks`) verifica una entrega de webhook de FiscalAPI y devuelve su `WebhookEvent`: valida la firma Standard Webhooks (HMAC-SHA256 sobre `webhook-id.webhook-timestamp.cuerpo` con el secreto `whsec_…`, comparada en tiempo constante) y que `webhook-timestamp` no difiera del reloj del receptor más que la tolerancia, hacia atrás o hacia adelante (por omisión `Webhook.DefaultTolerance`, 5 minutos). Acepta cualquier firma `v1` válida del header `webhook-signature` (varias, separadas por espacio) y el secreto con o sin el prefijo `whsec_`, en base64 canónico (sin espacios ni saltos de línea y con su relleno `=`, tal como lo entrega FiscalAPI). La sobrecarga `Verify(headers, body, IEnumerable<string> secrets, tolerance)` acepta varios secretos para la rotación (FiscalAPI firma con el nuevo y el anterior durante 24 h). Los nombres de los headers se comparan sin distinguir mayúsculas.
+  - Opera sobre el cuerpo **crudo**, leído como texto antes de deserializarlo: un cuerpo reserializado no verifica. Ejemplo para ASP.NET Core en el README (sección 14).
+  - Una entrega que no se puede tratar como auténtica (falta un header, ninguna firma coincide, timestamp fuera de la tolerancia, un cuerpo que no es texto UTF-8 válido o un cuerpo firmado que no es un evento JSON) lanza `WebhookVerificationException`; un secreto que no es base64 canónico (por ejemplo, con un salto de línea final o un espacio pegados al copiarlo, o truncado), una lista de secretos vacía, una tolerancia negativa o un argumento null lanzan `ArgumentException` (error de configuración del receptor), que en la sobrecarga de varios secretos indica la posición del secreto y nunca su valor.
+  - El evento se lee con opciones propias de Newtonsoft.Json: los ajustes globales de la aplicación (`JsonConvert.DefaultSettings`) no cambian cómo se lee.
+- Modelo `WebhookEvent` (namespace `Fiscalapi.Models`), el mismo sobre para todo evento: `Id` (igual al header `webhook-id`, se repite en cada reintento), `Type`, `CreatedAt` (UTC), `PersonId` (null si el recurso no tiene persona) y `Data` (`WebhookEventData`) con `RelatedObject` (`WebhookRelatedObject`: `Id`, `Type`, `Url`), `Status` y `PreviousStatus`. `RelatedObject.Url` es la ruta relativa del GET v4 del recurso (por ejemplo `/api/v4/invoices/{id}`); el recurso se lee con el servicio de su tipo y `RelatedObject.Id`.
+- `Type` es texto y no un enum: las constantes de `WebhookEventTypes` (`InvoiceCancellationRequested`, `InvoiceCanceled`, `InvoiceCancellationRejected`, `DownloadRequestCompleted`, `DownloadRequestAbandoned`, `DownloadRuleSuspended` y `WebhookTest`) son una ayuda para comparar, y un tipo o un campo que el SDK no conoce llega sin error. `WebhookTest` (`webhook.test`) no se suscribe: llega solo al pulsar "Enviar prueba" (`POST /api/v4/webhooks/{id}/test`), con `RelatedObject.Type` `webhook` y `RelatedObject.Url` `/api/v4/webhooks/{id}`, sin persona ni estados.
+- Cambio aditivo: nada existente cambia ni deja de compilar.
+
 ## [4.0.439] - 2026-10-12
 
 ### Enum `CreditType`

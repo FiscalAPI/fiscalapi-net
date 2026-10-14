@@ -50,6 +50,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Las pruebas fijan el momento de Webhook.Verify con su sobrecarga interna. -->
+		<InternalsVisibleTo Include="Fiscalapi.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="fiscalapi.ico" />
 	</ItemGroup>
 
