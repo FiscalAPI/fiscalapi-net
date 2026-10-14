@@ -178,7 +178,7 @@ namespace Fiscalapi.Webhooks
         private static ArgumentException NotCanonicalSecret(string parameterName, string description) =>
             new ArgumentException(
                 $"{description} no es whsec_ seguido de base64 canónico (sin espacios ni saltos de línea y con relleno): " +
-                "cópielo completo del endpoint de webhooks.", parameterName);
+                "cópielo completo del webhook.", parameterName);
 
         private static string RequiredHeader(IEnumerable<KeyValuePair<string, string>> headers, string name)
         {
