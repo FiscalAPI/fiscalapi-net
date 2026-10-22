@@ -6,15 +6,15 @@ namespace Fiscalapi.Tests;
 
 /// <summary>
 /// Servicio de tickets de Auto CFDI (POST/GET/DELETE /api/v4/tickets). Los mismos escenarios viven en los SDK de Node.js,
-/// Python, PHP y Java: el cuerpo exacto de la ingesta y el header Idempotency-Key solo si se pasa; las respuestas 201 y 200
-/// de la ingesta; el 409 y el 422 con la forma de error del SDK; la query de la lista con status repetido; el detalle con y
+/// Python, PHP y Java: el cuerpo exacto de la ingesta y el header Idempotency-Key solo si se pasa; la respuesta 201 de la
+/// ingesta; el 409 y el 422 con la forma de error del SDK; la query de la lista con status repetido; el detalle con y
 /// sin details; el código; la cancelación con DELETE, y un estado que el SDK no conoce, conservado como texto.
 /// </summary>
 public class TicketServiceTests
 {
     private const string IssuerId = "4b1c2d3e-0000-4000-8000-000000000002";
     private const string TicketId = "9f8e7d6c-0000-4000-8000-0000000000a1";
-    private const string IdempotencyKey = "pos-01-F-1001";
+    private const string IdempotencyKey = "550e8400-e29b-41d4-a716-446655440000";
 
     private const string IngestedResponseTemplate = """
         {"data":{"id":"9f8e7d6c-0000-4000-8000-0000000000a1","ticketCode":"K7M2Q9X4TB3H",
@@ -161,19 +161,17 @@ public class TicketServiceTests
         Assert.False(request.Headers.ContainsKey("Idempotency-Key"));
     }
 
-    // b. Respuestas de la ingesta
+    // b. Respuesta de la ingesta: la repetición con la misma llave de idempotencia devuelve esta misma 201
 
-    [Theory]
-    [InlineData(HttpStatusCode.Created, 201)]
-    [InlineData(HttpStatusCode.OK, 200)]
-    public async Task Create_ReadsTheNewTicketAndTheIdempotentReplayWithTheSameShape(HttpStatusCode status, int code)
+    [Fact]
+    public async Task Create_ReadsTheNewTicketWithItsShape()
     {
-        _api.RespondWith(IngestedResponseTemplate.Replace("STATUS", code.ToString()), status);
+        _api.RespondWith(IngestedResponseTemplate.Replace("STATUS", "201"), HttpStatusCode.Created);
 
         var response = await Tickets.CreateAsync(NewTicket(), IdempotencyKey);
 
         Assert.True(response.Succeeded);
-        Assert.Equal(code, response.HttpStatusCode);
+        Assert.Equal(201, response.HttpStatusCode);
         Assert.Null(response.ErrorData);
         var ingested = response.Data;
         Assert.Equal(TicketId, ingested.Id);
