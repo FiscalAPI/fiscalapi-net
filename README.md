@@ -310,10 +310,10 @@ var invoice = new Invoice
 var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice);
 ```
 
-La `idempotencyKey` es opcional: con ella, repetir la misma petición con la misma key en 24 h responde la factura original (con `Idempotent-Replayed: true`) y no timbra otra vez.
+La `idempotencyKey` es opcional: con ella, repetir la misma petición con la misma llave de idempotencia en 24 h devuelve la factura original (con `Idempotent-Replayed: true`) y no timbra otra vez.
 
 ```csharp
-// El SDK no reintenta solo: la key la da el integrador y se reutiliza para reintentar la misma factura
+// El SDK no reintenta solo: la llave de idempotencia la da el integrador y se reutiliza para reintentar la misma factura
 var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice, idempotencyKey: "pos-01-F-1001");
 ```
 

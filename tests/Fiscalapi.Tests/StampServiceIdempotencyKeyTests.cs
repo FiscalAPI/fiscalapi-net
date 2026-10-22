@@ -5,8 +5,8 @@ using Fiscalapi.Services;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// Llave de idempotencia de Stamps.TransferStamps: con key, la petición lleva el header Idempotency-Key con ese valor y el
-/// cuerpo no cambia; sin key, el header no se envía.
+/// Llave de idempotencia de Stamps.TransferStamps: si se pasa una, la petición lleva el header Idempotency-Key con ese valor y el
+/// cuerpo no cambia; sin llave de idempotencia, el header no se envía.
 /// </summary>
 public class StampServiceIdempotencyKeyTests
 {

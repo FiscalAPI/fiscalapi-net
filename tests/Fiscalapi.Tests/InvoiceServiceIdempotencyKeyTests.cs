@@ -5,8 +5,8 @@ using Fiscalapi.Services;
 namespace Fiscalapi.Tests;
 
 /// <summary>
-/// Llave de idempotencia de Invoices.CreateAsync: con key, la petición lleva el header Idempotency-Key con ese valor y el
-/// cuerpo no cambia; sin key, el header no se envía; y la sobrecarga de un argumento sigue rechazando una factura nula
+/// Llave de idempotencia de Invoices.CreateAsync: si se pasa una, la petición lleva el header Idempotency-Key con ese valor y el
+/// cuerpo no cambia; sin llave de idempotencia, el header no se envía; y la sobrecarga de un argumento sigue rechazando una factura nula
 /// antes de llamar al API.
 /// </summary>
 public class InvoiceServiceIdempotencyKeyTests
