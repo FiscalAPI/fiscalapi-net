@@ -2,6 +2,14 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [Sin publicar]
+
+### Idempotencia en crear factura y transferir timbres
+
+- `Invoices.CreateAsync(invoice, idempotencyKey)` (`IInvoiceService`/`InvoiceService`): nueva sobrecarga para `POST /api/v4/invoices`. Con `idempotencyKey` (de 1 a 64 caracteres ASCII visibles, sin espacios) envía el header `Idempotency-Key`; sin ella no lo envía y la petición es la de siempre. Repetir la misma key con la misma petición dentro de 24 h responde la factura original con el header `Idempotent-Replayed: true`, sin timbrar otra vez; con otra petición, 422; con la original aún en proceso, 409; con una key inválida, 400. El SDK no genera keys ni reintenta: la key la da el integrador.
+- `Stamps.TransferStamps(params, idempotencyKey)` (`IStampService`/`StampService`): nueva sobrecarga con las mismas respuestas, en `POST /api/v4/stamps`. `WithdrawStamps` no cambia.
+- `CreateAsync(invoice)` sigue existiendo y se comporta igual. Quien implementa su propia versión de `IInvoiceService` o `IStampService` (p. ej. un doble de pruebas) debe agregar las sobrecargas `CreateAsync(invoice, idempotencyKey)` y `TransferStamps(params, idempotencyKey)`; quien usa el cliente del SDK no cambia nada.
+
 ## [4.0.450] - 2026-10-14
 
 ### Webhooks

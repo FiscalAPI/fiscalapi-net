@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fiscalapi.Abstractions;
 using Fiscalapi.Common;
@@ -9,6 +10,8 @@ namespace Fiscalapi.Services
 {
     public class InvoiceService : BaseFiscalApiService<Invoice>, IInvoiceService
     {
+        private const string IdempotencyKeyHeader = "Idempotency-Key";
+
         //private const string IncomeEndpoint = "income";
         //private const string CreditNoteEndpoint = "credit-note";
         //private const string PaymentEndpoint = "payment";
@@ -19,12 +22,19 @@ namespace Fiscalapi.Services
         }
 
 
-        public override async Task<ApiResponse<Invoice>> CreateAsync(Invoice requestModel)
+        public override Task<ApiResponse<Invoice>> CreateAsync(Invoice requestModel)
+            => CreateAsync(requestModel, null);
+
+        public async Task<ApiResponse<Invoice>> CreateAsync(Invoice requestModel, string idempotencyKey = null)
         {
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
 
-            return await HttpClient.PostAsync<Invoice>(BuildEndpoint(), requestModel);
+            if (idempotencyKey == null)
+                return await HttpClient.PostAsync<Invoice>(BuildEndpoint(), requestModel);
+
+            var headers = new Dictionary<string, string> { [IdempotencyKeyHeader] = idempotencyKey };
+            return await HttpClient.PostAsync<Invoice>(BuildEndpoint(), requestModel, headers);
         }
 
         public async Task<ApiResponse<CancelInvoiceResponse>> CancelAsync(CancelInvoiceRequest requestModel)
