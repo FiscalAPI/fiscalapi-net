@@ -3,21 +3,32 @@ using Fiscalapi.Common;
 using Fiscalapi.Http;
 using Fiscalapi.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Fiscalapi.Services
 {
     public class StampService : BaseFiscalApiService<StampTransaction>, IStampService
     {
+        private const string IdempotencyKeyHeader = "Idempotency-Key";
+
         public StampService(IFiscalApiHttpClient httpClient, string apiVersion)
             : base(httpClient, "stamps", apiVersion)
         {
         }
 
-        public async Task<ApiResponse<bool>> TransferStamps(StampTransactionParams requestModel)
+        public Task<ApiResponse<bool>> TransferStamps(StampTransactionParams requestModel)
+            => TransferStamps(requestModel, null);
+
+        public async Task<ApiResponse<bool>> TransferStamps(StampTransactionParams requestModel, string idempotencyKey)
         {
             ValidateRequest(requestModel);
-            return await HttpClient.PostAsync<bool>(BuildEndpoint(), requestModel);
+
+            if (idempotencyKey == null)
+                return await HttpClient.PostAsync<bool>(BuildEndpoint(), requestModel);
+
+            var headers = new Dictionary<string, string> { [IdempotencyKeyHeader] = idempotencyKey };
+            return await HttpClient.PostAsync<bool>(BuildEndpoint(), requestModel, headers);
         }
 
         public async Task<ApiResponse<bool>> WithdrawStamps(StampTransactionParams requestModel)

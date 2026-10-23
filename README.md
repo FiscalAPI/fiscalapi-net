@@ -310,6 +310,13 @@ var invoice = new Invoice
 var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice);
 ```
 
+La `idempotencyKey` es opcional: con ella, repetir la misma petición con la misma llave de idempotencia en 24 h devuelve la factura original (con `Idempotent-Replayed: true`) y no timbra otra vez.
+
+```csharp
+// El SDK no reintenta solo: la llave de idempotencia la da el integrador y se reutiliza para reintentar la misma factura
+var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice, idempotencyKey: "550e8400-e29b-41d4-a716-446655440000");
+```
+
 ### 6. Crear la Misma Factura de Ingreso (Por Valores)
 
 ```csharp
@@ -631,8 +638,8 @@ var ticketBalance = person.Balances.FirstOrDefault(b => b.CreditType == CreditTy
 ### 12. Tickets de Auto CFDI: ingesta y consulta
 
 ```csharp
-// Ingesta de una venta pagada (cobra 1 crédito de ticket). La Idempotency-Key es opcional: repetir la misma key con el
-// mismo cuerpo responde 200 con el ticket original sin cobrar otra vez.
+// Ingesta de una venta pagada (cobra 1 crédito de ticket). La Idempotency-Key es opcional: repetir la misma llave de
+// idempotencia con el mismo cuerpo, dentro de 24 h, devuelve la respuesta original (201) sin cobrar otra vez.
 var ticket = new Ticket
 {
     Issuer = new TicketIssuer { Id = "<id_persona_emisora>" },
@@ -660,7 +667,7 @@ var ticket = new Ticket
     }
 };
 
-var created = await fiscalApi.Tickets.CreateAsync(ticket, idempotencyKey: "pos-01-F-1001");
+var created = await fiscalApi.Tickets.CreateAsync(ticket, idempotencyKey: "550e8400-e29b-41d4-a716-446655440000");
 if (created.Succeeded)
 {
     // Imprime el código y el QR en el ticket de venta
