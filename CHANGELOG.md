@@ -2,7 +2,7 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
-## [Sin publicar]
+## [4.0.462] - 2026-10-22
 
 ### Idempotencia en crear factura, transferir timbres y crear ticket
 
