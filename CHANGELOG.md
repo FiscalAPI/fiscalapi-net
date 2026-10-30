@@ -2,6 +2,12 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [4.0.469] - 2026-10-30
+
+### Sin cambios de API
+
+- Versión unificada con el back 4.0.469. El SDK no cambia: sus dependencias no tienen avisos de seguridad (`dotnet list package --vulnerable` y OSV). El workflow de publicación usa un token de GitHub de solo lectura.
+
 ## [4.0.462] - 2026-10-22
 
 ### Idempotencia en crear factura, transferir timbres y crear ticket
