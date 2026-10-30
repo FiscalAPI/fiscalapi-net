@@ -3,6 +3,9 @@ name: Publish NuGet Package
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
