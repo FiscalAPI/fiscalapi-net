@@ -9,7 +9,7 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 - Cambio del API, no del SDK: cancelar factura (`Invoices.CancelAsync`) frente a un rechazo del SAT responde **422** con `Succeeded` en `false`. Antes respondía 200 con `Succeeded` en `true` y el código 203 en `Data.InvoiceUuids`. El SDK no lanza excepción.
 - En ese 422, `Data` es `null`: el acuse va en `ErrorData` y el código del SAT en `Details` (`SAT <código>: <descripción>`).
 - Migración: trate el 422 como rechazo y lea el código y el acuse en `Details` y `ErrorData`, no en `Data`.
-- Las validaciones previas al PAC responden **400**: UUID no canónico, sustituta inválida con motivo 01, y cancelación por valores cuando no hay una persona con CSD o hay más de una.
+- Las validaciones previas al PAC responden **400**: UUID no canónico, sustituta inválida con motivo 01, y cancelar por `id` una factura emitida por valores cuando el tenant no tiene una persona con ese RFC y CSD vigente o tiene más de una.
 - Si el PAC no trae el código del SAT, la respuesta es **502**.
 - Una factura rechazada se queda vigente; ya no queda en «Cancelando».
 - Cancelar por valores un UUID que FiscalAPI no tiene ya no responde 404: responde el resultado del PAC con su acuse y no toca ninguna factura.
