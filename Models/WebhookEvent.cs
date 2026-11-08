@@ -47,6 +47,9 @@ namespace Fiscalapi.Models
 
         /// <summary>Estado del que salió el recurso, con los mismos códigos que <see cref="Status"/>; null si no aplica.</summary>
         public string PreviousStatus { get; set; }
+
+        /// <summary>Por qué no procedió la cancelación en <see cref="WebhookEventTypes.InvoiceCancellationRejected"/>; null en los demás eventos.</summary>
+        public string Reason { get; set; }
     }
 
     /// <summary>El recurso al que se refiere un <see cref="WebhookEvent"/>.</summary>
