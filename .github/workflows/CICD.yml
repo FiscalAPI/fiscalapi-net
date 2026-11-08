@@ -9,6 +9,9 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # Trusted Publishing: token OIDC que nuget.org canjea por una llave temporal
 
     steps:
     # Checkout the repository
@@ -41,11 +44,16 @@ jobs:
     - name: Pack NuGet Package
       run: dotnet pack --configuration Release --output ./nupkg
 
+    # Llave temporal (1 h) de la política de Trusted Publishing de la cuenta Fiscalapi
+    - name: NuGet login (OIDC)
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: Fiscalapi
+
     # Publish the package to NuGet
     - name: Publish to NuGet
-      env:
-        NUGET_KEY: ${{ secrets.NUGET_KEY }}
       run: |
         dotnet nuget push ./nupkg/*.nupkg \
-          --api-key $NUGET_KEY \
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }} \
           --source https://api.nuget.org/v3/index.json
