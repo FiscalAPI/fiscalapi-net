@@ -2,7 +2,7 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
-## [Sin publicar]
+## [4.0.474] - 2026-11-07
 
 ### Cancelación de facturas y webhooks
 
