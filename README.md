@@ -879,7 +879,7 @@ public class FiscalApiWebhookWorker : BackgroundService
 }
 ```
 
-- `WebhookEvent` es el mismo sobre para todo evento: `Id`, `Type` (texto; compárelo con las constantes de `WebhookEventTypes`), `CreatedAt` (UTC), `PersonId` (null si el recurso no tiene persona) y `Data` con `RelatedObject` (`Id`, `Type`, `Url`), `Status` y `PreviousStatus`.
+- `WebhookEvent` es el mismo sobre para todo evento: `Id`, `Type` (texto; compárelo con las constantes de `WebhookEventTypes`), `CreatedAt` (UTC), `PersonId` (null si el recurso no tiene persona) y `Data` con `RelatedObject` (`Id`, `Type`, `Url`), `Status`, `PreviousStatus` y `Reason` (`null` salvo en `invoice.cancellation_rejected`, donde dice por qué no procedió la cancelación).
 - `RelatedObject.Url` es la ruta relativa del GET v4 del recurso (`/api/v4/invoices/{id}`); para leerlo, use el servicio de su tipo con `RelatedObject.Id`.
 - El botón "Enviar prueba" del webhook (`POST /api/v4/webhooks/{id}/test`) envía `WebhookEventTypes.WebhookTest` (`webhook.test`), cuyo `RelatedObject` es el webhook mismo (`Type` `webhook`, `Url` `/api/v4/webhooks/{id}`), sin persona ni estados; no se suscribe.
 - Durante una rotación del secreto, FiscalAPI firma con el nuevo y con el anterior por 24 h: pase ambos, `Webhook.Verify(headers, body, new[] { secretoNuevo, secretoAnterior })`.

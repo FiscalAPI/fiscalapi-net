@@ -21,7 +21,10 @@ public class WebhookBackInteropTests
 
     // Los sobres de WebhookEnvelopeTests de fapi-back, con ids fijos.
     private const string CanceledInvoiceBody =
-        """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"invoice.canceled","createdAt":"2026-10-12T18:47:53Z","personId":"4b1c2d3e-0000-4000-8000-000000000002","data":{"relatedObject":{"id":"9f8e7d6c-0000-4000-8000-0000000000a1","type":"invoice","url":"/api/v4/invoices/9f8e7d6c-0000-4000-8000-0000000000a1"},"status":"X","previousStatus":"C"}}""";
+        """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"invoice.canceled","createdAt":"2026-10-12T18:47:53Z","personId":"4b1c2d3e-0000-4000-8000-000000000002","data":{"relatedObject":{"id":"9f8e7d6c-0000-4000-8000-0000000000a1","type":"invoice","url":"/api/v4/invoices/9f8e7d6c-0000-4000-8000-0000000000a1"},"status":"X","previousStatus":"C","reason":null}}""";
+
+    private const string RejectedCancellationBody =
+        """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"invoice.cancellation_rejected","createdAt":"2026-10-12T18:47:53Z","personId":"4b1c2d3e-0000-4000-8000-000000000002","data":{"relatedObject":{"id":"9f8e7d6c-0000-4000-8000-0000000000a1","type":"invoice","url":"/api/v4/invoices/9f8e7d6c-0000-4000-8000-0000000000a1"},"status":"V","previousStatus":"C","reason":"rejectedByRecipient"}}""";
 
     private const string CompletedDownloadRequestBody =
         """{"id":"0f6b2c1e-7d3a-4e8b-9c51-2a4d6e8f0b13","type":"download_request.completed","createdAt":"2026-10-12T18:47:53Z","personId":null,"data":{"relatedObject":{"id":"3c2b1a09-0000-4000-8000-0000000000b7","type":"download_request","url":"/api/v4/download-requests/3c2b1a09-0000-4000-8000-0000000000b7"},"status":null,"previousStatus":null}}""";
@@ -56,7 +59,23 @@ public class WebhookBackInteropTests
             Assert.Equal("/api/v4/invoices/" + InvoiceId, webhookEvent.Data.RelatedObject.Url);
             Assert.Equal("X", webhookEvent.Data.Status);
             Assert.Equal("C", webhookEvent.Data.PreviousStatus);
+            Assert.Null(webhookEvent.Data.Reason);
         }
+    }
+
+    [Fact]
+    public void A_rejected_cancellation_carries_the_reason()
+    {
+        var secret = BackWebhookSigner.GenerateSecret();
+        var headers = BackWebhookSigner.Headers(EventId, Timestamp, RejectedCancellationBody, secret);
+
+        var webhookEvent = Webhook.Verify(headers, RejectedCancellationBody, new[] { secret },
+            Webhook.DefaultTolerance, DeliveredAt);
+
+        Assert.Equal(WebhookEventTypes.InvoiceCancellationRejected, webhookEvent.Type);
+        Assert.Equal("V", webhookEvent.Data.Status);
+        Assert.Equal("C", webhookEvent.Data.PreviousStatus);
+        Assert.Equal("rejectedByRecipient", webhookEvent.Data.Reason);
     }
 
     [Fact]

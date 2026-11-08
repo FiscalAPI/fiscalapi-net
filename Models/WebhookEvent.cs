@@ -47,6 +47,13 @@ namespace Fiscalapi.Models
 
         /// <summary>Estado del que salió el recurso, con los mismos códigos que <see cref="Status"/>; null si no aplica.</summary>
         public string PreviousStatus { get; set; }
+
+        /// <summary>
+        /// Motivo de la transición. Todo evento lo trae; es null salvo en <see cref="WebhookEventTypes.InvoiceCancellationRejected"/>,
+        /// donde dice por qué no procedió la cancelación (<c>rejectedByRecipient</c>, <c>expired</c>, <c>notRequested</c> o
+        /// <c>notCancelable</c>). Es texto libre: pueden aparecer valores nuevos.
+        /// </summary>
+        public string Reason { get; set; }
     }
 
     /// <summary>El recurso al que se refiere un <see cref="WebhookEvent"/>.</summary>
