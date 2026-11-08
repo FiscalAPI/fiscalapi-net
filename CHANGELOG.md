@@ -4,10 +4,19 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 
 ## [4.0.474] - 2026-11-07
 
+### Cambios incompatibles (BREAKING)
+
+- Cambio del API, no del SDK: cancelar factura (`Invoices.CancelAsync`) frente a un rechazo del SAT responde **422** con `Succeeded` en `false`. Antes respondía 200 con `Succeeded` en `true` y el código 203 en `Data.InvoiceUuids`. El SDK no lanza excepción.
+- En ese 422, `Data` es `null`: el acuse va en `ErrorData` y el código del SAT en `Details` (`SAT <código>: <descripción>`).
+- Migración: trate el 422 como rechazo y lea el código y el acuse en `Details` y `ErrorData`, no en `Data`.
+- Las validaciones previas al PAC responden **400**: UUID no canónico, sustituta inválida con motivo 01, y cancelación por valores cuando no hay una persona con CSD o hay más de una.
+- Si el PAC no trae el código del SAT, la respuesta es **502**.
+- Cancelar por valores un UUID que FiscalAPI no tiene ya no responde 404: responde el resultado del PAC con su acuse y no toca ninguna factura.
+
 ### Cancelación de facturas y webhooks
 
 - `WebhookEventData.Reason` (nuevo, `string`): el motivo de la transición. Todo evento lo trae; es `null` salvo en `invoice.cancellation_rejected`, donde dice por qué no procedió la cancelación: `rejectedByRecipient`, `expired`, `notRequested` o `notCancelable`. Es texto libre: pueden aparecer valores nuevos. Cambio aditivo: nada existente cambia ni deja de compilar.
-- `Invoices.CancelAsync` frente a un rechazo del SAT: el API responde 422 y el SDK no lanza. `Succeeded` es `false`, `Message` es el mensaje genérico, `Details` trae `SAT <código>: <descripción>` y el acuse llega en `ErrorData` (`ErrorData.ToObject<CancelInvoiceResponse>()` da `Base64CancellationAcknowledgement` y `InvoiceUuids` con el código del SAT por UUID). No hay cambios de código: el comportamiento ya existía y ahora tiene prueba.
+- `Invoices.CancelAsync` frente a un rechazo del SAT: el API responde 422 y el SDK no lanza. `Succeeded` es `false`, `Message` es el mensaje genérico, `Details` trae `SAT <código>: <descripción>` y el acuse llega en `ErrorData` (`ErrorData.ToObject<CancelInvoiceResponse>()` da `Base64CancellationAcknowledgement` y `InvoiceUuids` con el código del SAT por UUID). El SDK no cambia de código: el cambio es del API (ver *Cambios incompatibles*).
 
 ## [4.0.469] - 2026-10-30
 
