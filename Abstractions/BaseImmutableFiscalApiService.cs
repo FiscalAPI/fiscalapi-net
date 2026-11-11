@@ -65,6 +65,14 @@ namespace Fiscalapi.Abstractions
             return HttpClient.GetAsync<PagedList<T>>(BuildEndpoint(queryParams: queryParams));
         }
 
+        /// <summary>La lista con la query string ya escapada de unos filtros (sin el signo ?); null o vacía, sin filtros.</summary>
+        protected Task<ApiResponse<PagedList<T>>> GetFilteredListAsync(string queryString)
+        {
+            var endpoint = BuildEndpoint();
+            return HttpClient.GetAsync<PagedList<T>>(
+                string.IsNullOrEmpty(queryString) ? endpoint : $"{endpoint}?{queryString}");
+        }
+
         public virtual Task<ApiResponse<T>> GetByIdAsync(string id, bool details = false)
         {
             var parameters = new Dictionary<string, string>

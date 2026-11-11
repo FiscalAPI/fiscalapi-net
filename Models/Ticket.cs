@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using Fiscalapi.Common;
 using Newtonsoft.Json;
 
 namespace Fiscalapi.Models
@@ -230,32 +230,17 @@ namespace Fiscalapi.Models
         public int? PageSize { get; set; }
 
         /// <summary>La query string de los filtros asignados, sin el signo ?; vacía si no hay ninguno.</summary>
-        internal string ToQueryString()
-        {
-            var parameters = new List<KeyValuePair<string, string>>();
-            if (Status != null)
-                parameters.AddRange(Status.Select(status => new KeyValuePair<string, string>("status", status)));
-            AddIfPresent(parameters, "personId", PersonId);
-            if (Details == true)
-                parameters.Add(new KeyValuePair<string, string>("details", "true"));
-            AddIfPresent(parameters, "globalInvoiceId", GlobalInvoiceId);
-            AddIfPresent(parameters, "from", FormatDate(From));
-            AddIfPresent(parameters, "to", FormatDate(To));
-            AddIfPresent(parameters, "pageNumber", PageNumber?.ToString(CultureInfo.InvariantCulture));
-            AddIfPresent(parameters, "pageSize", PageSize?.ToString(CultureInfo.InvariantCulture));
-
-            return string.Join("&",
-                parameters.Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value)}"));
-        }
-
-        private static string FormatDate(DateTime? date) =>
-            date?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-        private static void AddIfPresent(List<KeyValuePair<string, string>> parameters, string key, string value)
-        {
-            if (value != null)
-                parameters.Add(new KeyValuePair<string, string>(key, value));
-        }
+        internal string ToQueryString() =>
+            new QueryStringBuilder()
+                .AddEach("status", Status)
+                .Add("personId", PersonId)
+                .Add("details", Details == true ? "true" : null)
+                .Add("globalInvoiceId", GlobalInvoiceId)
+                .AddDate("from", From)
+                .AddDate("to", To)
+                .Add("pageNumber", PageNumber)
+                .Add("pageSize", PageSize)
+                .ToString();
     }
 
     /// <summary>Estados de un ticket, como llegan en <see cref="Ticket.Status"/>.</summary>

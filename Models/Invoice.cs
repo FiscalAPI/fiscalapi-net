@@ -413,4 +413,83 @@ namespace Fiscalapi.Models
         /// </summary>
         public string EfosValidation { get; set; }
     }
+
+    /// <summary>
+    /// Filtros de <c>Invoices.GetListAsync</c> (GET /api/v4/invoices). Cada filtro asignado se aplica y los que quedan en
+    /// null no se envían; sin ninguno, la lista es la de siempre (primera página, de la más antigua a la más reciente).
+    /// </summary>
+    public class InvoiceListFilters
+    {
+        /// <summary>
+        /// Primer día de la fecha de la factura (incluido), en fecha civil de México: solo cuenta la fecha (yyyy-MM-dd).
+        /// Va junto con <see cref="To"/>.
+        /// </summary>
+        public DateTime? From { get; set; }
+
+        /// <summary>
+        /// Último día de la fecha de la factura (incluido), en fecha civil de México: solo cuenta la fecha (yyyy-MM-dd).
+        /// Va junto con <see cref="From"/>.
+        /// </summary>
+        public DateTime? To { get; set; }
+
+        /// <summary>RFC del emisor, exacto.</summary>
+        public string IssuerTin { get; set; }
+
+        /// <summary>RFC del receptor, exacto.</summary>
+        public string RecipientTin { get; set; }
+
+        /// <summary>Tipo de comprobante (c_TipoDeComprobante): I, E, T, P o N.</summary>
+        public string TypeCode { get; set; }
+
+        /// <summary>Estatus de la factura: B (borrador), V (vigente), C (cancelando) o X (cancelada).</summary>
+        public string StatusId { get; set; }
+
+        /// <summary>Serie, exacta.</summary>
+        public string Series { get; set; }
+
+        /// <summary>Folio, exacto.</summary>
+        public string Number { get; set; }
+
+        /// <summary>Folio fiscal (UUID).</summary>
+        public string Uuid { get; set; }
+
+        /// <summary>
+        /// Orden por fecha de creación (ver <see cref="InvoiceListOrder"/>). Sin él, el API usa
+        /// <see cref="InvoiceListOrder.Asc"/>.
+        /// </summary>
+        public string Order { get; set; }
+
+        /// <summary>Página, desde 1. Sin ella, el API devuelve la primera.</summary>
+        public int? PageNumber { get; set; }
+
+        /// <summary>Tamaño de página (1 a 50). Sin él, el API usa 10.</summary>
+        public int? PageSize { get; set; }
+
+        /// <summary>La query string de los filtros asignados, sin el signo ?; vacía si no hay ninguno.</summary>
+        internal string ToQueryString() =>
+            new QueryStringBuilder()
+                .AddDate("from", From)
+                .AddDate("to", To)
+                .Add("issuerTin", IssuerTin)
+                .Add("recipientTin", RecipientTin)
+                .Add("typeCode", TypeCode)
+                .Add("statusId", StatusId)
+                .Add("series", Series)
+                .Add("number", Number)
+                .Add("uuid", Uuid)
+                .Add("order", Order)
+                .Add("pageNumber", PageNumber)
+                .Add("pageSize", PageSize)
+                .ToString();
+    }
+
+    /// <summary>Valores de <see cref="InvoiceListFilters.Order"/>: el orden de la lista por fecha de creación.</summary>
+    public static class InvoiceListOrder
+    {
+        /// <summary>De la más antigua a la más reciente (el orden por omisión).</summary>
+        public const string Asc = "asc";
+
+        /// <summary>Las más recientes primero.</summary>
+        public const string Desc = "desc";
+    }
 }

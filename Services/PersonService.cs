@@ -19,6 +19,15 @@ namespace Fiscalapi.Services
             Employee = new EmployeeService(httpClient, apiVersion);
         }
 
+        public Task<ApiResponse<PagedList<Person>>> GetListAsync(PersonListFilters filters)
+            => GetFilteredListAsync(filters?.ToQueryString());
+
+        /// <summary>Obtiene una persona por su id. GET /api/v4/people/{id}</summary>
+        /// <param name="id">Id de la persona.</param>
+        /// <param name="details">Obsoleto y sin efecto en personas: el API responde la misma persona con cualquier valor. Omítelo.</param>
+        public override Task<ApiResponse<Person>> GetByIdAsync(string id, bool details = false)
+            => base.GetByIdAsync(id, details);
+
         /// <summary>Lista los certificados (CSD y FIEL) de una persona, solo metadatos, sin el archivo ni la contraseña.</summary>
         public Task<ApiResponse<List<TaxFile>>> GetTaxFilesAsync(string personId)
         {

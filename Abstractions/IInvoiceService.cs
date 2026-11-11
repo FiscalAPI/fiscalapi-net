@@ -10,6 +10,12 @@ namespace Fiscalapi.Abstractions
     public interface IInvoiceService : IFiscalApiService<Invoice>
     {
         /// <summary>
+        /// Lista las facturas del tenant con los filtros y el orden asignados (null o sin filtros: la lista de siempre,
+        /// primera página). GET /api/v4/invoices
+        /// </summary>
+        Task<ApiResponse<PagedList<Invoice>>> GetListAsync(InvoiceListFilters filters);
+
+        /// <summary>
         /// Crea una factura. POST /api/v4/invoices
         /// Con <paramref name="idempotencyKey"/> (de 1 a 64 caracteres ASCII visibles, sin espacios) se envía el header
         /// Idempotency-Key: repetir la misma llave de idempotencia con la misma petición, dentro de 24 h, devuelve la factura original con el

@@ -6,7 +6,20 @@ Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a qui
 
 ### Agregado
 
+- Filtros en las listas de facturas, personas y productos, con el patrón de `Tickets.GetListAsync(TicketListFilters)`: cada filtro asignado viaja en la query string y uno en `null` no se envía; sin filtros (o con `null`), la lista es la de siempre.
+  - `Invoices.GetListAsync(InvoiceListFilters)`: `GET /api/v4/invoices` con `From`/`To` (fecha civil de México, solo la fecha; van juntos), `IssuerTin`, `RecipientTin`, `TypeCode` (I, E, T, P o N), `StatusId` (B, V, C o X), `Series`, `Number`, `Uuid`, `Order`, `PageNumber` y `PageSize` (1 a 50). `Order` es texto con las constantes `InvoiceListOrder.Asc` (por omisión) y `InvoiceListOrder.Desc` (las más recientes primero), por fecha de creación.
+  - `Persons.GetListAsync(PersonListFilters)`: `GET /api/v4/people` con `Search` (2 a 100 caracteres; razón social, RFC o correo), `UserTypeId` (T, U o C), `PageNumber` y `PageSize`.
+  - `Products.GetListAsync(ProductListFilters)`: `GET /api/v4/products` con `Search` (descripción o clave de producto o servicio del SAT), `PageNumber` y `PageSize`.
+  - `GetListAsync(pageNumber, pageSize)` sigue existiendo y se comporta igual.
+- `Me.GetAsync()` (`IFiscalApiClient.Me`, `IMeService`/`MeService`): `GET /api/v4/me`. Devuelve `MeInfo`, la persona de la API key: `Id`, `LegalName`, `Tin`, `Email`, `TenantId`, `Environment` (Development, Test o Production), `IsOwner`, `Features` (`PersonFeatures`: `Roles`, `Permissions`, `Denied`, `Features`, `Subscription` y `SeatAssignments`) y `Balances` (`List<CreditBalance>`; un tipo ausente tiene saldo 0). Sirve para validar una credencial: con una API key o un tenant que no son válidos responde 401.
+- `Person.LoginEnabled` (`bool?`), el acceso al portal: al crear, sin asignar o `false`, la persona nace sin acceso. En `Persons.UpdateAsync`, sin asignar no se envía y no cambia el acceso; `true` lo da y `false` lo quita. Solo lo cambia el owner, el owner siempre lo tiene y no afecta a la API key. En las respuestas llega el acceso efectivo.
+- `Person.Password` es opcional al crear: sin asignar no se envía, y solo es obligatoria si `LoginEnabled` es `true`.
 - `Persons.GetTaxFilesAsync(personId)` (`IPersonService`/`PersonService`): `GET /api/v4/people/{personId}/tax-files`. Devuelve la lista de certificados (CSD y FIEL) de la persona como `List<TaxFile>`, solo metadatos: no trae el archivo (`Base64File`) ni la contraseña (`Password`).
+- Quien usa el cliente del SDK no cambia nada. Quien implementa su propia versión de `IFiscalApiClient`, `IInvoiceService`, `IPersonService` o `IProductService` (p. ej. un doble de pruebas) debe agregar `Me`, las sobrecargas `GetListAsync(InvoiceListFilters)`, `GetListAsync(PersonListFilters)` y `GetListAsync(ProductListFilters)`, y `GetTaxFilesAsync(personId)`.
+
+### Obsoleto
+
+- En `Persons.GetByIdAsync(id, details)`, `details` no tiene efecto: el API responde la misma persona con cualquier valor. Se conserva para no romper la compilación; omítelo. En `Invoices.GetByIdAsync` sigue teniendo efecto.
 
 ## [4.0.474] - 2026-11-07
 

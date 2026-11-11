@@ -14,6 +14,8 @@ namespace Fiscalapi.Services
         {
         }
 
+        public Task<ApiResponse<PagedList<Product>>> GetListAsync(ProductListFilters filters)
+            => GetFilteredListAsync(filters?.ToQueryString());
 
         // GET /api/v4/products/{id}/taxes
         public Task<ApiResponse<List<ProductTax>>> GetTaxesAsync(string id)

@@ -19,5 +19,6 @@
         IManifestService Manifests { get; }
         ISatValidationService SatValidations { get; }
         ITicketService Tickets { get; }
+        IMeService Me { get; }
     }
 }
