@@ -1,4 +1,7 @@
-﻿using Fiscalapi.Models;
+﻿using Fiscalapi.Common;
+using Fiscalapi.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fiscalapi.Abstractions
 {
@@ -9,5 +12,8 @@ namespace Fiscalapi.Abstractions
     {
         IEmployerService Employer { get; }
         IEmployeeService Employee { get; }
+
+        /// <summary>Lista los certificados (CSD y FIEL) de una persona, solo metadatos, sin el archivo ni la contraseña.</summary>
+        Task<ApiResponse<List<TaxFile>>> GetTaxFilesAsync(string personId);
     }
 }

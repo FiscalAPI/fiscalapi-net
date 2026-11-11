@@ -2,6 +2,12 @@
 
 Cambios del SDK y notas de comportamiento del API de FiscalAPI que afectan a quien usa el SDK.
 
+## [Sin publicar]
+
+### Agregado
+
+- `Persons.GetTaxFilesAsync(personId)` (`IPersonService`/`PersonService`): `GET /api/v4/people/{personId}/tax-files`. Devuelve la lista de certificados (CSD y FIEL) de la persona como `List<TaxFile>`, solo metadatos: no trae el archivo (`Base64File`) ni la contraseña (`Password`).
+
 ## [4.0.474] - 2026-11-07
 
 ### Cambios incompatibles (BREAKING)
