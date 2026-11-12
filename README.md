@@ -108,6 +108,10 @@ Puedes usar el SDK tanto en aplicaciones sin inyección de dependencias (WinForm
 2. **Crea la instancia del cliente**:
     ```csharp
     var fiscalApi = FiscalApiClient.Create(settings);
+
+    // Opcional: valida la credencial. Responde la persona de la API key, su tenant, el ambiente, sus features y saldos
+    // (401 si la API key o el tenant no son válidos)
+    var me = await fiscalApi.Me.GetAsync();
     ```
 
 Para ejemplos completos, consulta [winforms-console](https://github.com/FiscalAPI/fiscalapi-samples-net-winforms).
@@ -315,6 +319,21 @@ La `idempotencyKey` es opcional: con ella, repetir la misma petición con la mis
 ```csharp
 // El SDK no reintenta solo: la llave de idempotencia la da el integrador y se reutiliza para reintentar la misma factura
 var apiResponse = await fiscalApi.Invoices.CreateAsync(invoice, idempotencyKey: "550e8400-e29b-41d4-a716-446655440000");
+```
+
+Para listar facturas con filtros usa `InvoiceListFilters`; los filtros sin asignar no se envían. `Persons.GetListAsync(PersonListFilters)` y `Products.GetListAsync(ProductListFilters)` buscan con `Search`.
+
+```csharp
+// Facturas vigentes de un receptor en septiembre, las más recientes primero
+var invoices = await fiscalApi.Invoices.GetListAsync(new InvoiceListFilters
+{
+    RecipientTin = "<rfc_receptor>",
+    StatusId = "V",
+    From = new DateTime(2026, 9, 1),
+    To = new DateTime(2026, 9, 30),
+    Order = InvoiceListOrder.Desc,
+    PageSize = 50
+});
 ```
 
 ### 6. Crear la Misma Factura de Ingreso (Por Valores)

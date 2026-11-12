@@ -112,6 +112,16 @@ namespace Fiscalapi.Models
         public string SatRequestStatusId { get; set; }
         public CatalogDto SatRequestStatus { get; set; }
 
+        /// <summary>
+        /// Code (CodEstatus) of the last SAT response for the request or its verification.
+        /// </summary>
+        public string SatStatusCode { get; set; }
+
+        /// <summary>
+        /// Message of the last SAT response for the request or its verification.
+        /// </summary>
+        public string SatMessage { get; set; }
+
 
         /// <summary>
         /// Fiscalapi Request Status ID.

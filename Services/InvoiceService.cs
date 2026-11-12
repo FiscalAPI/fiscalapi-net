@@ -22,6 +22,9 @@ namespace Fiscalapi.Services
         }
 
 
+        public Task<ApiResponse<PagedList<Invoice>>> GetListAsync(InvoiceListFilters filters)
+            => GetFilteredListAsync(filters?.ToQueryString());
+
         public override Task<ApiResponse<Invoice>> CreateAsync(Invoice requestModel)
             => CreateAsync(requestModel, null);
 

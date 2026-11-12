@@ -16,6 +16,33 @@ namespace Fiscalapi.Models
         public List<ProductTax> ProductTaxes { get; set; } // Default "IVA 16%"
     }
 
+    /// <summary>
+    /// Filtros de <c>Products.GetListAsync</c> (GET /api/v4/products). Cada filtro asignado se aplica y los que quedan en
+    /// null no se envían; sin ninguno, la lista es la de siempre (primera página).
+    /// </summary>
+    public class ProductListFilters
+    {
+        /// <summary>
+        /// Texto a buscar, de 2 a 100 caracteres y sin distinguir mayúsculas: los productos cuya descripción o clave de
+        /// producto o servicio del SAT lo contiene.
+        /// </summary>
+        public string Search { get; set; }
+
+        /// <summary>Página, desde 1. Sin ella, el API devuelve la primera.</summary>
+        public int? PageNumber { get; set; }
+
+        /// <summary>Tamaño de página (1 a 50). Sin él, el API usa 10.</summary>
+        public int? PageSize { get; set; }
+
+        /// <summary>La query string de los filtros asignados, sin el signo ?; vacía si no hay ninguno.</summary>
+        internal string ToQueryString() =>
+            new QueryStringBuilder()
+                .Add("search", Search)
+                .Add("pageNumber", PageNumber)
+                .Add("pageSize", PageSize)
+                .ToString();
+    }
+
     public class ProductTax : BaseDto
     {
         /// <summary>

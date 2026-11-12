@@ -23,6 +23,7 @@ namespace Fiscalapi.Services
         public IManifestService Manifests { get; }
         public ISatValidationService SatValidations { get; }
         public ITicketService Tickets { get; }
+        public IMeService Me { get; }
 
 
         private FiscalApiClient(FiscalapiSettings settings)
@@ -45,6 +46,7 @@ namespace Fiscalapi.Services
             Manifests = new ManifestService(httpClient, apiVersion);
             SatValidations = new SatValidationService(httpClient, apiVersion);
             Tickets = new TicketService(httpClient, apiVersion);
+            Me = new MeService(httpClient, apiVersion);
         }
 
         public static IFiscalApiClient Create(FiscalapiSettings settings)

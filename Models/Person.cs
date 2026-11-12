@@ -9,7 +9,15 @@ namespace Fiscalapi.Models
         //Mandatory fields
         public string LegalName { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; } // Contraseña del dashboard: requerida al crear; en Update, null o vacía conserva la actual. El API nunca la devuelve
+        public string Password { get; set; } // Contraseña del dashboard: opcional al crear (sin ella la persona no inicia sesión con contraseña) y obligatoria solo si LoginEnabled es true; en Update, null o vacía conserva la actual. Null no se envía y el API nunca la devuelve
+
+        /// <summary>
+        /// Acceso al portal (inicio de sesión en el dashboard); no afecta a la API key. Al crear, null o false: la persona
+        /// nace sin acceso. En Update, null (sin asignar) no se envía y no cambia el acceso actual; true lo da (la persona
+        /// debe tener contraseña o recibirla en <see cref="Password"/>) y false lo quita. Solo lo cambia el owner del
+        /// tenant, y el owner siempre lo tiene. En las respuestas llega el acceso efectivo.
+        /// </summary>
+        public bool? LoginEnabled { get; set; }
 
         //Optional fields
         public string PhoneNumber { get; set; }
@@ -52,6 +60,37 @@ namespace Fiscalapi.Models
     {
         public CreditType CreditType { get; set; }
         public int Available { get; set; }
+    }
+
+    /// <summary>
+    /// Filtros de <c>Persons.GetListAsync</c> (GET /api/v4/people). Cada filtro asignado se aplica y los que quedan en null
+    /// no se envían; sin ninguno, la lista es la de siempre (primera página).
+    /// </summary>
+    public class PersonListFilters
+    {
+        /// <summary>
+        /// Texto a buscar, de 2 a 100 caracteres y sin distinguir mayúsculas: las personas cuya razón social, RFC o correo
+        /// lo contiene.
+        /// </summary>
+        public string Search { get; set; }
+
+        /// <summary>Tipo de persona (<see cref="Person.UserTypeId"/>): T (tenant), U (usuario) o C (cliente), en mayúsculas.</summary>
+        public string UserTypeId { get; set; }
+
+        /// <summary>Página, desde 1. Sin ella, el API devuelve la primera.</summary>
+        public int? PageNumber { get; set; }
+
+        /// <summary>Tamaño de página (1 a 50). Sin él, el API usa 50.</summary>
+        public int? PageSize { get; set; }
+
+        /// <summary>La query string de los filtros asignados, sin el signo ?; vacía si no hay ninguno.</summary>
+        internal string ToQueryString() =>
+            new QueryStringBuilder()
+                .Add("search", Search)
+                .Add("userTypeId", UserTypeId)
+                .Add("pageNumber", PageNumber)
+                .Add("pageSize", PageSize)
+                .ToString();
     }
 
     public class EmployeeData : BaseDto
